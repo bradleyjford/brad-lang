@@ -8,10 +8,6 @@
     <RootNamespace>BradLang.CommandLine</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\BradLang\BradLang.csproj" />
   </ItemGroup>
