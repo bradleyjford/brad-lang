@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
-    ref struct Lexer
+    public class Lexer
     {
-        readonly ReadOnlySpan<char> _text;
+        readonly ReadOnlyMemory<char> _text;
         int _position;
 
         readonly DiagnosticBag _diagnostics;
 
         public Lexer(string text)
         {
-            _text = text.AsSpan();
+            _text = text.AsMemory();
 
             _position = 0;
             _diagnostics = new DiagnosticBag();
@@ -22,7 +22,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
         public SyntaxToken Lex()
         {
-            var text = _text;
+            var text = _text.Span;
 
             while (true)
             {
@@ -164,7 +164,7 @@ namespace BradLang.CodeAnalysis.Syntax
                     return '\0';
                 }
 
-                return _text[_position];
+                return _text.Span[_position];
             }
         }
 
@@ -181,7 +181,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 return '\0';
             }
 
-            return _text[index];
+            return _text.Span[index];
         }
     }
 }
