@@ -46,10 +46,8 @@ namespace BradLang.Tests
 
             Assert.Equal(kind1, tokens[0].Kind);
             Assert.Equal(text1, tokens[0].Text);
-
             Assert.Equal(SeparatorKind, tokens[1].Kind);
             Assert.Equal(SeparatorText, tokens[1].Text);
-
             Assert.Equal(kind2, tokens[2].Kind);
             Assert.Equal(text2, tokens[2].Text);
         }
@@ -100,9 +98,12 @@ namespace BradLang.Tests
             {
                 foreach (var t2 in GetSyntaxTokens())
                 {
-                    foreach (var s in GetSeparatorSyntaxTokens())
+                    //if (CanPairToken(t1.kind, t2.kind))
                     {
-                        yield return (t1.kind, t1.text, s.kind, s.text, t2.kind, t2.text);
+                        foreach (var s in GetSeparatorSyntaxTokens())
+                        {
+                            yield return (t1.kind, t1.text, s.kind, s.text, t2.kind, t2.text);
+                        }
                     }
                 }
             }

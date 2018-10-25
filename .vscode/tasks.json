@@ -10,6 +10,17 @@
                 "${workspaceFolder}/src/bc/bc.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "group": "test",
+            "args": [
+                "test",
+                "${workspaceFolder}/src/BradLang.Tests/BradLang.Tests.csproj"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
