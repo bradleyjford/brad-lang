@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
-    static class SyntaxFacts
+    public static class SyntaxFacts
     {
         public static int GetUnaryOperatorPrecedence(this SyntaxKind kind)
         {
@@ -56,6 +56,18 @@ namespace BradLang.CodeAnalysis.Syntax
                 default:
                     return SyntaxKind.IdentifierToken;
             }
+        }
+
+        public static bool IsKeyword(SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                case SyntaxKind.TrueKeyword:
+                case SyntaxKind.FalseKeyword:
+                    return true;
+            }
+
+            return false;
         }
     }
 }
