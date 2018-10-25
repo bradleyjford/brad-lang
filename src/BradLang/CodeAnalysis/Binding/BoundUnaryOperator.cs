@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
