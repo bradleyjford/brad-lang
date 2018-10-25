@@ -50,7 +50,7 @@ namespace BradLang.CodeAnalysis.Syntax
                     do
                     {
                         _position++;
-                    } while (Char.IsLetter(Current));
+                    } while (Char.IsLetter(Current) || Char.IsDigit(Current));
 
                     var textValue = new String(text.Slice(start, _position - start));
 

@@ -4,13 +4,13 @@ using System.Linq;
 using BradLang.CodeAnalysis.Syntax;
 using Xunit;
 
-namespace BradLand.Tests
+namespace BradLang.Tests
 {
     public class LexerTests
     {
         [Theory]
         [MemberData(nameof(GetSyntaxTokensData))]
-        public void Lexer_Lex_CanParseTokens(SyntaxKind kind, string text)
+        public void Lexer_Lex_CanParseToken(SyntaxKind kind, string text)
         {
             var tokens = ParseTokens(text).ToArray();
 
@@ -33,9 +33,30 @@ namespace BradLand.Tests
             Assert.Equal(text2, tokens[1].Text);
         }
 
+        [Theory]
+        [MemberData(nameof(GetSyntaxTokenPairsWithSeparatorsData))]
+        public void Lexer_Lex_CanParseTokenPairsWithSeparator(
+            SyntaxKind kind1, string text1, 
+            SyntaxKind SeparatorKind, string SeparatorText,
+            SyntaxKind kind2, string text2)
+        {
+            var tokens = ParseTokens(text1 + SeparatorText + text2).ToArray();
+
+            Assert.Equal(3, tokens.Length);
+
+            Assert.Equal(kind1, tokens[0].Kind);
+            Assert.Equal(text1, tokens[0].Text);
+
+            Assert.Equal(SeparatorKind, tokens[1].Kind);
+            Assert.Equal(SeparatorText, tokens[1].Text);
+
+            Assert.Equal(kind2, tokens[2].Kind);
+            Assert.Equal(text2, tokens[2].Text);
+        }
+
         public static IEnumerable<object[]> GetSyntaxTokensData()
         {
-            foreach (var t in GetSyntaxTokens())
+            foreach (var t in GetSyntaxTokens().Concat(GetSeparatorSyntaxTokens()))
             {
                 yield return new object[] { t.kind, t.text };
             }
@@ -46,6 +67,14 @@ namespace BradLand.Tests
             foreach (var t in GetSyntaxTokenPairs())
             {
                 yield return new object[] { t.kind1, t.text1, t.kind2, t.text2 };
+            }
+        }
+
+        public static IEnumerable<object[]> GetSyntaxTokenPairsWithSeparatorsData()
+        {
+            foreach (var t in GetSyntaxTokenPairsWithSeparators())
+            {
+                yield return new object[] { t.kind1, t.text1, t.SeparatorKind, t.SeparatorText, t.kind2, t.text2 };
             }
         }
 
@@ -65,6 +94,19 @@ namespace BradLand.Tests
             }
         }
 
+        static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind SeparatorKind, string SeparatorText, SyntaxKind kind2, string text2)> GetSyntaxTokenPairsWithSeparators()
+        {
+            foreach (var t1 in GetSyntaxTokens())
+            {
+                foreach (var t2 in GetSyntaxTokens())
+                {
+                    foreach (var s in GetSeparatorSyntaxTokens())
+                    {
+                        yield return (t1.kind, t1.text, s.kind, s.text, t2.kind, t2.text);
+                    }
+                }
+            }
+        }
         static bool CanPairToken(SyntaxKind kind1, SyntaxKind kind2) 
         {
             if (kind1 == SyntaxKind.IdentifierToken && kind2 == SyntaxKind.IdentifierToken)
@@ -73,7 +115,13 @@ namespace BradLand.Tests
             if (kind1 == SyntaxKind.NumberToken && kind2 == SyntaxKind.NumberToken)
                 return false;
 
+            if (kind1 == SyntaxKind.IdentifierToken && kind2 == SyntaxKind.NumberToken)
+                return false;
+
             if (SyntaxFacts.IsKeyword(kind1) && SyntaxFacts.IsKeyword(kind2))
+                return false;
+
+            if (SyntaxFacts.IsKeyword(kind1) && kind2 == SyntaxKind.NumberToken)
                 return false;
 
             if ((SyntaxFacts.IsKeyword(kind1) && kind2 == SyntaxKind.IdentifierToken) ||
@@ -130,20 +178,20 @@ namespace BradLand.Tests
 
                 (SyntaxKind.NumberToken, "1"),
                 (SyntaxKind.NumberToken, "12"),
-                (SyntaxKind.NumberToken, "123"),
+
                 (SyntaxKind.StringToken, "\"\""),
                 (SyntaxKind.StringToken, "\"a\""),
-                (SyntaxKind.StringToken, "\"ab\""),
-                (SyntaxKind.StringToken, "\"ab ab\""),
+                (SyntaxKind.StringToken, "\"a b\""),
                 (SyntaxKind.StringToken, "\"ab \\\"ab\""),
 
                 (SyntaxKind.IdentifierToken, "a"),
                 (SyntaxKind.IdentifierToken, "ab"),
-                (SyntaxKind.IdentifierToken, "abc"),
+                (SyntaxKind.IdentifierToken, "a1"),
+                (SyntaxKind.IdentifierToken, "a12")
             };
         }
 
-        static IEnumerable<(SyntaxKind kind, string text)> GetWhitespaceSyntaxTokens()
+        static IEnumerable<(SyntaxKind kind, string text)> GetSeparatorSyntaxTokens()
         {
             return new[] {
                 (SyntaxKind.WhiteSpaceToken, " "),
