@@ -15,6 +15,7 @@ namespace BradLang
             _variables = variables;
         }
 
+        public object Evaluate()
         {
             return EvaluateExpression(_root);
         }
