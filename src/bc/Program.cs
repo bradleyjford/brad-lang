@@ -44,9 +44,7 @@ namespace BradLang.CommandLine
                     continue;
                 }
 
-                var parser = new Parser(line);
-
-                var syntaxTree = parser.Parse();
+                var syntaxTree = SyntaxTree.Parse(line);
 
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 DumpSyntaxTree(syntaxTree.Root);
@@ -117,7 +115,9 @@ namespace BradLang.CommandLine
             var lastChild = node.GetChildren().LastOrDefault();
 
             foreach (var child in node.GetChildren())
+            {
                 DumpSyntaxTree(child, indent, child == lastChild);
+            }
         }
     }
 }
