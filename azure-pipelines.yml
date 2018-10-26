@@ -18,12 +18,8 @@ steps:
   inputs:
     command: test
     projects: '**/*.Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./coverage.xml'
-- task: PublishTestResults@2
-  inputs:
-    testResultsFormat: VSTest
-    testResultsFiles: '**/*.trx'
+    arguments: '--configuration $(buildConfiguration) --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=../../coverage.xml'
 - task: PublishCodeCoverageResults@1
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: '**/coverage.xml'
+    summaryFileLocation: './coverage.xml'
