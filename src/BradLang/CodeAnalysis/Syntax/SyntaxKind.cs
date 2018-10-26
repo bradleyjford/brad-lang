@@ -16,6 +16,9 @@ namespace BradLang.CodeAnalysis.Syntax
         StarToken,
         SlashToken,
 
+        ColonToken,
+        QuestionMarkToken,
+
         OpenParenthesisToken,
         CloseParenthesisToken,
 
@@ -42,9 +45,10 @@ namespace BradLang.CodeAnalysis.Syntax
         LiteralExpression,
         LiteralStringExpression,
         NameExpression,
-        BinaryExpression,
-        ParenthesizedExpression,
         UnaryExpression,
+        BinaryExpression,
+        TernaryExpression,
+        ParenthesizedExpression,
 
         AssignmentExpression
     }

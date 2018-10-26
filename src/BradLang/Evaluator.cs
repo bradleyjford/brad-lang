@@ -95,6 +95,20 @@ namespace BradLang
                         default:
                             throw new Exception($"Unexpected binary operator {binaryExpression.Operator.Kind}.");
                     }
+
+                    case BoundNodeKind.TernaryExpression:
+                        var ternaryExpression = (BoundTernaryExpression)expression;
+
+                        var conditionResult = EvaluateExpression(ternaryExpression.Condition);
+
+                        if ((bool)conditionResult)
+                        {
+                            return EvaluateExpression(ternaryExpression.True);
+                        }
+                        else
+                        {
+                            return EvaluateExpression(ternaryExpression.False);
+                        }
             }
 
             throw new Exception($"Unexpected node {expression.Kind}.");

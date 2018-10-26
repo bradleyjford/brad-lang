@@ -65,5 +65,11 @@ namespace BradLang.CodeAnalysis
             var message = $"Unterminated string constant.";
             Report(new TextSpan(position, length), message);
         }
+
+        internal void ReportTypeMismatch(TextSpan span, Type type1, Type type2)
+        {
+            var message = $"Cannot convert from type {type1} and {type2}.";
+            Report(span, message);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.BangToken:
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
-                    return 6;
+                    return 7;
 
                 default:
                     return 0;
@@ -24,20 +24,32 @@ namespace BradLang.CodeAnalysis.Syntax
             {
                 case SyntaxKind.StarToken:
                 case SyntaxKind.SlashToken:
-                    return 5;
+                    return 6;
 
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
-                    return 4;
+                    return 5;
 
                 case SyntaxKind.EqualsEqualsToken:
                 case SyntaxKind.BangEqualsToken:
-                    return 3;
+                    return 4;
 
                 case SyntaxKind.AmpersandAmpersandToken:
-                    return 2;
+                    return 3;
 
                 case SyntaxKind.PipePipeToken:
+                    return 2;
+
+                default:
+                    return 0;
+            }
+        }
+
+        public static int GetTernaryOperatorPrecedence(SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                case SyntaxKind.QuestionMarkToken:
                     return 1;
 
                 default:

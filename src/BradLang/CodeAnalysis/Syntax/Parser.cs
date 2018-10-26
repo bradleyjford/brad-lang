@@ -97,7 +97,26 @@ namespace BradLang.CodeAnalysis.Syntax
                 return new AssignmentExpressionSyntax(identifierToken, operatorToken, right);
             }
 
-            return ParseBinaryExpression();
+            return ParseTernaryExpression();
+        }
+
+        ExpressionSyntax ParseTernaryExpression()
+        {
+            var left = ParseBinaryExpression();
+
+            var ternayOperatorPrecedence = SyntaxFacts.GetTernaryOperatorPrecedence(Current.Kind);
+
+            if (ternayOperatorPrecedence != 0)
+            {
+                var questionMarkToken = Next();
+                var trueExpression = ParseExpression();
+                var colonToken = MatchToken(SyntaxKind.ColonToken);
+                var falseExpression = ParseExpression();
+                
+                left = new TernaryExpressionSyntax(left, questionMarkToken, trueExpression, colonToken, falseExpression);
+            }
+
+            return left;
         }
 
         ExpressionSyntax ParseBinaryExpression(int parentPrecedence = 0)
@@ -128,6 +147,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 }
 
                 var operatorToken = Next();
+
                 var right = ParseBinaryExpression(precedence);
 
                 left = new BinaryExpressionSyntax(left, operatorToken, right);

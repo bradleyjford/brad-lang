@@ -7,6 +7,7 @@ namespace BradLang.CodeAnalysis.Binding
         UnaryExpression,
         LiteralExpression,
         BinaryExpression,
+        TernaryExpression,
         VariableExpression,
         AssignmentExpression
     }

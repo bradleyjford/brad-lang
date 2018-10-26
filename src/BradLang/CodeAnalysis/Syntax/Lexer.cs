@@ -136,6 +136,10 @@ namespace BradLang.CodeAnalysis.Syntax
                         }
 
                         return new SyntaxToken(SyntaxKind.AmpersandToken, _position++, "&", null);
+                    case ':':
+                        return new SyntaxToken(SyntaxKind.ColonToken, _position++, ":", null);
+                    case '?':
+                        return new SyntaxToken(SyntaxKind.QuestionMarkToken, _position++, "?", null);
                     case '+':
                         return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
                     case '-':

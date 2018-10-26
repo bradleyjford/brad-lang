@@ -38,6 +38,8 @@ namespace BradLang.CodeAnalysis.Binding
                     return BindUnaryExpression((UnaryExpressionSyntax)syntax);
                 case SyntaxKind.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionSyntax)syntax);
+                case SyntaxKind.TernaryExpression:
+                    return BindTernaryExpression((TernaryExpressionSyntax)syntax);
                 case SyntaxKind.NameExpression:
                     return BindNameExpression((NameExpressionSyntax)syntax);
                 case SyntaxKind.AssignmentExpression:
@@ -128,6 +130,31 @@ namespace BradLang.CodeAnalysis.Binding
             }
 
             return new BoundBinaryExpression(left, boundOperator, right);
+        }
+
+        BoundExpression BindTernaryExpression(TernaryExpressionSyntax syntax)
+        {
+            var condition = BindExpression(syntax.Condition);
+            var trueExpression = BindExpression(syntax.True);
+            var falseExpression = BindExpression(syntax.False);
+            
+            if (condition.Type != typeof(bool))
+            {
+                _diagnostics.ReportTypeMismatch(syntax.QuestionMarkToken.Span, condition.Type, typeof(bool));
+
+                return trueExpression;
+            }
+
+            var boundOperator = BoundTernaryOperator.Bind(condition.Type, trueExpression.Type, falseExpression.Type);
+            
+            if (boundOperator == null)
+            {
+                _diagnostics.ReportTypeMismatch(syntax.ColonToken.Span, trueExpression.Type, falseExpression.Type);
+
+                return trueExpression;
+            }
+
+            return new BoundTernaryExpression(boundOperator, condition, trueExpression, falseExpression);
         }
     }
 }
