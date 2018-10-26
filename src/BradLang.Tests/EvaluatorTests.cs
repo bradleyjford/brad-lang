@@ -38,7 +38,6 @@ namespace BradLang.Tests
         public void Evaluator_Evaluate(string text, object expectedValue)
         {
             var syntaxTree = SyntaxTree.Parse(text);   
-            
             var compilation = new Compilation(syntaxTree);
             
             var variables = new Dictionary<VariableSymbol, object>();
