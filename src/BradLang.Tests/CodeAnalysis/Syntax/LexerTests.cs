@@ -98,7 +98,7 @@ namespace BradLang.Tests
             {
                 foreach (var t2 in GetSyntaxTokens())
                 {
-                    //if (CanPairToken(t1.kind, t2.kind))
+                    if (!CanPairToken(t1.kind, t2.kind))
                     {
                         foreach (var s in GetSeparatorSyntaxTokens())
                         {
