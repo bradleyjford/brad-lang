@@ -173,6 +173,8 @@ namespace BradLang.Tests
                 (SyntaxKind.AmpersandAmpersandToken, "&&"),
                 (SyntaxKind.PipeToken, "|"),
                 (SyntaxKind.PipePipeToken, "||"),
+                (SyntaxKind.QuestionMarkToken, "?"),
+                (SyntaxKind.ColonToken, ":"),
 
                 (SyntaxKind.TrueKeyword, "true"),
                 (SyntaxKind.FalseKeyword, "false"),
