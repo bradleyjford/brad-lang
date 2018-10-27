@@ -11,7 +11,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.BangToken:
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
-                    return 7;
+                    return 10;
 
                 default:
                     return 0;
@@ -24,10 +24,15 @@ namespace BradLang.CodeAnalysis.Syntax
             {
                 case SyntaxKind.StarToken:
                 case SyntaxKind.SlashToken:
-                    return 6;
 
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
+                    return 6;
+
+                case SyntaxKind.LessThanToken:
+                case SyntaxKind.LessThanEqualsToken:
+                case SyntaxKind.GreaterThanToken:
+                case SyntaxKind.GreaterThanEqualsToken:
                     return 5;
 
                 case SyntaxKind.EqualsEqualsToken:

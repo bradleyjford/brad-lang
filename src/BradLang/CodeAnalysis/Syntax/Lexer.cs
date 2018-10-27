@@ -104,6 +104,22 @@ namespace BradLang.CodeAnalysis.Syntax
 
                 switch (currentChar)
                 {
+                    case '<':
+                        if (PeekNext == '=')
+                        {
+                            _position += 2;
+                            return new SyntaxToken(SyntaxKind.LessThanEqualsToken, start, "<=", null);
+                        }
+
+                        return new SyntaxToken(SyntaxKind.LessThanToken, _position++, "<", null);
+                    case '>':
+                        if (PeekNext == '=')
+                        {
+                            _position += 2;
+                            return new SyntaxToken(SyntaxKind.GreaterThanEqualsToken, start, ">=", null);
+                        }
+
+                        return new SyntaxToken(SyntaxKind.GreaterThanToken, _position++, ">", null);
                     case '=':
                         if (PeekNext == '=')
                         {

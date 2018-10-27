@@ -22,6 +22,11 @@ namespace BradLang.CodeAnalysis.Syntax
         OpenParenthesisToken,
         CloseParenthesisToken,
 
+        LessThanToken,
+        LessThanEqualsToken,
+        GreaterThanToken,
+        GreaterThanEqualsToken,
+
         EqualsToken,
         EqualsEqualsToken,
 

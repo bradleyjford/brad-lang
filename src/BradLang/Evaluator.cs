@@ -84,6 +84,14 @@ namespace BradLang
                             return (int)left * (int)right;
                         case BoundBinaryOperatorKind.Division:
                             return (int)left / (int)right;
+                        case BoundBinaryOperatorKind.LessThan:
+                            return (int)left < (int)right;
+                        case BoundBinaryOperatorKind.LessThanEquals:
+                            return (int)left <= (int)right;
+                        case BoundBinaryOperatorKind.GreaterThan:
+                            return (int)left > (int)right;
+                        case BoundBinaryOperatorKind.GreaterThanEquals:
+                            return (int)left >= (int)right;
                         case BoundBinaryOperatorKind.Equals:
                             return Equals(left, right);
                         case BoundBinaryOperatorKind.NotEquals:

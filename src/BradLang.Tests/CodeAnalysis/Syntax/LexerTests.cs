@@ -129,6 +129,18 @@ namespace BradLang.Tests
                 (kind1 == SyntaxKind.IdentifierToken && SyntaxFacts.IsKeyword(kind2)))
                 return false;
 
+            if (kind1 == SyntaxKind.LessThanToken && kind2 == SyntaxKind.EqualsToken)
+                return false;
+
+            if (kind1 == SyntaxKind.LessThanToken && kind2 == SyntaxKind.EqualsEqualsToken)
+                return false;
+
+            if (kind1 == SyntaxKind.GreaterThanToken && kind2 == SyntaxKind.EqualsToken)
+                return false;
+
+            if (kind1 == SyntaxKind.GreaterThanToken && kind2 == SyntaxKind.EqualsEqualsToken)
+                return false;
+
             if (kind1 == SyntaxKind.BangToken && kind2 == SyntaxKind.EqualsToken)
                 return false;
 
@@ -165,6 +177,10 @@ namespace BradLang.Tests
                 (SyntaxKind.SlashToken, "/"),
                 (SyntaxKind.OpenParenthesisToken, "("),
                 (SyntaxKind.CloseParenthesisToken, ")"),
+                (SyntaxKind.LessThanToken, "<"),
+                (SyntaxKind.LessThanEqualsToken, "<="),
+                (SyntaxKind.GreaterThanToken, ">"),
+                (SyntaxKind.GreaterThanEqualsToken, ">="),
                 (SyntaxKind.EqualsToken, "="),
                 (SyntaxKind.EqualsEqualsToken, "=="),
                 (SyntaxKind.BangToken, "!"),
