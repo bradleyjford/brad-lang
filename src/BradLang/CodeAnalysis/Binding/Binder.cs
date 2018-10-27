@@ -39,7 +39,7 @@ namespace BradLang.CodeAnalysis.Binding
                 case SyntaxKind.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionSyntax)syntax);
                 case SyntaxKind.TernaryExpression:
-                    return BindTernaryExpression((TernaryExpressionSyntax)syntax);
+                    return BindTernaryExpression((ConditionalExpressionSyntax)syntax);
                 case SyntaxKind.NameExpression:
                     return BindNameExpression((NameExpressionSyntax)syntax);
                 case SyntaxKind.AssignmentExpression:
@@ -132,7 +132,7 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundBinaryExpression(left, boundOperator, right);
         }
 
-        BoundExpression BindTernaryExpression(TernaryExpressionSyntax syntax)
+        BoundExpression BindTernaryExpression(ConditionalExpressionSyntax syntax)
         {
             var condition = BindExpression(syntax.Condition);
             var trueExpression = BindExpression(syntax.True);

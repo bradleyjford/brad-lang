@@ -2,9 +2,9 @@
 
 namespace BradLang.CodeAnalysis.Syntax
 {
-    class TernaryExpressionSyntax : ExpressionSyntax
+    class ConditionalExpressionSyntax : ExpressionSyntax
     {
-        public TernaryExpressionSyntax(
+        public ConditionalExpressionSyntax(
             ExpressionSyntax condition, 
             SyntaxToken questionMarkToken, 
             ExpressionSyntax @true, 

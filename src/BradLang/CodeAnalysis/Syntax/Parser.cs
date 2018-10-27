@@ -113,7 +113,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 var colonToken = MatchToken(SyntaxKind.ColonToken);
                 var falseExpression = ParseExpression();
                 
-                left = new TernaryExpressionSyntax(left, questionMarkToken, trueExpression, colonToken, falseExpression);
+                left = new ConditionalExpressionSyntax(left, questionMarkToken, trueExpression, colonToken, falseExpression);
             }
 
             return left;
