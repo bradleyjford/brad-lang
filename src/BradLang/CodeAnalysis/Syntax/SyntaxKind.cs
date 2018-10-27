@@ -15,6 +15,7 @@ namespace BradLang.CodeAnalysis.Syntax
         MinusToken,
         StarToken,
         SlashToken,
+        PercentToken,
 
         ColonToken,
         QuestionMarkToken,

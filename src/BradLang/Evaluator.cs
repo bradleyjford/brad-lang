@@ -100,6 +100,8 @@ namespace BradLang
                             return (bool)left || (bool)right;
                         case BoundBinaryOperatorKind.LogicalAnd:
                             return (bool)left && (bool)right;
+                        case BoundBinaryOperatorKind.Modulus:
+                            return (int)left % (int)right;
                         default:
                             throw new Exception($"Unexpected binary operator {binaryExpression.Operator.Kind}.");
                     }

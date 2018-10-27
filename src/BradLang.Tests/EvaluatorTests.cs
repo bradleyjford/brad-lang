@@ -15,6 +15,7 @@ namespace BradLang.Tests
         [InlineData("17 - 9", 8)]
         [InlineData("2 * 7", 14)]
         [InlineData("21 / 7", 3)]
+        [InlineData("5 % 3", 2)]
         [InlineData("1 + 2 * 3", 7)]
         [InlineData("(1 + 2) * 3", 9)]
         [InlineData("(540)", 540)]

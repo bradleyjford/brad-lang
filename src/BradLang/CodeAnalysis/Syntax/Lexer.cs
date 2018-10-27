@@ -168,6 +168,8 @@ namespace BradLang.CodeAnalysis.Syntax
                         return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
                     case ')':
                         return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
+                    case '%':
+                        return new SyntaxToken(SyntaxKind.PercentToken, _position++, "%", null);
                     default:
                         _diagnostics.ReportBadCharacter(start, currentChar);
                         return new SyntaxToken(SyntaxKind.UnknownToken, _position++, new String(text.Slice(start, 1)), null);

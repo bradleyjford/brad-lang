@@ -24,6 +24,8 @@ namespace BradLang.CodeAnalysis.Syntax
             {
                 case SyntaxKind.StarToken:
                 case SyntaxKind.SlashToken:
+                case SyntaxKind.PercentToken:
+                    return 7;
 
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
