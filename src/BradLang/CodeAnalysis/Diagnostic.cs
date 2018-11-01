@@ -1,4 +1,5 @@
 using System;
+using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {

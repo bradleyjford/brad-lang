@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using BradLang.CodeAnalysis.Syntax;
+using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis
 {
-    sealed class DiagnosticBag : IEnumerable<Diagnostic>
+    public sealed class DiagnosticBag : IEnumerable<Diagnostic>
     {
         readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
 

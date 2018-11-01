@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {

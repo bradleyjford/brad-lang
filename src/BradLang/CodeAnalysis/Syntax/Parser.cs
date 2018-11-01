@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
     public sealed class Parser
     {
-        readonly SyntaxToken[] _tokens;
+        readonly ImmutableArray<SyntaxToken> _tokens;
         readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
         int _position;
@@ -29,12 +30,12 @@ namespace BradLang.CodeAnalysis.Syntax
                 }
             } while (token.Kind != SyntaxKind.EndOfFileToken);
 
-            _tokens = tokens.ToArray();
+            _tokens = tokens.ToImmutableArray();
 
             _diagnostics.AddRange(lexer.Diagnostics);
         }
 
-        public IEnumerable<Diagnostic> Diagnostics => _diagnostics;
+        public DiagnosticBag Diagnostics => _diagnostics;
 
         SyntaxToken Peek(int offset)
         {
@@ -77,7 +78,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
             var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
 
-            return new SyntaxTree(root, endOfFileToken, _diagnostics);
+            return new SyntaxTree(root, endOfFileToken, _diagnostics.ToImmutableArray());
         }
 
         ExpressionSyntax ParseExpression()

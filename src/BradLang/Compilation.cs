@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using BradLang.CodeAnalysis.Binding;
@@ -22,7 +23,7 @@ namespace BradLang
 
             var boundExpression = binder.Bind();
 
-            var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToArray();
+            var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
 
             var evaluator = new Evaluator(boundExpression, variables);
 
@@ -34,13 +35,13 @@ namespace BradLang
 
     public sealed class EvaluationResult
     {
-        public EvaluationResult(IEnumerable<Diagnostic> diagnostics, object value)
+        public EvaluationResult(ImmutableArray<Diagnostic> diagnostics, object value)
         {
-            Diagnostics = diagnostics.ToArray();
+            Diagnostics = diagnostics;
             Value = value;
         }
 
-        public IReadOnlyList<Diagnostic> Diagnostics { get; }
+        public ImmutableArray<Diagnostic> Diagnostics { get; }
         public object Value { get; }
     }
 }

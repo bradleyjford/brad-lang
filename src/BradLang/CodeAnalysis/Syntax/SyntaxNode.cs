@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
@@ -16,7 +17,7 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             using (var writer = new StringWriter())
             {
-                SyntaxNodeDiagnosticWriter.DumpSyntaxTree(writer, this);
+                SyntaxNodeDiagnosticWriter.Write(writer, this);
 
                 return writer.ToString();
             }

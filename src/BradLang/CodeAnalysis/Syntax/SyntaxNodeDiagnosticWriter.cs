@@ -5,7 +5,7 @@ namespace BradLang.CodeAnalysis.Syntax
 {
     sealed class SyntaxNodeDiagnosticWriter
     {
-        public static void DumpSyntaxTree(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
+        public static void Write(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
         {
             var marker = isLast ? "└──" : "├──";
 
@@ -27,7 +27,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
             foreach (var child in node.GetChildren())
             {
-                DumpSyntaxTree(writer, child, indent, child == lastChild);
+                Write(writer, child, indent, child == lastChild);
             }
         }
     }

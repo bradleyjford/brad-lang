@@ -11,7 +11,7 @@ namespace BradLang.CodeAnalysis.Binding
         readonly IDictionary<VariableSymbol, object> _variables;
         readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
-        public IEnumerable<Diagnostic> Diagnostics => _diagnostics;
+        public DiagnosticBag Diagnostics => _diagnostics;
 
         public Binder(SyntaxTree syntaxTree, IDictionary<VariableSymbol, object> variables)
         {

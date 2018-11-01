@@ -1,6 +1,6 @@
 using System;
 
-namespace BradLang.CodeAnalysis
+namespace BradLang.CodeAnalysis.Text
 {
     public struct TextSpan
     {
