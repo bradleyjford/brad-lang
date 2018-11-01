@@ -25,78 +25,70 @@ namespace BradLang
             switch (expression.Kind)
             {
                 case BoundNodeKind.LiteralExpression:
-                    return EvaluateLiteralExpression(expression);
+                    return EvaluateLiteralExpression((BoundLiteralExpression)expression);
 
                 case BoundNodeKind.VariableExpression:
-                    return EvaluateVariableExpression(expression);
+                    return EvaluateVariableExpression((BoundVariableExpression)expression);
 
                 case BoundNodeKind.AssignmentExpression:
-                    return EvaluateAssignmentExpression(expression);
+                    return EvaluateAssignmentExpression((BoundAssignmentExpression)expression);
 
                 case BoundNodeKind.UnaryExpression:
-                    return EvaluateUnaryExpression(expression);
+                    return EvaluateUnaryExpression((BoundUnaryExpression)expression);
 
                 case BoundNodeKind.BinaryExpression:
-                    return EvaluateBinaryExpression(expression);
+                    return EvaluateBinaryExpression((BoundBinaryExpression)expression);
 
                 case BoundNodeKind.TernaryExpression:
-                    return EvaluateTernaryExpression(expression);
+                    return EvaluateTernaryExpression((BoundTernaryExpression)expression);
             }
 
             throw new Exception($"Unexpected node {expression.Kind}.");
         }
 
-        object EvaluateVariableExpression(BoundExpression expression)
+        object EvaluateVariableExpression(BoundVariableExpression expression)
         {
-            var variableExpression = (BoundVariableExpression)expression;
-
-            return _variables[variableExpression.Variable];
+            return _variables[expression.Variable];
         }
 
-        static object EvaluateLiteralExpression(BoundExpression expression)
-        {
-            var literalExpression = (BoundLiteralExpression)expression;
-            
-            return literalExpression.Value;
+        static object EvaluateLiteralExpression(BoundLiteralExpression expression)
+        {           
+            return expression.Value;
         }
 
-        object EvaluateTernaryExpression(BoundExpression expression)
+        object EvaluateTernaryExpression(BoundTernaryExpression expression)
         {
-            var ternaryExpression = (BoundTernaryExpression)expression;
-
-            var conditionResult = EvaluateExpression(ternaryExpression.Condition);
+            var conditionResult = EvaluateExpression(expression.Condition);
 
             if ((bool)conditionResult)
             {
-                return EvaluateExpression(ternaryExpression.True);
+                return EvaluateExpression(expression.True);
             }
             else
             {
-                return EvaluateExpression(ternaryExpression.False);
+                return EvaluateExpression(expression.False);
             }
         }
 
-        object EvaluateBinaryExpression(BoundExpression expression)
+        object EvaluateBinaryExpression(BoundBinaryExpression expression)
         {
-            var binaryExpression = (BoundBinaryExpression)expression;
+            var left = EvaluateExpression(expression.Left);
+            var right = EvaluateExpression(expression.Right);
 
-            var left = EvaluateExpression(binaryExpression.Left);
-            var right = EvaluateExpression(binaryExpression.Right);
-
-            switch (binaryExpression.Operator.Kind)
+            switch (expression.Operator.Kind)
             {
                 case BoundBinaryOperatorKind.Addition:
-                    if (binaryExpression.Type == typeof(int))
+                    if (expression.Type == typeof(int))
                     {
                         return (int)left + (int)right;
                     }
 
-                    if (binaryExpression.Type == typeof(string))
+                    if (expression.Type == typeof(string))
                     {
                         return String.Concat(left, right);
                     }
 
-                    throw new Exception($"Unexpected binary operator {binaryExpression.Operator.Kind}.");
+                    throw new Exception($"Unexpected binary operator {expression.Operator.Kind}.");
                 case BoundBinaryOperatorKind.Subtraction:
                     return (int)left - (int)right;
                 case BoundBinaryOperatorKind.Multiplication:
@@ -122,27 +114,24 @@ namespace BradLang
                 case BoundBinaryOperatorKind.Modulus:
                     return (int)left % (int)right;
                 default:
-                    throw new Exception($"Unexpected binary operator {binaryExpression.Operator.Kind}.");
+                    throw new Exception($"Unexpected binary operator {expression.Operator.Kind}.");
             }
         }
 
-        object EvaluateAssignmentExpression(BoundExpression expression)
+        object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
         {
-            var assignmentExpression = (BoundAssignmentExpression)expression;
-            var value = EvaluateExpression(assignmentExpression.Expression);
+            var value = EvaluateExpression(expression.Expression);
 
-            _variables[assignmentExpression.Variable] = value;
+            _variables[expression.Variable] = value;
 
             return value;
         }
 
-        object EvaluateUnaryExpression(BoundExpression expression)
+        object EvaluateUnaryExpression(BoundUnaryExpression expression)
         {
-            var unaryExpression = (BoundUnaryExpression)expression;
+            var operand = EvaluateExpression(expression.Operand);
 
-            var operand = EvaluateExpression(unaryExpression.Operand);
-
-            switch (unaryExpression.Operator.Kind)
+            switch (expression.Operator.Kind)
             {
                 case BoundUnaryOperatorKind.Negation:
                     return -(int)operand;
@@ -151,7 +140,7 @@ namespace BradLang
                 case BoundUnaryOperatorKind.LogicalNegation:
                     return !(bool)operand;
                 default:
-                    throw new Exception($"Unsupported unary operator {unaryExpression.Operator.Kind}.");
+                    throw new Exception($"Unsupported unary operator {expression.Operator.Kind}.");
             }
         }
     }
