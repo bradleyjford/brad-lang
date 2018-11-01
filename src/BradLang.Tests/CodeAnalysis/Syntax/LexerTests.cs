@@ -8,6 +8,23 @@ namespace BradLang.Tests
 {
     public class LexerTests
     {
+        [Fact]
+        public void Lexer_Lex_AllTokensAreTested()
+        {
+            var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
+                .Cast<SyntaxKind>()
+                .Where(sk => sk.ToString().EndsWith("Keywork") || sk.ToString().EndsWith("Token"));
+
+            var testedTokenKinds = GetSyntaxTokens().Concat(GetSeparatorSyntaxTokens()).Select(t => t.kind);
+
+            var untestedTokenKinds = new SortedSet<SyntaxKind>(tokenKinds);
+            untestedTokenKinds.ExceptWith(testedTokenKinds);
+            untestedTokenKinds.Remove(SyntaxKind.UnknownToken);
+            untestedTokenKinds.Remove(SyntaxKind.EndOfFileToken);
+
+            Assert.Empty(untestedTokenKinds);
+        }
+
         [Theory]
         [MemberData(nameof(GetSyntaxTokensData))]
         public void Lexer_Lex_CanParseToken(SyntaxKind kind, string text)
@@ -170,31 +187,12 @@ namespace BradLang.Tests
 
         static IEnumerable<(SyntaxKind kind, string text)> GetSyntaxTokens()
         {
-            return new[] {
-                (SyntaxKind.PlusToken, "+"),
-                (SyntaxKind.MinusToken, "-"),
-                (SyntaxKind.StarToken, "*"),
-                (SyntaxKind.SlashToken, "/"),
-                (SyntaxKind.OpenParenthesisToken, "("),
-                (SyntaxKind.CloseParenthesisToken, ")"),
-                (SyntaxKind.LessThanToken, "<"),
-                (SyntaxKind.LessThanEqualsToken, "<="),
-                (SyntaxKind.GreaterThanToken, ">"),
-                (SyntaxKind.GreaterThanEqualsToken, ">="),
-                (SyntaxKind.EqualsToken, "="),
-                (SyntaxKind.EqualsEqualsToken, "=="),
-                (SyntaxKind.BangToken, "!"),
-                (SyntaxKind.BangEqualsToken, "!="),
-                (SyntaxKind.AmpersandToken, "&"), 
-                (SyntaxKind.AmpersandAmpersandToken, "&&"),
-                (SyntaxKind.PipeToken, "|"),
-                (SyntaxKind.PipePipeToken, "||"),
-                (SyntaxKind.QuestionMarkToken, "?"),
-                (SyntaxKind.ColonToken, ":"),
+            var fixedLengthTokens = Enum.GetValues(typeof(SyntaxKind))
+                .Cast<SyntaxKind>()
+                .Select(sk => ( kind: sk, text: SyntaxFacts.GetText(sk) ))
+                .Where(k => k.text != null);
 
-                (SyntaxKind.TrueKeyword, "true"),
-                (SyntaxKind.FalseKeyword, "false"),
-
+            var variableLengthTokens = new[] {
                 (SyntaxKind.NumberToken, "1"),
                 (SyntaxKind.NumberToken, "12"),
 
@@ -208,6 +206,8 @@ namespace BradLang.Tests
                 (SyntaxKind.IdentifierToken, "a1"),
                 (SyntaxKind.IdentifierToken, "a12")
             };
+
+            return fixedLengthTokens.Concat(variableLengthTokens);
         }
 
         static IEnumerable<(SyntaxKind kind, string text)> GetSeparatorSyntaxTokens()
