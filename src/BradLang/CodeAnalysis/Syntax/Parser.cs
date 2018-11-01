@@ -68,7 +68,7 @@ namespace BradLang.CodeAnalysis.Syntax
             
             _diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, kind);
             
-            return new SyntaxToken(kind, Current.Position, null, null);
+            return new SyntaxToken(kind, Current.Span.Start, null, null);
         }
 
         public SyntaxTree Parse()

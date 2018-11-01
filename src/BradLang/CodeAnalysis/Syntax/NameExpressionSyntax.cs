@@ -8,11 +8,15 @@ namespace BradLang.CodeAnalysis.Syntax
         public NameExpressionSyntax(SyntaxToken nameToken)
         {
             NameToken = nameToken;
+
+            Span = nameToken.Span;
         }
 
         public SyntaxToken NameToken { get; }
 
         public override SyntaxKind Kind => SyntaxKind.NameExpression;
+
+        public override TextSpan Span { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

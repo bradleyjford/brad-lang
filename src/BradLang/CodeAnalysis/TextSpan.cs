@@ -2,7 +2,7 @@ using System;
 
 namespace BradLang.CodeAnalysis
 {
-    public class TextSpan
+    public struct TextSpan
     {
         public TextSpan(int start, int length)
         {

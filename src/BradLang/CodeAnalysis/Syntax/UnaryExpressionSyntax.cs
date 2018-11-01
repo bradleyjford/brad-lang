@@ -12,9 +12,13 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             OperatorToken = operatorToken;
             Operand = operand;
+
+            Span = new TextSpan(operatorToken.Span.Start, operand.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.UnaryExpression;
+
+        public override TextSpan Span { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

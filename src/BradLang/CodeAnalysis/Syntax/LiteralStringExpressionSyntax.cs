@@ -14,9 +14,13 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             StringToken = stringToken;
             Value = value;
+
+            Span = stringToken.Span;
         }
 
         public override SyntaxKind Kind => SyntaxKind.LiteralStringExpression;
+
+        public override TextSpan Span { get; }
 
         public SyntaxToken StringToken { get; }
         public string Value { get; }

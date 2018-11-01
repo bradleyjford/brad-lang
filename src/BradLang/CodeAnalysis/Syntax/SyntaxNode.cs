@@ -10,6 +10,8 @@ namespace BradLang.CodeAnalysis.Syntax
 
         public abstract IEnumerable<SyntaxNode> GetChildren();
 
+        public abstract TextSpan Span { get; }
+
         public override string ToString()
         {
             using (var writer = new StringWriter())

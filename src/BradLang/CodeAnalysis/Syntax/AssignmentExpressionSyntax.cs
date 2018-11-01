@@ -11,6 +11,8 @@ namespace BradLang.CodeAnalysis.Syntax
             IdentifierToken = identifierToken;
             EqualsToken = equalsToken;
             Expression = expression;
+
+            Span = new TextSpan(identifierToken.Span.Start, expression.Span.End);
         }
 
         public SyntaxToken IdentifierToken { get; }
@@ -18,6 +20,8 @@ namespace BradLang.CodeAnalysis.Syntax
         public ExpressionSyntax Expression { get; }
 
         public override SyntaxKind Kind => SyntaxKind.AssignmentExpression;
+
+        public override TextSpan Span { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

@@ -9,7 +9,6 @@ namespace BradLang.CodeAnalysis.Syntax
         public SyntaxToken(SyntaxKind kind, int position, string text, object value)
         {
             Kind = kind;
-            Position = position;
             Text = text;
             Value = value;
 
@@ -17,9 +16,8 @@ namespace BradLang.CodeAnalysis.Syntax
         }
 
         public override SyntaxKind Kind { get; }
-        public int Position { get; }
 
-        public TextSpan Span { get; }
+        public override TextSpan Span { get; }
         public string Text { get; }
         public object Value { get; }
 
