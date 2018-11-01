@@ -88,5 +88,65 @@ namespace BradLang.CodeAnalysis.Syntax
 
             return false;
         }
+
+        public static string GetText(SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                case SyntaxKind.AmpersandToken: 
+                    return "&";
+                case SyntaxKind.BangToken:
+                    return "!";
+                case SyntaxKind.ColonToken:
+                    return ":";
+                case SyntaxKind.EqualsToken:
+                    return "=";
+                case SyntaxKind.PipeToken: 
+                    return "|";
+                case SyntaxKind.QuestionMarkToken:
+                    return "?";
+                
+                case SyntaxKind.OpenParenthesisToken:
+                    return "(";
+                case SyntaxKind.CloseParenthesisToken:
+                    return ")";
+
+                case SyntaxKind.PlusToken:
+                    return "+";
+                case SyntaxKind.MinusToken:
+                    return "-";
+                case SyntaxKind.StarToken:
+                    return "*";
+                case SyntaxKind.SlashToken:
+                    return "/";
+                case SyntaxKind.PercentToken:
+                    return "%";
+
+                case SyntaxKind.AmpersandAmpersandToken: 
+                    return "&&";
+                case SyntaxKind.PipePipeToken: 
+                    return "||";
+
+                case SyntaxKind.EqualsEqualsToken:
+                    return "==";
+                case SyntaxKind.BangEqualsToken:
+                    return "!=";
+                case SyntaxKind.LessThanToken:
+                    return "<";
+                case SyntaxKind.LessThanEqualsToken:
+                    return "<=";
+                case SyntaxKind.GreaterThanToken:
+                    return ">";
+                case SyntaxKind.GreaterThanEqualsToken:
+                    return ">=";
+
+                case SyntaxKind.TrueKeyword:
+                    return "true";
+                case SyntaxKind.FalseKeyword:
+                    return "false";
+            }
+
+            return null;
+        }
     }
 }
