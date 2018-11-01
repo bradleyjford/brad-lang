@@ -47,7 +47,7 @@ namespace BradLang.CommandLine
                 var syntaxTree = SyntaxTree.Parse(line);
 
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                DumpSyntaxTree(syntaxTree.Root);
+                Console.WriteLine(syntaxTree.Root.ToString());
                 Console.ResetColor();
 
                 var compilation = new Compilation(syntaxTree);
@@ -94,30 +94,6 @@ namespace BradLang.CommandLine
             }
         }
 
-        static void DumpSyntaxTree(SyntaxNode node, string indent = "", bool isLast = true)
-        {
-            var marker = isLast ? "└──" : "├──";
 
-            Console.Write(indent);
-            Console.Write(marker);
-            Console.Write(node.Kind);
-
-            if (node is SyntaxToken t && t.Value != null)
-            {
-                Console.Write(" ");
-                Console.Write(t.Value);
-            }
-
-            Console.WriteLine();
-
-            indent += isLast ? "   " : "│  ";
-
-            var lastChild = node.GetChildren().LastOrDefault();
-
-            foreach (var child in node.GetChildren())
-            {
-                DumpSyntaxTree(child, indent, child == lastChild);
-            }
-        }
     }
 }
