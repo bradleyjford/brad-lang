@@ -161,35 +161,63 @@ namespace BradLang.CodeAnalysis.Syntax
             switch (Current.Kind)
             {
                 case SyntaxKind.OpenParenthesisToken:
-                    var left = Next();
-                    var expression = ParseExpression();
-                    var right = MatchToken(SyntaxKind.CloseParenthesisToken);
-
-                    return new ParenthesizedExpressionSyntax(left, expression, right);
+                    return ParseParenthesizedExpression();
 
                 case SyntaxKind.TrueKeyword:
                 case SyntaxKind.FalseKeyword:
-                    var keywordToken = Next();
-                    var value = keywordToken.Kind == SyntaxKind.TrueKeyword;
-
-                    return new LiteralExpressionSyntax(keywordToken, value);
-
-                case SyntaxKind.IdentifierToken:
-                    var nameToken = Next();
-                    return new NameExpressionSyntax(nameToken);
+                    return ParseLiteralBooleanExpression();
 
                 case SyntaxKind.StringToken:
-                    var stringToken = Next();
-                    return new LiteralStringExpressionSyntax(stringToken);
+                    return ParseLiteralStringExpression();
 
                 case SyntaxKind.NumberToken:
-                    var numberToken = Next();
-                    return new LiteralExpressionSyntax(numberToken);
+                    return ParseLiteralNumberExpression();
+
+                case SyntaxKind.IdentifierToken:
+                    return ParseNameExpression();
 
                 default:
                     var unknownToken = MatchToken(SyntaxKind.UnknownToken);
                     return new LiteralExpressionSyntax(unknownToken);
             }
+        }
+
+        ExpressionSyntax ParseNameExpression()
+        {
+            var nameToken = MatchToken(SyntaxKind.IdentifierToken);
+            
+            return new NameExpressionSyntax(nameToken);
+        }
+
+        ExpressionSyntax ParseLiteralNumberExpression()
+        {
+            var numberToken = MatchToken(SyntaxKind.NumberToken);
+
+            return new LiteralExpressionSyntax(numberToken);
+        }
+
+        ExpressionSyntax ParseLiteralStringExpression()
+        {
+            var stringToken = MatchToken(SyntaxKind.StringToken);
+
+            return new LiteralStringExpressionSyntax(stringToken);
+        }
+
+        ExpressionSyntax ParseLiteralBooleanExpression()
+        {
+            var isTrue = Current.Kind == SyntaxKind.TrueKeyword;
+            var keywordToken = isTrue ? MatchToken(SyntaxKind.TrueKeyword) : MatchToken(SyntaxKind.FalseKeyword);
+
+            return new LiteralExpressionSyntax(keywordToken, isTrue);
+        }
+
+        ExpressionSyntax ParseParenthesizedExpression()
+        {
+            var left = MatchToken(SyntaxKind.OpenParenthesisToken);
+            var expression = ParseExpression();
+            var right = MatchToken(SyntaxKind.CloseParenthesisToken);
+
+            return new ParenthesizedExpressionSyntax(left, expression, right);
         }
     }
 }
