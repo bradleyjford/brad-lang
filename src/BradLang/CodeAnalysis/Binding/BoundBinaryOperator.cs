@@ -3,7 +3,7 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    class BoundBinaryOperator
+    sealed class BoundBinaryOperator
     {
         static readonly BoundBinaryOperator[] _operators =
         {

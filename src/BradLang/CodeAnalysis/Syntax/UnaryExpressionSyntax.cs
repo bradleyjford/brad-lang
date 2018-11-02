@@ -4,7 +4,7 @@ using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
-    public class UnaryExpressionSyntax : ExpressionSyntax
+    public sealed class UnaryExpressionSyntax : ExpressionSyntax
     {
         public SyntaxToken OperatorToken { get; }
         public ExpressionSyntax Operand { get; }

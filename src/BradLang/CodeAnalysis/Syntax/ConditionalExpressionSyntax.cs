@@ -3,7 +3,7 @@ using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
-    class ConditionalExpressionSyntax : ExpressionSyntax
+    public class ConditionalExpressionSyntax : ExpressionSyntax
     {
         public ConditionalExpressionSyntax(
             ExpressionSyntax condition, 

@@ -3,7 +3,7 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    class BoundTernaryOperator
+    sealed class BoundTernaryOperator
     {
         BoundTernaryOperator(Type conditionType, Type trueType, Type falseType)
         {

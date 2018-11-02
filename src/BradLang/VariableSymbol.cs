@@ -2,7 +2,7 @@ using System;
 
 namespace BradLang
 {
-    public class VariableSymbol
+    public sealed class VariableSymbol
     {
         internal VariableSymbol(string name, Type type)
         {
