@@ -2,8 +2,13 @@ using System;
 
 namespace BradLang.CodeAnalysis.Text
 {
-    public struct TextSpan
+    public sealed class TextSpan
     {
+        public static TextSpan FromBounds(int start, int end)
+        {
+            return new TextSpan(start, end - start);
+        }
+
         public TextSpan(int start, int length)
         {
             Start = start;

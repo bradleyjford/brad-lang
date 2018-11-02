@@ -25,23 +25,16 @@ namespace BradLang
 
             var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
 
+            if (diagnostics.Any())
+            {
+                return new EvaluationResult(diagnostics, null);
+            }
+
             var evaluator = new Evaluator(boundExpression, variables);
 
             var result = evaluator.Evaluate();
 
             return new EvaluationResult(diagnostics, result);
         }
-    }
-
-    public sealed class EvaluationResult
-    {
-        public EvaluationResult(ImmutableArray<Diagnostic> diagnostics, object value)
-        {
-            Diagnostics = diagnostics;
-            Value = value;
-        }
-
-        public ImmutableArray<Diagnostic> Diagnostics { get; }
-        public object Value { get; }
     }
 }

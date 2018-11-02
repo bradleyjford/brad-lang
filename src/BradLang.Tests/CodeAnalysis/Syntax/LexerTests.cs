@@ -225,19 +225,7 @@ namespace BradLang.Tests
 
         IEnumerable<SyntaxToken> ParseTokens(string text)
         {
-            var lexer = new Lexer(text);
-
-            while (true)  
-            {
-                var token = lexer.Lex();
-                
-                if (token.Kind == SyntaxKind.EndOfFileToken)
-                {
-                    break;
-                }
-
-                yield return token;
-            } 
+            return SyntaxTree.ParseTokens(text);
         }
     }
 }

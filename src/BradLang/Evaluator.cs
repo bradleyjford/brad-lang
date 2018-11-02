@@ -46,27 +46,39 @@ namespace BradLang
             throw new Exception($"Unexpected node {expression.Kind}.");
         }
 
+        object EvaluateLiteralExpression(BoundLiteralExpression expression)
+        {
+            return expression.Value;
+        }
+
         object EvaluateVariableExpression(BoundVariableExpression expression)
         {
             return _variables[expression.Variable];
         }
 
-        static object EvaluateLiteralExpression(BoundLiteralExpression expression)
-        {           
-            return expression.Value;
+        object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
+        {
+            var value = EvaluateExpression(expression.Expression);
+
+            _variables[expression.Variable] = value;
+
+            return value;
         }
 
-        object EvaluateTernaryExpression(BoundTernaryExpression expression)
+        object EvaluateUnaryExpression(BoundUnaryExpression expression)
         {
-            var conditionResult = EvaluateExpression(expression.Condition);
+            var operand = EvaluateExpression(expression.Operand);
 
-            if ((bool)conditionResult)
+            switch (expression.Operator.Kind)
             {
-                return EvaluateExpression(expression.True);
-            }
-            else
-            {
-                return EvaluateExpression(expression.False);
+                case BoundUnaryOperatorKind.Negation:
+                    return -(int)operand;
+                case BoundUnaryOperatorKind.Identity:
+                    return (int)operand;
+                case BoundUnaryOperatorKind.LogicalNegation:
+                    return !(bool)operand;
+                default:
+                    throw new Exception($"Unsupported unary operator {expression.Operator.Kind}.");
             }
         }
 
@@ -118,29 +130,17 @@ namespace BradLang
             }
         }
 
-        object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
+        object EvaluateTernaryExpression(BoundTernaryExpression expression)
         {
-            var value = EvaluateExpression(expression.Expression);
+            var conditionResult = (bool)EvaluateExpression(expression.Condition);
 
-            _variables[expression.Variable] = value;
-
-            return value;
-        }
-
-        object EvaluateUnaryExpression(BoundUnaryExpression expression)
-        {
-            var operand = EvaluateExpression(expression.Operand);
-
-            switch (expression.Operator.Kind)
+            if (conditionResult)
             {
-                case BoundUnaryOperatorKind.Negation:
-                    return -(int)operand;
-                case BoundUnaryOperatorKind.Identity:
-                    return (int)operand;
-                case BoundUnaryOperatorKind.LogicalNegation:
-                    return !(bool)operand;
-                default:
-                    throw new Exception($"Unsupported unary operator {expression.Operator.Kind}.");
+                return EvaluateExpression(expression.True);
+            }
+            else
+            {
+                return EvaluateExpression(expression.False);
             }
         }
     }

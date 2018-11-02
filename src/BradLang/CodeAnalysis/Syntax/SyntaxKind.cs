@@ -55,7 +55,6 @@ namespace BradLang.CodeAnalysis.Syntax
         BinaryExpression,
         TernaryExpression,
         ParenthesizedExpression,
-
         AssignmentExpression
     }
 }

@@ -6,7 +6,7 @@ namespace BradLang.CodeAnalysis.Syntax
 {
     public class Lexer
     {
-        readonly ReadOnlyMemory<char> _text;
+        readonly SourceText _text;
         readonly DiagnosticBag _diagnostics;
 
         int _position;
@@ -15,9 +15,9 @@ namespace BradLang.CodeAnalysis.Syntax
         int _start;
         object _value;
 
-        public Lexer(string text)
+        public Lexer(SourceText text)
         {
-            _text = text.AsMemory();
+            _text = text;
 
             _position = 0;
             _diagnostics = new DiagnosticBag();
@@ -31,7 +31,7 @@ namespace BradLang.CodeAnalysis.Syntax
             _kind = SyntaxKind.UnknownToken;
             _value = null;
 
-            var text = _text.Span;
+            var text = _text;
 
             switch (Current)
             {
@@ -167,15 +167,15 @@ namespace BradLang.CodeAnalysis.Syntax
                     }
                     else if (Char.IsLetter(currentChar))
                     {
-                        ReadKeywordOrIdentifier(text);
+                        ReadKeywordOrIdentifier();
                     }
                     else if (Char.IsDigit(currentChar))
                     {
-                        ReadNumber(text);
+                        ReadNumber();
                     }
                     else if (currentChar == '"')
                     {
-                        ReadString(text);
+                        ReadString();
                     }
                     else
                     {
@@ -191,7 +191,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
             if (tokenText == null)
             {
-                tokenText = new String(text.Slice(_start, _position - _start));
+                tokenText = text.ToString(_start, _position - _start);
             }
 
             return new SyntaxToken(_kind, _start, tokenText, _value);
@@ -207,26 +207,26 @@ namespace BradLang.CodeAnalysis.Syntax
             _kind = SyntaxKind.WhiteSpaceToken;
         }
 
-        void ReadKeywordOrIdentifier(ReadOnlySpan<char> text)
+        void ReadKeywordOrIdentifier()
         {
             do
             {
                 _position++;
             } while (Char.IsLetter(Current) || Char.IsDigit(Current));
 
-            var textValue = new String(text.Slice(_start, _position - _start));
+            var textValue = _text.ToString(_start, _position - _start);
 
             _kind = SyntaxFacts.GetKeywordKind(textValue);
         }
 
-        void ReadNumber(ReadOnlySpan<char> text)
+        void ReadNumber()
         {
             do
             {
                 _position++;
             } while (Char.IsDigit(Current));
 
-            var textValue = new String(text.Slice(_start, _position - _start));
+            var textValue = _text.ToString(_start, _position - _start);
 
             if (!Int32.TryParse(textValue, out var value))
             {
@@ -237,7 +237,7 @@ namespace BradLang.CodeAnalysis.Syntax
             _value = value;
         }
 
-        void ReadString(ReadOnlySpan<char> text)
+        void ReadString()
         {
             do
             {
@@ -253,7 +253,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 {
                     _position++;
                     _kind = SyntaxKind.StringToken;
-                    _value = new String(text.Slice(_start + 1, _position - _start - 2));
+                    _value = _text.ToString(_start + 1, _position - _start - 2);
                 }
             } while (_kind == SyntaxKind.UnknownToken);
         }
@@ -267,7 +267,7 @@ namespace BradLang.CodeAnalysis.Syntax
                     return '\0';
                 }
 
-                return _text.Span[_position];
+                return _text[_position];
             }
         }
 
@@ -284,7 +284,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 return '\0';
             }
 
-            return _text.Span[index];
+            return _text[index];
         }
     }
 }

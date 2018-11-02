@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
@@ -11,7 +12,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
         int _position;
 
-        public Parser(string text)
+        public Parser(SourceText text)
         {
             var tokens = new List<SyntaxToken>();
 
@@ -66,9 +67,9 @@ namespace BradLang.CodeAnalysis.Syntax
             {
                 return Next();
             }
-            
+
             _diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, kind);
-            
+
             return new SyntaxToken(kind, Current.Span.Start, null, null);
         }
 
@@ -93,7 +94,7 @@ namespace BradLang.CodeAnalysis.Syntax
             {
                 var identifierToken = Next();
                 var operatorToken = Next();
-                var right = ParseAssignmentExpression();
+                var right = ParseExpression();
 
                 return new AssignmentExpressionSyntax(identifierToken, operatorToken, right);
             }
@@ -113,7 +114,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 var trueExpression = ParseExpression();
                 var colonToken = MatchToken(SyntaxKind.ColonToken);
                 var falseExpression = ParseExpression();
-                
+
                 left = new ConditionalExpressionSyntax(left, questionMarkToken, trueExpression, colonToken, falseExpression);
             }
 
@@ -183,25 +184,13 @@ namespace BradLang.CodeAnalysis.Syntax
             }
         }
 
-        ExpressionSyntax ParseNameExpression()
+        ExpressionSyntax ParseParenthesizedExpression()
         {
-            var nameToken = MatchToken(SyntaxKind.IdentifierToken);
-            
-            return new NameExpressionSyntax(nameToken);
-        }
+            var left = MatchToken(SyntaxKind.OpenParenthesisToken);
+            var expression = ParseExpression();
+            var right = MatchToken(SyntaxKind.CloseParenthesisToken);
 
-        ExpressionSyntax ParseLiteralNumberExpression()
-        {
-            var numberToken = MatchToken(SyntaxKind.NumberToken);
-
-            return new LiteralExpressionSyntax(numberToken);
-        }
-
-        ExpressionSyntax ParseLiteralStringExpression()
-        {
-            var stringToken = MatchToken(SyntaxKind.StringToken);
-
-            return new LiteralStringExpressionSyntax(stringToken);
+            return new ParenthesizedExpressionSyntax(left, expression, right);
         }
 
         ExpressionSyntax ParseLiteralBooleanExpression()
@@ -212,13 +201,25 @@ namespace BradLang.CodeAnalysis.Syntax
             return new LiteralExpressionSyntax(keywordToken, isTrue);
         }
 
-        ExpressionSyntax ParseParenthesizedExpression()
+        ExpressionSyntax ParseLiteralStringExpression()
         {
-            var left = MatchToken(SyntaxKind.OpenParenthesisToken);
-            var expression = ParseExpression();
-            var right = MatchToken(SyntaxKind.CloseParenthesisToken);
+            var stringToken = MatchToken(SyntaxKind.StringToken);
 
-            return new ParenthesizedExpressionSyntax(left, expression, right);
+            return new LiteralStringExpressionSyntax(stringToken);
+        }
+
+        ExpressionSyntax ParseLiteralNumberExpression()
+        {
+            var numberToken = MatchToken(SyntaxKind.NumberToken);
+
+            return new LiteralExpressionSyntax(numberToken);
+        }
+
+        ExpressionSyntax ParseNameExpression()
+        {
+            var nameToken = MatchToken(SyntaxKind.IdentifierToken);
+
+            return new NameExpressionSyntax(nameToken);
         }
     }
 }
