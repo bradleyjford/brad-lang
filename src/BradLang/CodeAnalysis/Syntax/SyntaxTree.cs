@@ -17,11 +17,8 @@ namespace BradLang.CodeAnalysis.Syntax
 
         public static SyntaxTree Parse(SourceText text)
         {
-            var parser = new Parser(text);
-
-            return parser.Parse();
+            return new SyntaxTree(text);
         }
-
 
         public static IEnumerable<SyntaxToken> ParseTokens(string text)
         {
@@ -37,7 +34,7 @@ namespace BradLang.CodeAnalysis.Syntax
             while (true)
             {
                 var token = lexer.Lex();
-                
+
                 if (token.Kind == SyntaxKind.EndOfFileToken)
                 {
                     break;
@@ -46,15 +43,16 @@ namespace BradLang.CodeAnalysis.Syntax
                 yield return token;
             }
         }
-        
-        internal SyntaxTree(ExpressionSyntax root, SyntaxToken endOfFileToken, ImmutableArray<Diagnostic> diagnostics)
+
+        private SyntaxTree(SourceText text)
         {
-            Root = root;
-            EndOfFileToken = endOfFileToken;
-            Diagnostics = diagnostics;
+            var parser = new Parser(text);
+
+            Root = parser.ParseCompilationUnit();
+            Diagnostics = parser.Diagnostics.ToImmutableArray();
         }
 
-        public ExpressionSyntax Root { get; }
+        public CompilationUnitSyntax Root { get; }
         public SyntaxToken EndOfFileToken { get; }
         public ImmutableArray<Diagnostic> Diagnostics { get; }
     }

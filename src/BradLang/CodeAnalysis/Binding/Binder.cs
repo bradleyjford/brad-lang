@@ -1,27 +1,70 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
+
     sealed class Binder
     {
-        readonly SyntaxTree _syntaxTree;
-        readonly IDictionary<VariableSymbol, object> _variables;
+        readonly BoundScope _scope;
         readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
         public DiagnosticBag Diagnostics => _diagnostics;
 
-        public Binder(SyntaxTree syntaxTree, IDictionary<VariableSymbol, object> variables)
+        public Binder(BoundScope parent)
         {
-            _syntaxTree = syntaxTree;
-            _variables = variables;
+            _scope = new BoundScope(parent);
         }
 
-        public BoundExpression Bind()
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, SyntaxTree syntaxTree)
         {
-            return BindExpression(_syntaxTree.Root);
+            var parentScope = CreateParentScope(previous);
+            var binder = new Binder(parentScope);
+
+            var expression = binder.BindExpression(syntaxTree.Root.Expression);
+            
+            var variables = binder._scope.GetDeclaredVariables();
+            var diagnostics = binder.Diagnostics.ToImmutableArray();
+
+            if (previous != null)
+            {
+                diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
+            }
+            
+            return new BoundGlobalScope(previous, variables, diagnostics, expression);
+        }
+
+        static BoundScope CreateParentScope(BoundGlobalScope previous)
+        {
+            var stack = new Stack<BoundGlobalScope>();
+
+            while (previous != null)
+            {
+                stack.Push(previous);
+
+                previous = previous.Previous;
+            }
+
+            BoundScope parent = null;
+
+            while (stack.Count > 0)
+            {
+                previous = stack.Pop();
+
+                var scope = new BoundScope(parent);
+
+                foreach (var variable in previous.Variables)
+                {
+                    scope.TryDeclareVariable(variable);
+                }
+
+                parent = scope;
+            }
+
+            return parent;
         }
 
         BoundExpression BindExpression(ExpressionSyntax syntax)
@@ -54,13 +97,18 @@ namespace BradLang.CodeAnalysis.Binding
             var name = syntax.IdentifierToken.Text;
             var boundExpression = BindExpression(syntax.Expression);
 
-            var variable = _variables.Keys.SingleOrDefault(v => v.Name == name);
-
-            if (variable == null)
+            if (!_scope.TryLookupVariable(name, out var variable))
             {
                 variable = new VariableSymbol(name, boundExpression.Type);
 
-                _variables.Add(variable, null);
+                _scope.TryDeclareVariable(variable);
+            }
+
+            if (variable.Type != boundExpression.Type)
+            {
+                _diagnostics.ReportTypeMismatch(syntax.Expression.Span, boundExpression.Type, variable.Type);
+                
+                return boundExpression;
             }
 
             return new BoundAssignmentExpression(variable, boundExpression);
@@ -70,9 +118,7 @@ namespace BradLang.CodeAnalysis.Binding
         {
             var name = syntax.NameToken.Text;
 
-            var variable = _variables.Keys.SingleOrDefault(v => v.Name == name);
-
-            if (variable == null)
+            if (!_scope.TryLookupVariable(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.NameToken.Span, name);
 
@@ -137,7 +183,7 @@ namespace BradLang.CodeAnalysis.Binding
             var condition = BindExpression(syntax.Condition);
             var trueExpression = BindExpression(syntax.True);
             var falseExpression = BindExpression(syntax.False);
-            
+
             if (condition.Type != typeof(bool))
             {
                 _diagnostics.ReportTypeMismatch(syntax.QuestionMarkToken.Span, condition.Type, typeof(bool));
@@ -146,7 +192,7 @@ namespace BradLang.CodeAnalysis.Binding
             }
 
             var boundOperator = BoundTernaryOperator.Bind(condition.Type, trueExpression.Type, falseExpression.Type);
-            
+
             if (boundOperator == null)
             {
                 _diagnostics.ReportTypeMismatch(syntax.ColonToken.Span, trueExpression.Type, falseExpression.Type);

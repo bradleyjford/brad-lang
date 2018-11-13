@@ -10,6 +10,7 @@ namespace BradLang.CodeAnalysis.Syntax
         readonly ImmutableArray<SyntaxToken> _tokens;
         readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
+
         int _position;
 
         public Parser(SourceText text)
@@ -73,14 +74,14 @@ namespace BradLang.CodeAnalysis.Syntax
             return new SyntaxToken(kind, Current.Span.Start, null, null);
         }
 
-        public SyntaxTree Parse()
+        public CompilationUnitSyntax ParseCompilationUnit()
         {
-            var root = ParseExpression();
-
+            var expression = ParseExpression();
             var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
 
-            return new SyntaxTree(root, endOfFileToken, _diagnostics.ToImmutableArray());
+            return new CompilationUnitSyntax(expression, endOfFileToken);
         }
+
 
         ExpressionSyntax ParseExpression()
         {

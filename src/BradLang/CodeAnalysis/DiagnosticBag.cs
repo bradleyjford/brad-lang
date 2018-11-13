@@ -67,9 +67,9 @@ namespace BradLang.CodeAnalysis
             Report(new TextSpan(position, length), message);
         }
 
-        internal void ReportTypeMismatch(TextSpan span, Type type1, Type type2)
+        internal void ReportTypeMismatch(TextSpan span, Type fromType, Type toType)
         {
-            var message = $"Cannot convert from type {type1} and {type2}.";
+            var message = $"Cannot convert from type '{fromType}' to '{toType}'.";
             Report(span, message);
         }
     }

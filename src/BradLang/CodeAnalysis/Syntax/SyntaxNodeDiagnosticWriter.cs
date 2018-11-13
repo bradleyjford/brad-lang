@@ -1,22 +1,36 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
-    sealed class SyntaxNodeDiagnosticWriter
+    public sealed class SyntaxNodeDiagnosticWriter
     {
         public static void Write(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
         {
+            var isConsoleWriter = writer == Console.Out;
+
             var marker = isLast ? "└──" : "├──";
 
             writer.Write(indent);
             writer.Write(marker);
+
+            if (isConsoleWriter)
+            {
+                Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.Cyan;
+            }
+            
             writer.Write(node.Kind);
 
             if (node is SyntaxToken t && t.Value != null)
             {
                 writer.Write(" ");
                 writer.Write(t.Value);
+            }
+
+            if (isConsoleWriter)
+            {
+                Console.ResetColor();
             }
 
             writer.WriteLine();

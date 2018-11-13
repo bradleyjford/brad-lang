@@ -3,38 +3,67 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using BradLang.CodeAnalysis.Binding;
 using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang
 {
+
     public sealed class Compilation
     {
-        public SyntaxTree Syntax { get; }
+        BoundGlobalScope _globalScope;
 
-        public Compilation(SyntaxTree syntax)
+        public Compilation(SyntaxTree syntaxTree)
+            : this(syntaxTree, null)
         {
-            Syntax = syntax;
+        }
+
+        Compilation(SyntaxTree syntaxTree, Compilation previous)
+        {
+            SyntaxTree = syntaxTree;
+            Previous = previous;
+        }
+
+        public SyntaxTree SyntaxTree { get; }
+        public Compilation Previous { get; }
+
+        public Compilation ContinueWith(SyntaxTree syntaxTree)
+        {
+            return new Compilation(syntaxTree, this);
+        }
+
+        BoundGlobalScope GlobalScope 
+        {
+            get
+            {
+                if (_globalScope == null)
+                {
+                    var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree);
+
+                    Interlocked.CompareExchange(ref _globalScope, globalScope, null);
+                }
+
+                return _globalScope;
+            }
         }
 
         public EvaluationResult Evaluate(IDictionary<VariableSymbol, object> variables)
         {
-            var binder = new Binder(Syntax, variables);
+            var globalScope = GlobalScope;
 
-            var boundExpression = binder.Bind();
-
-            var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
+            var diagnostics = SyntaxTree.Diagnostics.Concat(globalScope.Diagnostics).ToImmutableArray();
 
             if (diagnostics.Any())
             {
                 return new EvaluationResult(diagnostics, null);
             }
 
-            var evaluator = new Evaluator(boundExpression, variables);
+            var evaluator = new Evaluator(globalScope.Expression, variables);
 
             var result = evaluator.Evaluate();
 
-            return new EvaluationResult(diagnostics, result);
+            return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, result);
         }
     }
 }

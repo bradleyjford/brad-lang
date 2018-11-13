@@ -9,6 +9,8 @@ namespace BradLang.CommandLine
 {
     static class Program
     {
+        static Compilation _compilation = null;
+
         static void Main()
         {
             var variables = new Dictionary<VariableSymbol, object>();
@@ -17,6 +19,8 @@ namespace BradLang.CommandLine
 
             while (true)
             {
+                Console.ForegroundColor = ConsoleColor.Green;
+
                 if (input.Length == 0)
                 {
                     Console.Write("> ");
@@ -25,6 +29,8 @@ namespace BradLang.CommandLine
                 {
                     Console.Write("| ");
                 }
+
+                Console.ResetColor();
 
                 var line = Console.ReadLine();
 
@@ -71,20 +77,21 @@ namespace BradLang.CommandLine
             var sourceText = SourceText.From(text);
             var syntaxTree = SyntaxTree.Parse(sourceText);
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine(syntaxTree.Root.ToString());
-            Console.ResetColor();
+            SyntaxNodeDiagnosticWriter.Write(Console.Out, syntaxTree.Root);
 
-            var compilation = new Compilation(syntaxTree);
+            _compilation = _compilation == null 
+                ? new Compilation(syntaxTree) 
+                : _compilation.ContinueWith(syntaxTree);
 
             try
             {
-                var result = compilation.Evaluate(variables);
+                var result = _compilation.Evaluate(variables);
 
                 if (!result.Diagnostics.Any())
                 {
+                    Console.ForegroundColor = ConsoleColor.Magenta;
                     Console.WriteLine($"= {result.Value}");
-
+                    Console.ResetColor();
                 }
                 else
                 {
@@ -125,7 +132,6 @@ namespace BradLang.CommandLine
                 Console.WriteLine(e);
                 Console.ResetColor();
             }
-
         }
     }
 }

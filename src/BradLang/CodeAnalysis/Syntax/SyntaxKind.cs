@@ -43,6 +43,9 @@ namespace BradLang.CodeAnalysis.Syntax
 
         StringToken,
 
+        // Nodes
+        CompilationUnit,
+
         // Keyword
         TrueKeyword,
         FalseKeyword,
