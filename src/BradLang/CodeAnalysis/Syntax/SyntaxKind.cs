@@ -22,7 +22,8 @@ namespace BradLang.CodeAnalysis.Syntax
 
         OpenParenthesisToken,
         CloseParenthesisToken,
-
+        OpenBraceToken,
+        CloseBraceToken,
         LessThanToken,
         LessThanEqualsToken,
         GreaterThanToken,
@@ -47,8 +48,15 @@ namespace BradLang.CodeAnalysis.Syntax
         CompilationUnit,
 
         // Keyword
+        LetKeyword,
+        VarKeyword,
         TrueKeyword,
         FalseKeyword,
+
+        // Statements
+        StatementExpression,
+        BlockStatement,
+        VariableDeclarationStatement,
 
         // Expressions
         LiteralExpression,
@@ -58,6 +66,6 @@ namespace BradLang.CodeAnalysis.Syntax
         BinaryExpression,
         TernaryExpression,
         ParenthesizedExpression,
-        AssignmentExpression
+        AssignmentExpression,
     }
 }

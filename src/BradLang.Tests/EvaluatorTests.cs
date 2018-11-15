@@ -42,8 +42,8 @@ namespace BradLang.Tests
         [InlineData("\"Hello\" == \"World\"", false)]
         [InlineData("\"Hello\" != \"Hello\"", false)]
         [InlineData("\"Hello\" != \"World\"", true)]
-        [InlineData("a = 42", 42)]
-        [InlineData("a = b = 10", 10)]
+        [InlineData("{ var a = 42 a }", 42)]
+        [InlineData("{ var a = 0 var b = 0 a = b = 10 }", 10)]
         [InlineData("1 == 1 ? \"Correct\" : \"Incorrect\"", "Correct")]
         [InlineData("1 == 2 ? \"Incorrect\" : \"Correct\"", "Correct")]
         public void Evaluator_Evaluate(string text, object expectedValue)

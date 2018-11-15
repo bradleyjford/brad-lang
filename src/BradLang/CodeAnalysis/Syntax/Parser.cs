@@ -76,12 +76,61 @@ namespace BradLang.CodeAnalysis.Syntax
 
         public CompilationUnitSyntax ParseCompilationUnit()
         {
-            var expression = ParseExpression();
+            var statement = ParseStatement();
             var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
 
-            return new CompilationUnitSyntax(expression, endOfFileToken);
+            return new CompilationUnitSyntax(statement, endOfFileToken);
         }
 
+        StatementSyntax ParseStatement()
+        {
+            switch (Current.Kind)
+            {
+                case SyntaxKind.OpenBraceToken:
+                    return ParseBlockStatement();
+                case SyntaxKind.LetKeyword:
+                case SyntaxKind.VarKeyword:
+                    return ParseVariableDeclarationStatement();
+                default:
+                    return ParseExpressionStatement();
+            }
+        }
+
+        StatementSyntax ParseBlockStatement()
+        {
+            var openBraceToken = MatchToken(SyntaxKind.OpenBraceToken);
+            var statements = ImmutableArray.CreateBuilder<StatementSyntax>();;
+
+            while (Current.Kind != SyntaxKind.CloseBraceToken)
+            {
+                var statement = ParseStatement();
+
+                statements.Add(statement);
+            }
+
+            var closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
+
+            return new BlockStatementSyntax(openBraceToken, statements.ToImmutable(), closeBraceToken);
+        }
+
+        StatementSyntax ParseVariableDeclarationStatement()
+        {
+            var expectedKind = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+
+            var keywordToken = MatchToken(expectedKind);
+            var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
+            var equalsToken = MatchToken(SyntaxKind.EqualsToken);
+            var initializer = ParseExpression();
+
+            return new VariableDeclarationStatementSyntax(keywordToken, identifierToken, equalsToken, initializer);
+        }
+
+        StatementSyntax ParseExpressionStatement()
+        {
+            var expression = ParseExpression();
+
+            return new ExpressionStatementSyntax(expression);
+        }
 
         ExpressionSyntax ParseExpression()
         {

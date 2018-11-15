@@ -9,8 +9,9 @@ namespace BradLang.CodeAnalysis.Binding
 
     sealed class Binder
     {
-        readonly BoundScope _scope;
         readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+
+        BoundScope _scope;
 
         public DiagnosticBag Diagnostics => _diagnostics;
 
@@ -24,7 +25,7 @@ namespace BradLang.CodeAnalysis.Binding
             var parentScope = CreateParentScope(previous);
             var binder = new Binder(parentScope);
 
-            var expression = binder.BindExpression(syntaxTree.Root.Expression);
+            var statement = binder.BindStatement(syntaxTree.Root.Statement);
             
             var variables = binder._scope.GetDeclaredVariables();
             var diagnostics = binder.Diagnostics.ToImmutableArray();
@@ -34,7 +35,7 @@ namespace BradLang.CodeAnalysis.Binding
                 diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
             }
             
-            return new BoundGlobalScope(previous, variables, diagnostics, expression);
+            return new BoundGlobalScope(previous, variables, diagnostics, statement);
         }
 
         static BoundScope CreateParentScope(BoundGlobalScope previous)
@@ -67,6 +68,59 @@ namespace BradLang.CodeAnalysis.Binding
             return parent;
         }
 
+        BoundStatement BindStatement(StatementSyntax syntax)
+        {
+            switch (syntax.Kind)
+            {
+                case SyntaxKind.BlockStatement:
+                    return BindBlockStatement((BlockStatementSyntax)syntax);
+                case SyntaxKind.VariableDeclarationStatement:
+                    return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax);
+                default: 
+                    return BindExpressionStatement((ExpressionStatementSyntax)syntax);
+            }
+        }
+
+        BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
+        {
+            _scope = new BoundScope(_scope);
+
+            var statements = ImmutableArray.CreateBuilder<BoundStatement>();
+
+            foreach (var statementSyntax in syntax.Statements)
+            {
+                var statement = BindStatement(statementSyntax);
+
+                statements.Add(statement);
+            }
+
+            _scope = _scope.Parent;
+
+            return new BoundBlockStatement(statements.ToImmutable());
+        }
+
+        BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
+        {
+            var initializerExpression = BindExpression(syntax.Initializer);
+
+            var isConstant = syntax.KeywordToken.Kind == SyntaxKind.LetKeyword;
+
+            var variableSymbol = new VariableSymbol(syntax.IdentifierToken.Text, initializerExpression.Type, isConstant);
+
+            if (!_scope.TryDeclareVariable(variableSymbol))
+            {
+                _diagnostics.ReportVariableAlreadyDeclared(syntax.IdentifierToken.Span, syntax.IdentifierToken.Text);
+            }
+
+            return new BoundVariableDeclaration(variableSymbol, initializerExpression);
+        }
+
+        BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+        {
+            var expression = BindExpression(syntax.Expression);
+
+            return new BoundExpressionStatement(expression);
+        }
         BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
@@ -99,9 +153,9 @@ namespace BradLang.CodeAnalysis.Binding
 
             if (!_scope.TryLookupVariable(name, out var variable))
             {
-                variable = new VariableSymbol(name, boundExpression.Type);
+                _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
 
-                _scope.TryDeclareVariable(variable);
+                return boundExpression;
             }
 
             if (variable.Type != boundExpression.Type)

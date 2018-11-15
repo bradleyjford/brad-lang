@@ -4,7 +4,7 @@ using System.Linq;
 using BradLang.CodeAnalysis.Syntax;
 using Xunit;
 
-namespace BradLang.Tests
+namespace BradLang.Tests.CodeAnalysis.Syntax
 {
     public class LexerTests
     {
@@ -13,7 +13,7 @@ namespace BradLang.Tests
         {
             var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
                 .Cast<SyntaxKind>()
-                .Where(sk => sk.ToString().EndsWith("Keywork") || sk.ToString().EndsWith("Token"));
+                .Where(sk => sk.ToString().EndsWith("Keyword") || sk.ToString().EndsWith("Token"));
 
             var testedTokenKinds = GetSyntaxTokens().Concat(GetSeparatorSyntaxTokens()).Select(t => t.kind);
 

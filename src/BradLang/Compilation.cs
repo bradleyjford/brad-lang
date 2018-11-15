@@ -59,7 +59,7 @@ namespace BradLang
                 return new EvaluationResult(diagnostics, null);
             }
 
-            var evaluator = new Evaluator(globalScope.Expression, variables);
+            var evaluator = new Evaluator(globalScope.Statement, variables);
 
             var result = evaluator.Evaluate();
 

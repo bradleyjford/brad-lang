@@ -9,17 +9,17 @@ namespace BradLang.CodeAnalysis.Binding
             BoundGlobalScope previous,
             ImmutableArray<VariableSymbol> variables, 
             ImmutableArray<Diagnostic> diagnostics, 
-            BoundExpression expression)
+            BoundStatement statement)
         {
             Previous = previous;
             Variables = variables;
             Diagnostics = diagnostics;
-            Expression = expression;
+            Statement = statement;
         }
 
         public BoundGlobalScope Previous { get; }
         public ImmutableArray<VariableSymbol> Variables { get; }
         public ImmutableArray<Diagnostic> Diagnostics { get; }
-        public BoundExpression Expression { get; }
+        public BoundStatement Statement { get; }
     }
 }

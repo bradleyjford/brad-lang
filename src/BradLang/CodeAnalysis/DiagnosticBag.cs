@@ -72,5 +72,11 @@ namespace BradLang.CodeAnalysis
             var message = $"Cannot convert from type '{fromType}' to '{toType}'.";
             Report(span, message);
         }
+
+        internal void ReportVariableAlreadyDeclared(TextSpan span, string name)
+        {
+            var message = $"Variable \"{name}\" is already declared.";
+            Report(span, message);
+        }
     }
 }

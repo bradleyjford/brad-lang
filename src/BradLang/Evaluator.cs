@@ -6,10 +6,12 @@ namespace BradLang
 {
     sealed class Evaluator
     {
-        readonly BoundExpression _root;
+        readonly BoundStatement _root;
         readonly IDictionary<VariableSymbol, object> _variables;
 
-        public Evaluator(BoundExpression root, IDictionary<VariableSymbol, object> variables)
+        object _lastValue;
+
+        public Evaluator(BoundStatement root, IDictionary<VariableSymbol, object> variables)
         {
             _root = root;
             _variables = variables;
@@ -17,33 +19,74 @@ namespace BradLang
 
         public object Evaluate()
         {
-            return EvaluateExpression(_root);
+            EvaluateStatement(_root);
+
+            return _lastValue;
         }
 
-        object EvaluateExpression(BoundExpression expression)
+        void EvaluateStatement(BoundStatement statement)
         {
-            switch (expression.Kind)
+            switch (statement.Kind)
+            {
+                case BoundNodeKind.BlockStatement:
+                    EvaluateBlockStatement((BoundBlockStatement)statement);
+                    break;
+                
+                case BoundNodeKind.VariableDeclaration:
+                    EvaluateVariableDeclaration((BoundVariableDeclaration)statement);
+                    break;
+
+                case BoundNodeKind.ExpressionStatement:
+                    EvaluateExpressionStatement((BoundExpressionStatement)statement);
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unexpected node {statement.Kind}.");
+            }
+        }
+
+        void EvaluateBlockStatement(BoundBlockStatement node)
+        {
+            foreach (var statement in node.Statements)
+            {
+                EvaluateStatement(statement);
+            }
+        }
+
+        void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
+        {
+            _variables[statement.VariableSymbol] = EvaluateExpression(statement.InitializerExpression);
+        }
+
+        void EvaluateExpressionStatement(BoundExpressionStatement node)
+        {
+            _lastValue = EvaluateExpression(node.Expression);
+        }
+
+        object EvaluateExpression(BoundNode node)
+        {
+            switch (node.Kind)
             {
                 case BoundNodeKind.LiteralExpression:
-                    return EvaluateLiteralExpression((BoundLiteralExpression)expression);
+                    return EvaluateLiteralExpression((BoundLiteralExpression)node);
 
                 case BoundNodeKind.VariableExpression:
-                    return EvaluateVariableExpression((BoundVariableExpression)expression);
+                    return EvaluateVariableExpression((BoundVariableExpression)node);
 
                 case BoundNodeKind.AssignmentExpression:
-                    return EvaluateAssignmentExpression((BoundAssignmentExpression)expression);
+                    return EvaluateAssignmentExpression((BoundAssignmentExpression)node);
 
                 case BoundNodeKind.UnaryExpression:
-                    return EvaluateUnaryExpression((BoundUnaryExpression)expression);
+                    return EvaluateUnaryExpression((BoundUnaryExpression)node);
 
                 case BoundNodeKind.BinaryExpression:
-                    return EvaluateBinaryExpression((BoundBinaryExpression)expression);
+                    return EvaluateBinaryExpression((BoundBinaryExpression)node);
 
                 case BoundNodeKind.TernaryExpression:
-                    return EvaluateTernaryExpression((BoundTernaryExpression)expression);
+                    return EvaluateTernaryExpression((BoundTernaryExpression)node);
             }
 
-            throw new Exception($"Unexpected node {expression.Kind}.");
+            throw new Exception($"Unexpected node {node.Kind}.");
         }
 
         object EvaluateLiteralExpression(BoundLiteralExpression expression)

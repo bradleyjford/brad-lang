@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
@@ -64,10 +65,40 @@ namespace BradLang.CodeAnalysis.Syntax
             }
         }
 
+        public static IEnumerable<SyntaxKind> GetUnaryOperatorKinds()
+        {
+            var kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+
+            foreach (var kind in kinds)
+            {
+                if (GetUnaryOperatorPrecedence(kind) > 0)
+                {
+                    yield return kind;
+                }
+            }
+        }
+
+        public static IEnumerable<SyntaxKind> GetBinaryOperatorKinds()
+        {
+            var kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+
+            foreach (var kind in kinds)
+            {
+                if (GetBinaryOperatorPrecedence(kind) > 0)
+                {
+                    yield return kind;
+                }
+            }
+        }
+
         public static SyntaxKind GetKeywordKind(string keyword)
         {
             switch (keyword)
             {
+                case "let":
+                    return SyntaxKind.LetKeyword;
+                case "var":
+                    return SyntaxKind.VarKeyword;
                 case "true":
                     return SyntaxKind.TrueKeyword;
                 case "false":
@@ -81,8 +112,10 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             switch (kind)
             {
-                case SyntaxKind.TrueKeyword:
                 case SyntaxKind.FalseKeyword:
+                case SyntaxKind.LetKeyword:
+                case SyntaxKind.TrueKeyword:
+                case SyntaxKind.VarKeyword:
                     return true;
             }
 
@@ -93,7 +126,7 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             switch (kind)
             {
-                case SyntaxKind.AmpersandToken: 
+                case SyntaxKind.AmpersandToken:
                     return "&";
                 case SyntaxKind.BangToken:
                     return "!";
@@ -101,15 +134,20 @@ namespace BradLang.CodeAnalysis.Syntax
                     return ":";
                 case SyntaxKind.EqualsToken:
                     return "=";
-                case SyntaxKind.PipeToken: 
+                case SyntaxKind.PipeToken:
                     return "|";
                 case SyntaxKind.QuestionMarkToken:
                     return "?";
-                
+
                 case SyntaxKind.OpenParenthesisToken:
                     return "(";
                 case SyntaxKind.CloseParenthesisToken:
                     return ")";
+
+                case SyntaxKind.OpenBraceToken:
+                    return "{";
+                case SyntaxKind.CloseBraceToken:
+                    return "}";
 
                 case SyntaxKind.PlusToken:
                     return "+";
@@ -122,9 +160,9 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.PercentToken:
                     return "%";
 
-                case SyntaxKind.AmpersandAmpersandToken: 
+                case SyntaxKind.AmpersandAmpersandToken:
                     return "&&";
-                case SyntaxKind.PipePipeToken: 
+                case SyntaxKind.PipePipeToken:
                     return "||";
 
                 case SyntaxKind.EqualsEqualsToken:
@@ -140,6 +178,10 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.GreaterThanEqualsToken:
                     return ">=";
 
+                case SyntaxKind.LetKeyword:
+                    return "let";
+                case SyntaxKind.VarKeyword:
+                    return "var";
                 case SyntaxKind.TrueKeyword:
                     return "true";
                 case SyntaxKind.FalseKeyword:
