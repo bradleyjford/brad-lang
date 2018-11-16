@@ -40,6 +40,7 @@ namespace BradLang.CodeAnalysis.Binding
             }
 
             variable = null;
+            
             return false;
         }
 

@@ -13,13 +13,13 @@ namespace BradLang.CodeAnalysis.Binding
         }
 
         public SyntaxKind SyntaxKind => SyntaxKind.TernaryExpression;
+        public Type Type => TrueType;
         
         public Type ConditionType { get; }
         public Type TrueType { get; }
         public Type FalseType { get; }
-        public Type Type => TrueType;
 
-        public static BoundTernaryOperator Bind(Type conditionType, Type trueType, Type falseType)
+        public static BoundTernaryOperator Bind(SyntaxKind kind, Type conditionType, Type trueType, Type falseType)
         {
             if (conditionType == typeof(bool) && trueType == falseType)
             {
@@ -28,6 +28,5 @@ namespace BradLang.CodeAnalysis.Binding
 
             return null;
         }
-
     }
 }

@@ -3,7 +3,7 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    class BoundGlobalScope
+    sealed class BoundGlobalScope
     {
         public BoundGlobalScope(
             BoundGlobalScope previous,

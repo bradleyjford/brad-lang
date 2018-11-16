@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    class BoundBlockStatement : BoundStatement
+    sealed class BoundBlockStatement : BoundStatement
     {
         public BoundBlockStatement(ImmutableArray<BoundStatement> statements)
         {

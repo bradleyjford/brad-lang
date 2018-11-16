@@ -95,14 +95,18 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             switch (keyword)
             {
-                case "let":
-                    return SyntaxKind.LetKeyword;
-                case "var":
-                    return SyntaxKind.VarKeyword;
-                case "true":
-                    return SyntaxKind.TrueKeyword;
+                case "else":
+                    return SyntaxKind.ElseKeyword;
                 case "false":
                     return SyntaxKind.FalseKeyword;
+                case "if":
+                    return SyntaxKind.IfKeyword;
+                case "let":
+                    return SyntaxKind.LetKeyword;
+                case "true":
+                    return SyntaxKind.TrueKeyword;
+                case "var":
+                    return SyntaxKind.VarKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -112,7 +116,9 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             switch (kind)
             {
+                case SyntaxKind.ElseKeyword:
                 case SyntaxKind.FalseKeyword:
+                case SyntaxKind.IfKeyword:
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.TrueKeyword:
                 case SyntaxKind.VarKeyword:
@@ -138,7 +144,9 @@ namespace BradLang.CodeAnalysis.Syntax
                     return "|";
                 case SyntaxKind.QuestionMarkToken:
                     return "?";
-
+                case SyntaxKind.SemicolonToken:
+                    return ";";
+                    
                 case SyntaxKind.OpenParenthesisToken:
                     return "(";
                 case SyntaxKind.CloseParenthesisToken:
@@ -178,14 +186,18 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.GreaterThanEqualsToken:
                     return ">=";
 
-                case SyntaxKind.LetKeyword:
-                    return "let";
-                case SyntaxKind.VarKeyword:
-                    return "var";
-                case SyntaxKind.TrueKeyword:
-                    return "true";
+                case SyntaxKind.ElseKeyword:
+                    return "else";
                 case SyntaxKind.FalseKeyword:
                     return "false";
+                case SyntaxKind.IfKeyword:
+                    return "if";
+                case SyntaxKind.LetKeyword:
+                    return "let";
+                case SyntaxKind.TrueKeyword:
+                    return "true";
+                case SyntaxKind.VarKeyword:
+                    return "var";
             }
 
             return null;

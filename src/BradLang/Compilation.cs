@@ -9,7 +9,6 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang
 {
-
     public sealed class Compilation
     {
         BoundGlobalScope _globalScope;

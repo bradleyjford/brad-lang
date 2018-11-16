@@ -13,11 +13,10 @@ namespace BradLang.CodeAnalysis.Syntax
             Span = nameToken.Span;
         }
 
-        public SyntaxToken NameToken { get; }
-
         public override SyntaxKind Kind => SyntaxKind.NameExpression;
-
         public override TextSpan Span { get; }
+
+        public SyntaxToken NameToken { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

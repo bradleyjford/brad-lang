@@ -14,7 +14,7 @@ namespace BradLang.CodeAnalysis.Syntax
             OperatorToken = operatorToken;
             Operand = operand;
 
-            Span = new TextSpan(operatorToken.Span.Start, operand.Span.End);
+            Span = TextSpan.FromBounds(operatorToken.Span.Start, operand.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.UnaryExpression;

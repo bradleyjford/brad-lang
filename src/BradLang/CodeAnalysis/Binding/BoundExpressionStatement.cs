@@ -1,7 +1,8 @@
 using System;
 
 namespace BradLang.CodeAnalysis.Binding
-{    sealed class BoundExpressionStatement : BoundStatement
+{    
+    sealed class BoundExpressionStatement : BoundStatement
     {
         public BoundExpressionStatement(BoundExpression expression)
         {

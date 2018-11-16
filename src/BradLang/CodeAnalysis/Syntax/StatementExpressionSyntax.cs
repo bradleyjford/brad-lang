@@ -9,21 +9,24 @@ namespace BradLang.CodeAnalysis.Syntax
 
     public sealed class ExpressionStatementSyntax : StatementSyntax
     {
-        public ExpressionStatementSyntax(ExpressionSyntax expression)
+        public ExpressionStatementSyntax(ExpressionSyntax expression, SyntaxToken statementTerminatorToken)
         {
             Expression = expression;
-
-            Span = Expression.Span;
+            StatementTerminatorToken = statementTerminatorToken;
+            
+            Span = TextSpan.FromBounds(Expression.Span.Start, statementTerminatorToken.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.StatementExpression;
-
         public override TextSpan Span { get; }
+        
         public ExpressionSyntax Expression { get; }
+        public SyntaxToken StatementTerminatorToken { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return Expression;
+            yield return StatementTerminatorToken;
         }
     }
 }

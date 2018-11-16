@@ -18,6 +18,7 @@ namespace BradLang.CodeAnalysis.Syntax
         PercentToken,
 
         ColonToken,
+        SemicolonToken,
         QuestionMarkToken,
 
         OpenParenthesisToken,
@@ -48,24 +49,29 @@ namespace BradLang.CodeAnalysis.Syntax
         CompilationUnit,
 
         // Keyword
+        ElseKeyword,
+        IfKeyword,
         LetKeyword,
         VarKeyword,
         TrueKeyword,
         FalseKeyword,
 
         // Statements
-        StatementExpression,
         BlockStatement,
+        ElseClause,
+        IfStatement,
+        StatementExpression,
         VariableDeclarationStatement,
 
+
         // Expressions
+        AssignmentExpression,
+        BinaryExpression,
         LiteralExpression,
         LiteralStringExpression,
         NameExpression,
-        UnaryExpression,
-        BinaryExpression,
-        TernaryExpression,
         ParenthesizedExpression,
-        AssignmentExpression,
+        TernaryExpression,
+        UnaryExpression,
     }
 }

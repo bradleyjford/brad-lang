@@ -49,6 +49,7 @@ namespace BradLang.CodeAnalysis.Binding
             Kind = kind;
             LeftType = leftType;
             RightType = rightType;
+            
             Type = resultType;
         }
 

@@ -12,11 +12,10 @@ namespace BradLang.CodeAnalysis.Syntax
             Expression = expression;
             CloseParenthesisToken = closeParenthesisToken;
 
-            Span = new TextSpan(openParenthesisToken.Span.Start, closeParenthesisToken.Span.End);
+            Span = TextSpan.FromBounds(openParenthesisToken.Span.Start, closeParenthesisToken.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
-
         public override TextSpan Span { get; }
 
         public SyntaxToken OpenParenthesisToken { get; }

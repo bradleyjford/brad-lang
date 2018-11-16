@@ -10,15 +10,14 @@ namespace BradLang.CodeAnalysis.Syntax
             Statement = statement;
             EndOfFileToken = endOfFileToken;
 
-            Span = new TextSpan(statement.Span.Start, endOfFileToken.Span.End);
+            Span = TextSpan.FromBounds(statement.Span.Start, endOfFileToken.Span.End);
         }
+
+        public override SyntaxKind Kind => SyntaxKind.CompilationUnit;
+        public override TextSpan Span { get; }
 
         public StatementSyntax Statement { get; }
         public SyntaxToken EndOfFileToken { get; }
-
-        public override SyntaxKind Kind => SyntaxKind.CompilationUnit;
-
-        public override TextSpan Span { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
@@ -26,5 +25,4 @@ namespace BradLang.CodeAnalysis.Syntax
             yield return EndOfFileToken;
         }
     }
-
 }
