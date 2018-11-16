@@ -5,18 +5,18 @@ namespace BradLang.CodeAnalysis.Text
 {
     public sealed class SourceText
     {
+        public static SourceText From(string text)
+        {
+            return new SourceText(text);
+        }
+
         readonly string _text;
 
-        private SourceText(string text)
+        SourceText(string text)
         {
             _text = text;
 
             Lines = ParseLines(this, text);
-        }
-
-        public static SourceText From(string text)
-        {
-            return new SourceText(text);
         }
 
         static ImmutableArray<TextLine> ParseLines(SourceText sourceText, string text)
@@ -45,7 +45,7 @@ namespace BradLang.CodeAnalysis.Text
                 }
             }
 
-            if (position > lineStart)
+            if (position >= lineStart)
             {
                 var line = CreateLine(sourceText, position, lineStart, 0);
 

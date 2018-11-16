@@ -11,11 +11,11 @@ namespace BradLang.CodeAnalysis.Binding
             Right = right;
         }
 
+        public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
+        public override Type Type => Operator.Type;
+
         public BoundExpression Left { get; }
         public BoundBinaryOperator Operator { get; }
         public BoundExpression Right { get; }
-
-        public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
-        public override Type Type => Operator.Type;
     }
 }

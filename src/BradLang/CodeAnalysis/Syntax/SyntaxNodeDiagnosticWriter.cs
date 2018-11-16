@@ -8,6 +8,11 @@ namespace BradLang.CodeAnalysis.Syntax
     {
         public static void Write(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
         {
+            if (node == null)
+            {
+                return;
+            }
+
             var isConsoleWriter = writer == Console.Out;
 
             var marker = isLast ? "└──" : "├──";

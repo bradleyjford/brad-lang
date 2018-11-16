@@ -18,6 +18,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             var testedTokenKinds = GetSyntaxTokens().Concat(GetSeparatorSyntaxTokens()).Select(t => t.kind);
 
             var untestedTokenKinds = new SortedSet<SyntaxKind>(tokenKinds);
+            
             untestedTokenKinds.ExceptWith(testedTokenKinds);
             untestedTokenKinds.Remove(SyntaxKind.UnknownToken);
             untestedTokenKinds.Remove(SyntaxKind.EndOfFileToken);

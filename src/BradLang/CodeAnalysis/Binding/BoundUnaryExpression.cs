@@ -10,10 +10,10 @@ namespace BradLang.CodeAnalysis.Binding
             Operand = operand;
         }
 
-        public BoundUnaryOperator Operator { get; }
-        public BoundExpression Operand { get; }
-
         public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
         public override Type Type => Operand.Type;
+
+        public BoundUnaryOperator Operator { get; }
+        public BoundExpression Operand { get; }
     }
 }

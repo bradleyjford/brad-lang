@@ -6,20 +6,8 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-
     sealed class Binder
     {
-        readonly DiagnosticBag _diagnostics = new DiagnosticBag();
-
-        BoundScope _scope;
-
-        public DiagnosticBag Diagnostics => _diagnostics;
-
-        public Binder(BoundScope parent)
-        {
-            _scope = new BoundScope(parent);
-        }
-
         public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, SyntaxTree syntaxTree)
         {
             var parentScope = CreateParentScope(previous);
@@ -68,12 +56,25 @@ namespace BradLang.CodeAnalysis.Binding
             return parent;
         }
 
+        readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+
+        BoundScope _scope;
+
+        Binder(BoundScope parent)
+        {
+            _scope = new BoundScope(parent);
+        }
+
+        public DiagnosticBag Diagnostics => _diagnostics;
+
         BoundStatement BindStatement(StatementSyntax syntax)
         {
             switch (syntax.Kind)
             {
                 case SyntaxKind.BlockStatement:
                     return BindBlockStatement((BlockStatementSyntax)syntax);
+                case SyntaxKind.IfStatement:
+                    return BindIfStatement((IfStatementSyntax)syntax);
                 case SyntaxKind.VariableDeclarationStatement:
                     return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax);
                 default: 
@@ -99,6 +100,21 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundBlockStatement(statements.ToImmutable());
         }
 
+        BoundStatement BindIfStatement(IfStatementSyntax syntax)
+        {
+            var condition = BindExpression(syntax.ConditionExpression, typeof(bool));
+
+            var thenStatement = BindStatement(syntax.ThenStatement);
+            BoundStatement elseStatement = null;
+            
+            if (syntax.ElseClause != null)
+            {
+                elseStatement = BindStatement(syntax.ElseClause.ElseStatement);
+            }
+
+            return new BoundIfStatement(condition, thenStatement, elseStatement);
+        }
+
         BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
         {
             var initializerExpression = BindExpression(syntax.Initializer);
@@ -121,6 +137,19 @@ namespace BradLang.CodeAnalysis.Binding
 
             return new BoundExpressionStatement(expression);
         }
+
+        BoundExpression BindExpression(ExpressionSyntax syntax, Type expectedType)
+        {
+            var expression = BindExpression(syntax);
+
+            if (expression.Type != typeof(bool))
+            {
+                _diagnostics.ReportTypeMismatch(syntax.Span, expression.Type, typeof(bool));
+            }
+
+            return expression;
+        }
+
         BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
@@ -156,6 +185,11 @@ namespace BradLang.CodeAnalysis.Binding
                 _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
 
                 return boundExpression;
+            }
+
+            if (variable.IsReadOnly)
+            {
+                _diagnostics.ReportCannotAssign(syntax.IdentifierToken.Span, name);
             }
 
             if (variable.Type != boundExpression.Type)
@@ -218,8 +252,8 @@ namespace BradLang.CodeAnalysis.Binding
 
         BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
         {
-            var left = BindExpression(syntax.Left);
-            var right = BindExpression(syntax.Right);
+            var left = BindExpression(syntax.LeftExpression);
+            var right = BindExpression(syntax.RightExpression);
             var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
             if (boundOperator == null)
@@ -234,9 +268,9 @@ namespace BradLang.CodeAnalysis.Binding
 
         BoundExpression BindTernaryExpression(ConditionalExpressionSyntax syntax)
         {
-            var condition = BindExpression(syntax.Condition);
-            var trueExpression = BindExpression(syntax.True);
-            var falseExpression = BindExpression(syntax.False);
+            var condition = BindExpression(syntax.ConditionExpression);
+            var trueExpression = BindExpression(syntax.TrueExpression);
+            var falseExpression = BindExpression(syntax.FalseExpression);
 
             if (condition.Type != typeof(bool))
             {
@@ -245,7 +279,7 @@ namespace BradLang.CodeAnalysis.Binding
                 return trueExpression;
             }
 
-            var boundOperator = BoundTernaryOperator.Bind(condition.Type, trueExpression.Type, falseExpression.Type);
+            var boundOperator = BoundTernaryOperator.Bind(syntax.Kind, condition.Type, trueExpression.Type, falseExpression.Type);
 
             if (boundOperator == null)
             {

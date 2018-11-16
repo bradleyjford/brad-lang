@@ -31,7 +31,11 @@ namespace BradLang
                 case BoundNodeKind.BlockStatement:
                     EvaluateBlockStatement((BoundBlockStatement)statement);
                     break;
-                
+
+                case BoundNodeKind.IfStatement:
+                    EvaluateIfStatement((BoundIfStatement)statement);
+                    break;
+
                 case BoundNodeKind.VariableDeclaration:
                     EvaluateVariableDeclaration((BoundVariableDeclaration)statement);
                     break;
@@ -53,9 +57,23 @@ namespace BradLang
             }
         }
 
+        void EvaluateIfStatement(BoundIfStatement statement)
+        {
+            var conditionMet = (bool)EvaluateExpression(statement.Condition);
+
+            if (conditionMet)
+            {
+                EvaluateStatement(statement.ThenStatement);
+            }
+            else if (statement.ElseStatement != null)
+            {
+                EvaluateStatement(statement.ElseStatement);
+            }
+        }
+
         void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
         {
-            _variables[statement.VariableSymbol] = EvaluateExpression(statement.InitializerExpression);
+            _variables[statement.VariableSymbol] = EvaluateExpression(statement.Initializer);
         }
 
         void EvaluateExpressionStatement(BoundExpressionStatement node)

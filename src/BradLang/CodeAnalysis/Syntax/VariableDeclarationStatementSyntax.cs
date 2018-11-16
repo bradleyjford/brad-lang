@@ -5,24 +5,30 @@ namespace BradLang.CodeAnalysis.Syntax
 {
     public sealed class VariableDeclarationStatementSyntax : StatementSyntax
     {
-        public VariableDeclarationStatementSyntax(SyntaxToken keywordToken, SyntaxToken identifierToken, SyntaxToken equalsToken, ExpressionSyntax initializer)
+        public VariableDeclarationStatementSyntax(
+            SyntaxToken keywordToken, 
+            SyntaxToken identifierToken, 
+            SyntaxToken equalsToken, 
+            ExpressionSyntax initializer,
+            SyntaxToken statementTerminatorToken)
         {
             KeywordToken = keywordToken;
             IdentifierToken = identifierToken;
             EqualsToken = equalsToken;
             Initializer = initializer;
-
-            Span = new TextSpan(keywordToken.Span.Start, initializer.Span.End);
+            StatementTerminatorToken = statementTerminatorToken;
+            
+            Span = TextSpan.FromBounds(keywordToken.Span.Start, statementTerminatorToken.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.VariableDeclarationStatement;
-
         public override TextSpan Span { get; }
 
         public SyntaxToken KeywordToken { get; }
         public SyntaxToken IdentifierToken { get; }
         public SyntaxToken EqualsToken { get; }
         public ExpressionSyntax Initializer { get; }
+        public SyntaxToken StatementTerminatorToken { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
@@ -30,6 +36,7 @@ namespace BradLang.CodeAnalysis.Syntax
             yield return IdentifierToken;
             yield return EqualsToken;
             yield return Initializer;
+            yield return StatementTerminatorToken;
         }
     }
 }

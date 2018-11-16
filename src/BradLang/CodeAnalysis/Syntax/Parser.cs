@@ -10,7 +10,6 @@ namespace BradLang.CodeAnalysis.Syntax
         readonly ImmutableArray<SyntaxToken> _tokens;
         readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
-
         int _position;
 
         public Parser(SourceText text)
@@ -39,7 +38,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
         public DiagnosticBag Diagnostics => _diagnostics;
 
-        SyntaxToken Peek(int offset)
+        SyntaxToken PeekToken(int offset)
         {
             var index = _position + offset;
 
@@ -51,11 +50,11 @@ namespace BradLang.CodeAnalysis.Syntax
             return _tokens[index];
         }
 
-        SyntaxToken Current => Peek(0);
+        SyntaxToken CurrentToken => PeekToken(0);
 
-        SyntaxToken Next()
+        SyntaxToken NextToken()
         {
-            var current = Current;
+            var current = CurrentToken;
 
             _position++;
 
@@ -64,14 +63,14 @@ namespace BradLang.CodeAnalysis.Syntax
 
         SyntaxToken MatchToken(SyntaxKind kind)
         {
-            if (Current.Kind == kind)
+            if (CurrentToken.Kind == kind)
             {
-                return Next();
+                return NextToken();
             }
 
-            _diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, kind);
+            _diagnostics.ReportUnexpectedToken(CurrentToken.Span, CurrentToken.Kind, kind);
 
-            return new SyntaxToken(kind, Current.Span.Start, null, null);
+            return new SyntaxToken(kind, CurrentToken.Span.Start, null, null);
         }
 
         public CompilationUnitSyntax ParseCompilationUnit()
@@ -84,10 +83,12 @@ namespace BradLang.CodeAnalysis.Syntax
 
         StatementSyntax ParseStatement()
         {
-            switch (Current.Kind)
+            switch (CurrentToken.Kind)
             {
                 case SyntaxKind.OpenBraceToken:
                     return ParseBlockStatement();
+                case SyntaxKind.IfKeyword:
+                    return ParseIfStatement();
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclarationStatement();
@@ -101,11 +102,19 @@ namespace BradLang.CodeAnalysis.Syntax
             var openBraceToken = MatchToken(SyntaxKind.OpenBraceToken);
             var statements = ImmutableArray.CreateBuilder<StatementSyntax>();;
 
-            while (Current.Kind != SyntaxKind.CloseBraceToken)
+            while (CurrentToken.Kind != SyntaxKind.CloseBraceToken &&
+                CurrentToken.Kind != SyntaxKind.EndOfFileToken)
             {
+                var startToken = CurrentToken;
+
                 var statement = ParseStatement();
 
                 statements.Add(statement);
+
+                if (CurrentToken == startToken)
+                {
+                    NextToken();
+                }
             }
 
             var closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
@@ -113,23 +122,51 @@ namespace BradLang.CodeAnalysis.Syntax
             return new BlockStatementSyntax(openBraceToken, statements.ToImmutable(), closeBraceToken);
         }
 
+        StatementSyntax ParseIfStatement()
+        {
+            var ifKeyword = MatchToken(SyntaxKind.IfKeyword);
+            var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+            var condition = ParseExpression();
+            var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+            var thenStatement = ParseStatement();
+
+            var elseClause = ParseElseClause();
+
+            return new IfStatementSyntax(ifKeyword, openParenthesisToken, condition, closeParenthesisToken, thenStatement, elseClause);
+        }
+
+        ElseClauseSyntax ParseElseClause()
+        {
+            if (CurrentToken.Kind != SyntaxKind.ElseKeyword)
+            {
+                return null;
+            }
+
+            var elseKeyword = NextToken();
+            var elseStatement = ParseStatement();
+
+            return new ElseClauseSyntax(elseKeyword, elseStatement);
+        }
+
         StatementSyntax ParseVariableDeclarationStatement()
         {
-            var expectedKind = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+            var expectedKind = CurrentToken.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
 
             var keywordToken = MatchToken(expectedKind);
             var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
             var equalsToken = MatchToken(SyntaxKind.EqualsToken);
             var initializer = ParseExpression();
+            var statementTerminatorToken = MatchToken(SyntaxKind.SemicolonToken);
 
-            return new VariableDeclarationStatementSyntax(keywordToken, identifierToken, equalsToken, initializer);
+            return new VariableDeclarationStatementSyntax(keywordToken, identifierToken, equalsToken, initializer, statementTerminatorToken);
         }
 
         StatementSyntax ParseExpressionStatement()
         {
             var expression = ParseExpression();
+            var statementTerminatorToken = MatchToken(SyntaxKind.SemicolonToken);
 
-            return new ExpressionStatementSyntax(expression);
+            return new ExpressionStatementSyntax(expression, statementTerminatorToken);
         }
 
         ExpressionSyntax ParseExpression()
@@ -139,11 +176,11 @@ namespace BradLang.CodeAnalysis.Syntax
 
         ExpressionSyntax ParseAssignmentExpression()
         {
-            if (Current.Kind == SyntaxKind.IdentifierToken &&
-                Peek(1).Kind == SyntaxKind.EqualsToken)
+            if (CurrentToken.Kind == SyntaxKind.IdentifierToken &&
+                PeekToken(1).Kind == SyntaxKind.EqualsToken)
             {
-                var identifierToken = Next();
-                var operatorToken = Next();
+                var identifierToken = NextToken();
+                var operatorToken = NextToken();
                 var right = ParseExpression();
 
                 return new AssignmentExpressionSyntax(identifierToken, operatorToken, right);
@@ -156,11 +193,11 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             var left = ParseBinaryExpression();
 
-            var ternayOperatorPrecedence = SyntaxFacts.GetTernaryOperatorPrecedence(Current.Kind);
+            var ternayOperatorPrecedence = SyntaxFacts.GetTernaryOperatorPrecedence(CurrentToken.Kind);
 
             if (ternayOperatorPrecedence != 0)
             {
-                var questionMarkToken = Next();
+                var questionMarkToken = NextToken();
                 var trueExpression = ParseExpression();
                 var colonToken = MatchToken(SyntaxKind.ColonToken);
                 var falseExpression = ParseExpression();
@@ -175,11 +212,11 @@ namespace BradLang.CodeAnalysis.Syntax
         {
             ExpressionSyntax left;
 
-            var unaryOperatorPrecedence = Current.Kind.GetUnaryOperatorPrecedence();
+            var unaryOperatorPrecedence = CurrentToken.Kind.GetUnaryOperatorPrecedence();
 
             if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence)
             {
-                var operatorToken = Next();
+                var operatorToken = NextToken();
                 var operand = ParseBinaryExpression(unaryOperatorPrecedence);
 
                 left = new UnaryExpressionSyntax(operatorToken, operand);
@@ -191,14 +228,14 @@ namespace BradLang.CodeAnalysis.Syntax
 
             while (true)
             {
-                var precedence = Current.Kind.GetBinaryOperatorPrecedence();
+                var precedence = CurrentToken.Kind.GetBinaryOperatorPrecedence();
 
                 if (precedence == 0 || precedence <= parentPrecedence)
                 {
                     break;
                 }
 
-                var operatorToken = Next();
+                var operatorToken = NextToken();
 
                 var right = ParseBinaryExpression(precedence);
 
@@ -210,7 +247,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
         ExpressionSyntax ParsePrimaryExpression()
         {
-            switch (Current.Kind)
+            switch (CurrentToken.Kind)
             {
                 case SyntaxKind.OpenParenthesisToken:
                     return ParseParenthesizedExpression();
@@ -230,6 +267,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
                 default:
                     var unknownToken = MatchToken(SyntaxKind.UnknownToken);
+                    
                     return new LiteralExpressionSyntax(unknownToken);
             }
         }
@@ -245,7 +283,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
         ExpressionSyntax ParseLiteralBooleanExpression()
         {
-            var isTrue = Current.Kind == SyntaxKind.TrueKeyword;
+            var isTrue = CurrentToken.Kind == SyntaxKind.TrueKeyword;
             var keywordToken = isTrue ? MatchToken(SyntaxKind.TrueKeyword) : MatchToken(SyntaxKind.FalseKeyword);
 
             return new LiteralExpressionSyntax(keywordToken, isTrue);

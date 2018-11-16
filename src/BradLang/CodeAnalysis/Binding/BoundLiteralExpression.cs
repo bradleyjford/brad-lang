@@ -9,9 +9,9 @@ namespace BradLang.CodeAnalysis.Binding
             Value = value;
         }
 
-        public object Value { get; }
-
         public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
         public override Type Type => Value?.GetType() ?? typeof(object);
+
+        public object Value { get; }
     }
 }

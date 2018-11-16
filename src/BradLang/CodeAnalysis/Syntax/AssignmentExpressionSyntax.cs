@@ -13,16 +13,16 @@ namespace BradLang.CodeAnalysis.Syntax
             EqualsToken = equalsToken;
             Expression = expression;
 
-            Span = new TextSpan(identifierToken.Span.Start, expression.Span.End);
+            Span = TextSpan.FromBounds(identifierToken.Span.Start, expression.Span.End);
         }
-
-        public SyntaxToken IdentifierToken { get; }
-        public SyntaxToken EqualsToken { get; }
-        public ExpressionSyntax Expression { get; }
 
         public override SyntaxKind Kind => SyntaxKind.AssignmentExpression;
 
         public override TextSpan Span { get; }
+
+        public SyntaxToken IdentifierToken { get; }
+        public SyntaxToken EqualsToken { get; }
+        public ExpressionSyntax Expression { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

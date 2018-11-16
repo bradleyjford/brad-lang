@@ -20,7 +20,6 @@ namespace BradLang.CodeAnalysis.Syntax
         }
 
         public override SyntaxKind Kind => SyntaxKind.LiteralStringExpression;
-
         public override TextSpan Span { get; }
 
         public SyntaxToken StringToken { get; }

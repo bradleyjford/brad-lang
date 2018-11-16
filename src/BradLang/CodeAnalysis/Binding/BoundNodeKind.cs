@@ -2,18 +2,20 @@ using System;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    public enum BoundNodeKind
+    enum BoundNodeKind
     {
         // Statements
         BlockStatement,
         ExpressionStatement,
+        IfStatement,
         VariableDeclaration,
         
-        UnaryExpression,
-        LiteralExpression,
-        BinaryExpression,
-        TernaryExpression,
-        VariableExpression,
+        // Expressions
         AssignmentExpression,
+        BinaryExpression,
+        LiteralExpression,       
+        TernaryExpression,
+        UnaryExpression,
+        VariableExpression,
     }
 }

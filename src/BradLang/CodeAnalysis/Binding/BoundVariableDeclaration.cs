@@ -5,12 +5,12 @@ namespace BradLang.CodeAnalysis.Binding
         public BoundVariableDeclaration(VariableSymbol variableSymbol, BoundExpression initializer)
         {
             VariableSymbol = variableSymbol;
-            InitializerExpression = initializer;
+            Initializer = initializer;
         }
 
         public override BoundNodeKind Kind => BoundNodeKind.VariableDeclaration;
 
         public VariableSymbol VariableSymbol { get; }
-        public BoundExpression InitializerExpression { get; }
+        public BoundExpression Initializer { get; }
     }
 }

@@ -6,28 +6,28 @@ namespace BradLang.CodeAnalysis.Syntax
 {
     public sealed class BinaryExpressionSyntax : ExpressionSyntax
     {
-        public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
+        public BinaryExpressionSyntax(ExpressionSyntax leftExpression, SyntaxToken operatorToken, ExpressionSyntax rightExpression)
         {
-            Left = left;
+            LeftExpression = leftExpression;
             OperatorToken = operatorToken;
-            Right = right;
+            RightExpression = rightExpression;
 
-            Span = new TextSpan(left.Span.Start, right.Span.End);
+            Span = TextSpan.FromBounds(leftExpression.Span.Start, rightExpression.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
 
         public override TextSpan Span { get; }
 
-        public ExpressionSyntax Left { get; }
+        public ExpressionSyntax LeftExpression { get; }
         public SyntaxToken OperatorToken { get; }
-        public ExpressionSyntax Right { get; }
+        public ExpressionSyntax RightExpression { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            yield return Left;
+            yield return LeftExpression;
             yield return OperatorToken;
-            yield return Right;
+            yield return RightExpression;
         }
     }
 }

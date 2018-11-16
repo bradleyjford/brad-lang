@@ -6,37 +6,37 @@ namespace BradLang.CodeAnalysis.Syntax
     public class ConditionalExpressionSyntax : ExpressionSyntax
     {
         public ConditionalExpressionSyntax(
-            ExpressionSyntax condition, 
+            ExpressionSyntax conditionExpression, 
             SyntaxToken questionMarkToken, 
-            ExpressionSyntax @true, 
+            ExpressionSyntax trueExpression, 
             SyntaxToken colonToken,
-            ExpressionSyntax @false)
+            ExpressionSyntax falseExpression)
         {
-            Condition = condition;
+            ConditionExpression = conditionExpression;
             QuestionMarkToken = questionMarkToken;
-            True = @true;
+            TrueExpression = trueExpression;
             ColonToken = colonToken;
-            False = @false;
+            FalseExpression = falseExpression;
 
-            Span = new TextSpan(condition.Span.Start, @false.Span.End);
+            Span = TextSpan.FromBounds(conditionExpression.Span.Start, falseExpression.Span.End);
         }
 
-        public ExpressionSyntax Condition { get; }
-        public SyntaxToken QuestionMarkToken { get; }
-        public ExpressionSyntax True { get; }
-        public SyntaxToken ColonToken { get; }
-        public ExpressionSyntax False { get; }
-
         public override SyntaxKind Kind => SyntaxKind.TernaryExpression;
-
         public override TextSpan Span { get; }
+
+        public ExpressionSyntax ConditionExpression { get; }
+        public SyntaxToken QuestionMarkToken { get; }
+        public ExpressionSyntax TrueExpression { get; }
+        public SyntaxToken ColonToken { get; }
+        public ExpressionSyntax FalseExpression { get; }
+
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            yield return Condition;
+            yield return ConditionExpression;
             yield return QuestionMarkToken;
-            yield return True;
+            yield return TrueExpression;
             yield return ColonToken;
-            yield return False;
+            yield return FalseExpression;
         }
     }
 }

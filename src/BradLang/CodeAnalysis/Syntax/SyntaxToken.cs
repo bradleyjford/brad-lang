@@ -17,8 +17,8 @@ namespace BradLang.CodeAnalysis.Syntax
         }
 
         public override SyntaxKind Kind { get; }
-
         public override TextSpan Span { get; }
+        
         public string Text { get; }
         public object Value { get; }
 

@@ -8,10 +8,12 @@ namespace BradLang.CodeAnalysis.Binding
         Subtraction,
         Multiplication,
         Division,
+        
         LessThan,
         LessThanEquals,
         GreaterThan,
         GreaterThanEquals,
+        
         Equals,
         NotEquals,
         LogicalAnd,

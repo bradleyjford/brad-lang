@@ -12,11 +12,10 @@ namespace BradLang.CodeAnalysis.Syntax
             Statements = statements;
             CloseBraceToken = closeBraceToken;
 
-            Span = new TextSpan(openBraceToken.Span.Start, closeBraceToken.Span.End);
+            Span = TextSpan.FromBounds(openBraceToken.Span.Start, closeBraceToken.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.BlockStatement;
-
         public override TextSpan Span { get; }
 
         public SyntaxToken OpenBraceToken { get; }
@@ -35,5 +34,4 @@ namespace BradLang.CodeAnalysis.Syntax
             yield return CloseBraceToken;
         }
     }
-
 }

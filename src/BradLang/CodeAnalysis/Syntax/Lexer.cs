@@ -9,10 +9,10 @@ namespace BradLang.CodeAnalysis.Syntax
         readonly SourceText _text;
         readonly DiagnosticBag _diagnostics;
 
+        int _start;
         int _position;
 
         SyntaxKind _kind;
-        int _start;
         object _value;
 
         public Lexer(SourceText text)
@@ -37,6 +37,10 @@ namespace BradLang.CodeAnalysis.Syntax
             {
                 case '\0':
                     _kind = SyntaxKind.EndOfFileToken;
+                    break;
+                case ';':
+                    _position++;
+                    _kind = SyntaxKind.SemicolonToken;
                     break;
                 case '<':
                     _position++;
@@ -238,7 +242,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
             if (!Int32.TryParse(textValue, out var value))
             {
-                _diagnostics.ReportInvalidNumber(new TextSpan(_start, _position - _start), textValue, typeof(Int32));
+                _diagnostics.ReportInvalidNumber(new TextSpan(_start, _position - _start), textValue, typeof(int));
             }
 
             _kind = SyntaxKind.NumberToken;
@@ -253,13 +257,14 @@ namespace BradLang.CodeAnalysis.Syntax
 
                 if (Current == '\0')
                 {
-                    _diagnostics.ReportUnterminatedStringConstant(_start, _position - _start);
+                    _diagnostics.ReportUnterminatedStringConstant(new TextSpan(_start, _position - _start));
 
                     _kind = SyntaxKind.EndOfFileToken;
                 }
                 else if (Current == '"' && Previous != '\\')
                 {
                     _position++;
+                    
                     _kind = SyntaxKind.StringToken;
                     _value = _text.ToString(_start + 1, _position - _start - 2);
                 }
