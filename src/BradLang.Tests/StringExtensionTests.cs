@@ -10,22 +10,22 @@ namespace BradLang.Tests.CodeAnalysis
         {
             var text = @"
                 {
-                    var a = 10;
+                    var a = 10
 
                     if (a < 100)
                     {
-                        a = 5;
+                        a = 5
                     }
                 }
             ";
 
             var expected = 
 @"{
-    var a = 10;
+    var a = 10
 
     if (a < 100)
     {
-        a = 5;
+        a = 5
     }
 }";
 
