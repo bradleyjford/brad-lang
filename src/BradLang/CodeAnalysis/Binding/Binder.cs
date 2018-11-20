@@ -79,6 +79,8 @@ namespace BradLang.CodeAnalysis.Binding
                     return BindIfStatement((IfStatementSyntax)syntax);
                 case SyntaxKind.VariableDeclarationStatement:
                     return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax);
+                case SyntaxKind.WhileStatement:
+                    return BoundWhileStatement((WhileStatementSyntax)syntax);
                 default: 
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
             }
@@ -154,6 +156,14 @@ namespace BradLang.CodeAnalysis.Binding
             }
 
             return new BoundVariableDeclaration(variableSymbol, initializerExpression);
+        }
+
+        BoundStatement BoundWhileStatement(WhileStatementSyntax syntax)
+        {
+            var condition = BindExpression(syntax.ConditionExpression, typeof(bool));
+            var body = BindStatement(syntax.Body);
+
+            return new BoundWhileStatement(condition, body);
         }
 
         BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)

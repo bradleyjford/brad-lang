@@ -55,6 +55,7 @@ namespace BradLang.CodeAnalysis.Syntax
         LetKeyword,
         ToKeyword,
         VarKeyword,
+        WhileKeyword,
         TrueKeyword,
         FalseKeyword,
 
@@ -65,7 +66,7 @@ namespace BradLang.CodeAnalysis.Syntax
         IfStatement,
         StatementExpression,
         VariableDeclarationStatement,
-
+        WhileStatement,
 
         // Expressions
         AssignmentExpression,

@@ -94,6 +94,8 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclarationStatement();
+                case SyntaxKind.WhileKeyword:
+                    return ParseWhileStatement();
                 default:
                     return ParseExpressionStatement();
             }
@@ -173,6 +175,15 @@ namespace BradLang.CodeAnalysis.Syntax
             var initializer = ParseExpression();
 
             return new VariableDeclarationStatementSyntax(keywordToken, identifierToken, equalsToken, initializer);
+        }
+
+        StatementSyntax ParseWhileStatement()
+        {
+            var keywordToken = MatchToken(SyntaxKind.WhileKeyword);
+            var condition = ParseExpression();
+            var body = ParseStatement();
+
+            return new WhileStatementSyntax(keywordToken, condition, body);
         }
 
         StatementSyntax ParseExpressionStatement()

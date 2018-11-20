@@ -111,6 +111,8 @@ namespace BradLang.CodeAnalysis.Syntax
                     return SyntaxKind.TrueKeyword;
                 case "var":
                     return SyntaxKind.VarKeyword;
+                case "while":
+                    return SyntaxKind.WhileKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -128,6 +130,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.ToKeyword:
                 case SyntaxKind.TrueKeyword:
                 case SyntaxKind.VarKeyword:
+                case SyntaxKind.WhileKeyword:
                     return true;
             }
 
@@ -208,6 +211,8 @@ namespace BradLang.CodeAnalysis.Syntax
                     return "true";
                 case SyntaxKind.VarKeyword:
                     return "var";
+                case SyntaxKind.WhileKeyword:
+                    return "while";
             }
 
             return null;

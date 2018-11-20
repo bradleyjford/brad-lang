@@ -44,6 +44,10 @@ namespace BradLang.CodeAnalysis
                     EvaluateVariableDeclaration((BoundVariableDeclaration)statement);
                     break;
 
+                case BoundNodeKind.WhileStatement:
+                    EvaluateWhileStatement((BoundWhileStatement)statement);
+                    break;
+
                 case BoundNodeKind.ExpressionStatement:
                     EvaluateExpressionStatement((BoundExpressionStatement)statement);
                     break;
@@ -91,6 +95,21 @@ namespace BradLang.CodeAnalysis
         void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
         {
             _variables[statement.VariableSymbol] = EvaluateExpression(statement.Initializer);
+        }
+
+        void EvaluateWhileStatement(BoundWhileStatement statement)
+        {
+            while(true)
+            {
+                var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
+
+                if (!conditionStatisfied)
+                {
+                    break;
+                }
+
+                EvaluateStatement(statement.Body);
+            }
         }
 
         void EvaluateExpressionStatement(BoundExpressionStatement node)

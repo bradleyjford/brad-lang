@@ -10,6 +10,7 @@ namespace BradLang.CodeAnalysis.Binding
         IfStatement,
         ForStatement,
         VariableDeclaration,
+        WhileStatement,
         
         // Expressions
         AssignmentExpression,
