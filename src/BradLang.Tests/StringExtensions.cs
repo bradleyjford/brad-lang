@@ -8,6 +8,11 @@ namespace BradLang.Tests
     {
         public static string Unindent(this string text)
         {
+            return String.Join(Environment.NewLine, text.UnindentLines());
+        }
+
+        public static string[] UnindentLines(this string text)
+        {
             var minimumIndent = Int32.MaxValue;
 
             var lines = new List<string>();
@@ -52,7 +57,7 @@ namespace BradLang.Tests
                 lines.RemoveAt(lines.Count - 1);
             }
 
-            return String.Join(Environment.NewLine, lines);
+            return lines.ToArray();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace BradLang.CodeAnalysis.Binding
         BlockStatement,
         ExpressionStatement,
         IfStatement,
+        ForStatement,
         VariableDeclaration,
         
         // Expressions

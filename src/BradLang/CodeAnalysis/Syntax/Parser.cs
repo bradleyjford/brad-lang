@@ -81,12 +81,14 @@ namespace BradLang.CodeAnalysis.Syntax
             return new CompilationUnitSyntax(statement, endOfFileToken);
         }
 
-        StatementSyntax ParseStatement()
+        StatementSyntax ParseStatement(bool requireStatementTerminatorToken = true)
         {
             switch (CurrentToken.Kind)
             {
                 case SyntaxKind.OpenBraceToken:
                     return ParseBlockStatement();
+                case SyntaxKind.ForKeyword:
+                    return ParseForStatement();
                 case SyntaxKind.IfKeyword:
                     return ParseIfStatement();
                 case SyntaxKind.LetKeyword:
@@ -120,6 +122,19 @@ namespace BradLang.CodeAnalysis.Syntax
             var closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
 
             return new BlockStatementSyntax(openBraceToken, statements.ToImmutable(), closeBraceToken);
+        }
+
+        StatementSyntax ParseForStatement()
+        {
+            var forKeyword = MatchToken(SyntaxKind.ForKeyword);
+            var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
+            var equalsToken = MatchToken(SyntaxKind.EqualsToken);
+            var lowerBoundExpression = ParseExpression();
+            var toKeyword = MatchToken(SyntaxKind.ToKeyword);
+            var upperBoundExpression = ParseExpression();
+            var body = ParseStatement();
+
+            return new ForStatementSyntax(forKeyword, identifierToken, equalsToken, lowerBoundExpression, toKeyword, upperBoundExpression, body);
         }
 
         StatementSyntax ParseIfStatement()
@@ -156,17 +171,15 @@ namespace BradLang.CodeAnalysis.Syntax
             var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
             var equalsToken = MatchToken(SyntaxKind.EqualsToken);
             var initializer = ParseExpression();
-            var statementTerminatorToken = MatchToken(SyntaxKind.SemicolonToken);
 
-            return new VariableDeclarationStatementSyntax(keywordToken, identifierToken, equalsToken, initializer, statementTerminatorToken);
+            return new VariableDeclarationStatementSyntax(keywordToken, identifierToken, equalsToken, initializer);
         }
 
         StatementSyntax ParseExpressionStatement()
         {
             var expression = ParseExpression();
-            var statementTerminatorToken = MatchToken(SyntaxKind.SemicolonToken);
-
-            return new ExpressionStatementSyntax(expression, statementTerminatorToken);
+            
+            return new ExpressionStatementSyntax(expression);
         }
 
         ExpressionSyntax ParseExpression()
@@ -263,12 +276,8 @@ namespace BradLang.CodeAnalysis.Syntax
                     return ParseLiteralNumberExpression();
 
                 case SyntaxKind.IdentifierToken:
-                    return ParseNameExpression();
-
                 default:
-                    var unknownToken = MatchToken(SyntaxKind.UnknownToken);
-                    
-                    return new LiteralExpressionSyntax(unknownToken);
+                    return ParseNameExpression();
             }
         }
 

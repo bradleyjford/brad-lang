@@ -1,6 +1,6 @@
 using System;
 
-namespace BradLang
+namespace BradLang.CodeAnalysis
 {
     public sealed class VariableSymbol
     {

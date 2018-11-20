@@ -2,7 +2,7 @@ using System;
 
 namespace BradLang.CodeAnalysis.Text
 {
-    public sealed class TextSpan
+    public struct TextSpan
     {
         public static TextSpan FromBounds(int start, int end)
         {
@@ -19,5 +19,7 @@ namespace BradLang.CodeAnalysis.Text
         public int Length { get; }
 
         public int End => Start + Length;
+
+        public override string ToString() => $"{Start}..{End}";
     }
 }

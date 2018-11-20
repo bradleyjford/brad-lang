@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using BradLang.CodeAnalysis.Binding;
 
-namespace BradLang
+namespace BradLang.CodeAnalysis
 {
     sealed class Evaluator
     {
@@ -32,6 +32,10 @@ namespace BradLang
                     EvaluateBlockStatement((BoundBlockStatement)statement);
                     break;
 
+                case BoundNodeKind.ForStatement:
+                    EvaluateForStatement((BoundForStatement)statement);
+                    break;
+
                 case BoundNodeKind.IfStatement:
                     EvaluateIfStatement((BoundIfStatement)statement);
                     break;
@@ -54,6 +58,19 @@ namespace BradLang
             foreach (var statement in node.Statements)
             {
                 EvaluateStatement(statement);
+            }
+        }
+
+        void EvaluateForStatement(BoundForStatement statement)
+        {
+            var lowerBound = (int)EvaluateExpression(statement.LowerBound);
+            var upperBound = (int)EvaluateExpression(statement.UpperBound);
+
+            for (var i = lowerBound; i <= upperBound; i++)
+            {
+                _variables[statement.Variable] = i;
+
+                EvaluateStatement(statement.Body);
             }
         }
 

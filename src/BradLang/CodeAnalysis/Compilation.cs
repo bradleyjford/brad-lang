@@ -7,7 +7,7 @@ using System.Threading;
 using BradLang.CodeAnalysis.Binding;
 using BradLang.CodeAnalysis.Syntax;
 
-namespace BradLang
+namespace BradLang.CodeAnalysis
 {
     public sealed class Compilation
     {

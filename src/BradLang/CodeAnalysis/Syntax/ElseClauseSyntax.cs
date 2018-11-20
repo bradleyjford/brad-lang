@@ -12,6 +12,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
             Span = elseKeyword.Span;
         }
+        
         public override SyntaxKind Kind => SyntaxKind.ElseClause;
         public override TextSpan Span { get; }
 

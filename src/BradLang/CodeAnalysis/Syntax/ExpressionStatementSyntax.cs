@@ -3,30 +3,24 @@ using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
-    public abstract class StatementSyntax : SyntaxNode
-    {
-    }
 
     public sealed class ExpressionStatementSyntax : StatementSyntax
     {
-        public ExpressionStatementSyntax(ExpressionSyntax expression, SyntaxToken statementTerminatorToken)
+        public ExpressionStatementSyntax(ExpressionSyntax expression)
         {
             Expression = expression;
-            StatementTerminatorToken = statementTerminatorToken;
             
-            Span = TextSpan.FromBounds(Expression.Span.Start, statementTerminatorToken.Span.End);
+            Span = expression.Span;
         }
 
         public override SyntaxKind Kind => SyntaxKind.StatementExpression;
         public override TextSpan Span { get; }
         
         public ExpressionSyntax Expression { get; }
-        public SyntaxToken StatementTerminatorToken { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return Expression;
-            yield return StatementTerminatorToken;
         }
     }
 }

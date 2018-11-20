@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BradLang.CodeAnalysis;
 using BradLang.CodeAnalysis.Syntax;
 using BradLang.CodeAnalysis.Text;
 
@@ -79,19 +80,21 @@ namespace BradLang.CommandLine
 
             SyntaxNodeDiagnosticWriter.Write(Console.Out, syntaxTree.Root);
 
-            _compilation = _compilation == null 
+            var compilation = _compilation == null 
                 ? new Compilation(syntaxTree) 
                 : _compilation.ContinueWith(syntaxTree);
 
             try
             {
-                var result = _compilation.Evaluate(variables);
+                var result = compilation.Evaluate(variables);
 
                 if (!result.Diagnostics.Any())
                 {
-                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"= {result.Value}");
                     Console.ResetColor();
+
+                    _compilation = compilation;
                 }
                 else
                 {

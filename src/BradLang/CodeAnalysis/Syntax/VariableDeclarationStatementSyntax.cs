@@ -9,16 +9,14 @@ namespace BradLang.CodeAnalysis.Syntax
             SyntaxToken keywordToken, 
             SyntaxToken identifierToken, 
             SyntaxToken equalsToken, 
-            ExpressionSyntax initializer,
-            SyntaxToken statementTerminatorToken)
+            ExpressionSyntax initializer)
         {
             KeywordToken = keywordToken;
             IdentifierToken = identifierToken;
             EqualsToken = equalsToken;
             Initializer = initializer;
-            StatementTerminatorToken = statementTerminatorToken;
             
-            Span = TextSpan.FromBounds(keywordToken.Span.Start, statementTerminatorToken.Span.End);
+            Span = TextSpan.FromBounds(keywordToken.Span.Start, initializer.Span.End);
         }
 
         public override SyntaxKind Kind => SyntaxKind.VariableDeclarationStatement;
@@ -28,7 +26,6 @@ namespace BradLang.CodeAnalysis.Syntax
         public SyntaxToken IdentifierToken { get; }
         public SyntaxToken EqualsToken { get; }
         public ExpressionSyntax Initializer { get; }
-        public SyntaxToken StatementTerminatorToken { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
@@ -36,7 +33,6 @@ namespace BradLang.CodeAnalysis.Syntax
             yield return IdentifierToken;
             yield return EqualsToken;
             yield return Initializer;
-            yield return StatementTerminatorToken;
         }
     }
 }

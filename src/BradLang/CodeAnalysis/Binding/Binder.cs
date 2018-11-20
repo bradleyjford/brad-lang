@@ -73,6 +73,8 @@ namespace BradLang.CodeAnalysis.Binding
             {
                 case SyntaxKind.BlockStatement:
                     return BindBlockStatement((BlockStatementSyntax)syntax);
+                case SyntaxKind.ForStatement:
+                    return BindForStatement((ForStatementSyntax)syntax);
                 case SyntaxKind.IfStatement:
                     return BindIfStatement((IfStatementSyntax)syntax);
                 case SyntaxKind.VariableDeclarationStatement:
@@ -98,6 +100,29 @@ namespace BradLang.CodeAnalysis.Binding
             _scope = _scope.Parent;
 
             return new BoundBlockStatement(statements.ToImmutable());
+        }
+
+        BoundStatement BindForStatement(ForStatementSyntax syntax)
+        {
+            var lowerBound = BindExpression(syntax.LowerBoundExpression, typeof(int));
+            var upperBound = BindExpression(syntax.UpperBoundExpression, typeof(int));
+
+            _scope = new BoundScope(_scope);
+
+            var name = syntax.IdentifierToken.Text;
+
+            var variable = new VariableSymbol(name, typeof(int), true);
+            
+            if (!_scope.TryDeclareVariable(variable))
+            {
+                _diagnostics.ReportVariableAlreadyDeclared(syntax.IdentifierToken.Span, name);
+            }
+
+            var body = BindStatement(syntax.Body);
+
+            _scope = _scope.Parent;
+
+            return new BoundForStatement(variable, lowerBound, upperBound, body);
         }
 
         BoundStatement BindIfStatement(IfStatementSyntax syntax)
@@ -142,9 +167,9 @@ namespace BradLang.CodeAnalysis.Binding
         {
             var expression = BindExpression(syntax);
 
-            if (expression.Type != typeof(bool))
+            if (expression.Type != expectedType)
             {
-                _diagnostics.ReportTypeMismatch(syntax.Span, expression.Type, typeof(bool));
+                _diagnostics.ReportTypeMismatch(syntax.Span, expression.Type, expectedType);
             }
 
             return expression;
@@ -166,10 +191,10 @@ namespace BradLang.CodeAnalysis.Binding
                     return BindBinaryExpression((BinaryExpressionSyntax)syntax);
                 case SyntaxKind.TernaryExpression:
                     return BindTernaryExpression((ConditionalExpressionSyntax)syntax);
-                case SyntaxKind.NameExpression:
-                    return BindNameExpression((NameExpressionSyntax)syntax);
                 case SyntaxKind.AssignmentExpression:
                     return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
+                case SyntaxKind.NameExpression:
+                    return BindNameExpression((NameExpressionSyntax)syntax);
                 default:
                     throw new Exception($"Unexpected syntax {syntax.Kind}.");
             }
@@ -183,19 +208,18 @@ namespace BradLang.CodeAnalysis.Binding
             if (!_scope.TryLookupVariable(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
-
                 return boundExpression;
             }
-
+            
             if (variable.IsReadOnly)
             {
                 _diagnostics.ReportCannotAssign(syntax.IdentifierToken.Span, name);
+                return boundExpression;
             }
 
             if (variable.Type != boundExpression.Type)
             {
                 _diagnostics.ReportTypeMismatch(syntax.Expression.Span, boundExpression.Type, variable.Type);
-                
                 return boundExpression;
             }
 
@@ -205,6 +229,13 @@ namespace BradLang.CodeAnalysis.Binding
         BoundExpression BindNameExpression(NameExpressionSyntax syntax)
         {
             var name = syntax.NameToken.Text;
+
+            if (String.IsNullOrEmpty(name))
+            {
+                // Specified syntax was inserted by the Parser as a result of a parse error.
+                // Diagnostic has already been reported by the Parser.
+                return new BoundLiteralExpression(String.Empty);
+            }
 
             if (!_scope.TryLookupVariable(name, out var variable))
             {

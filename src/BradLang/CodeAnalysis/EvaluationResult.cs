@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using BradLang.CodeAnalysis.Syntax;
 
-namespace BradLang
+namespace BradLang.CodeAnalysis
 {
     public sealed class EvaluationResult
     {
