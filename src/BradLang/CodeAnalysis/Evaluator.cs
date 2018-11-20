@@ -80,9 +80,9 @@ namespace BradLang.CodeAnalysis
 
         void EvaluateIfStatement(BoundIfStatement statement)
         {
-            var conditionMet = (bool)EvaluateExpression(statement.Condition);
+            var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
 
-            if (conditionMet)
+            if (conditionStatisfied)
             {
                 EvaluateStatement(statement.ThenStatement);
             }
