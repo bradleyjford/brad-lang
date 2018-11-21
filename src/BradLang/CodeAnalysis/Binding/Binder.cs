@@ -75,8 +75,12 @@ namespace BradLang.CodeAnalysis.Binding
                     return BindBlockStatement((BlockStatementSyntax)syntax);
                 case SyntaxKind.ForStatement:
                     return BindForStatement((ForStatementSyntax)syntax);
-                case SyntaxKind.IfStatement:
+                case SyntaxKind.MethodDeclaration:
+                    return BindMethodDeclaration((MethodDeclarationSyntax)syntax);
+                case SyntaxKind.IfStatement:                   
                     return BindIfStatement((IfStatementSyntax)syntax);
+                case SyntaxKind.ReturnStatement:
+                    return BindReturnStatement((ReturnStatementSyntax)syntax);
                 case SyntaxKind.VariableDeclarationStatement:
                     return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax);
                 case SyntaxKind.WhileStatement:
@@ -127,6 +131,29 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundForStatement(variable, lowerBound, upperBound, body);
         }
 
+        BoundStatement BindMethodDeclaration(MethodDeclarationSyntax syntax)
+        {
+            var returnType = syntax.ReturnTypeToken.Text;
+
+            // TODO: We are ignoring the specified return type for the moment and asssuming all
+            // methods return System.Int32.
+            var parameterSymbol = new VariableSymbol(syntax.ParameterNameToken.Text, typeof(int), false);
+
+            _scope = new BoundScope(_scope);
+
+            _scope.TryDeclareVariable(parameterSymbol);
+
+            var bodyStatement = BindStatement(syntax.BodyStatement);
+
+            _scope = _scope.Parent;
+
+            var methodInfo = new MethodInfo(syntax.MethodNameToken.Text, typeof(int), parameterSymbol, bodyStatement);
+
+            _scope.TryDelcareMethod(methodInfo);
+
+            return new BoundMethodDeclaration(methodInfo);
+        }
+
         BoundStatement BindIfStatement(IfStatementSyntax syntax)
         {
             var condition = BindExpression(syntax.ConditionExpression, typeof(bool));
@@ -140,6 +167,13 @@ namespace BradLang.CodeAnalysis.Binding
             }
 
             return new BoundIfStatement(condition, thenStatement, elseStatement);
+        }
+
+        BoundStatement BindReturnStatement(ReturnStatementSyntax syntax)
+        {
+            var value = BindExpression(syntax.ValueExpression);
+
+            return new BoundReturnStatement(value);
         }
 
         BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
@@ -195,6 +229,8 @@ namespace BradLang.CodeAnalysis.Binding
                     return BindLiteralExpression((LiteralExpressionSyntax)syntax);
                 case SyntaxKind.LiteralStringExpression:
                     return BindLiteralStringExpression((LiteralStringExpressionSyntax)syntax);
+                case SyntaxKind.MethodInvocation:
+                    return BindMethodInvocation((MethodInvocationExpressionSyntax)syntax);
                 case SyntaxKind.UnaryExpression:
                     return BindUnaryExpression((UnaryExpressionSyntax)syntax);
                 case SyntaxKind.BinaryExpression:
@@ -276,6 +312,18 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundLiteralExpression(value);
         }
 
+        BoundExpression BindMethodInvocation(MethodInvocationExpressionSyntax syntax)
+        {
+            var argument = BindExpression(syntax.ArgumentExpressionSyntax);
+
+            if (!_scope.TryLookupMethod(syntax.MethodNameToken.Text, out var methodInfo))
+            {
+                _diagnostics.ReportMethodNotDefinied(syntax.MethodNameToken.Span, syntax.MethodNameToken.Text);
+                return argument;
+            }
+
+            return new BoundMethodInvocationExpression(methodInfo, argument);
+        }
         BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
         {
             var boundOperand = BindExpression(syntax.Operand);

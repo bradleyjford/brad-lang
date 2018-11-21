@@ -50,20 +50,24 @@ namespace BradLang.CodeAnalysis.Syntax
 
         // Keyword
         ElseKeyword,
+        FalseKeyword,
         ForKeyword,
         IfKeyword,
         LetKeyword,
+        ReturnKeyword,
         ToKeyword,
+        TrueKeyword,
         VarKeyword,
         WhileKeyword,
-        TrueKeyword,
-        FalseKeyword,
 
         // Statements
         BlockStatement,
         ElseClause,
         ForStatement,
         IfStatement,
+        MethodDeclaration,
+        MethodInvocation,
+        ReturnStatement,
         StatementExpression,
         VariableDeclarationStatement,
         WhileStatement,

@@ -105,6 +105,8 @@ namespace BradLang.CodeAnalysis.Syntax
                     return SyntaxKind.IfKeyword;
                 case "let":
                     return SyntaxKind.LetKeyword;
+                case "return":
+                    return SyntaxKind.ReturnKeyword;
                 case "to":
                     return SyntaxKind.ToKeyword;
                 case "true":
@@ -127,6 +129,7 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.ForKeyword:
                 case SyntaxKind.IfKeyword:
                 case SyntaxKind.LetKeyword:
+                case SyntaxKind.ReturnKeyword:
                 case SyntaxKind.ToKeyword:
                 case SyntaxKind.TrueKeyword:
                 case SyntaxKind.VarKeyword:
@@ -203,6 +206,8 @@ namespace BradLang.CodeAnalysis.Syntax
                     return "for";                    
                 case SyntaxKind.IfKeyword:
                     return "if";
+                case SyntaxKind.ReturnKeyword:
+                    return "return";
                 case SyntaxKind.LetKeyword:
                     return "let";
                 case SyntaxKind.ToKeyword:

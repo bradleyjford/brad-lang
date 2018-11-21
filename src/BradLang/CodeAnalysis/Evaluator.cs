@@ -40,6 +40,10 @@ namespace BradLang.CodeAnalysis
                     EvaluateIfStatement((BoundIfStatement)statement);
                     break;
 
+                case BoundNodeKind.ReturnStatement:
+                    EvaluateReturnStatement((BoundReturnStatement)statement);
+                    break;
+
                 case BoundNodeKind.VariableDeclaration:
                     EvaluateVariableDeclaration((BoundVariableDeclaration)statement);
                     break;
@@ -52,9 +56,17 @@ namespace BradLang.CodeAnalysis
                     EvaluateExpressionStatement((BoundExpressionStatement)statement);
                     break;
 
+                case BoundNodeKind.MethodDeclaration:
+                    break;
+
                 default:
                     throw new InvalidOperationException($"Unexpected node {statement.Kind}.");
             }
+        }
+
+        void EvaluateReturnStatement(BoundReturnStatement statement)
+        {
+            _lastValue = EvaluateExpression(statement.Value);
         }
 
         void EvaluateBlockStatement(BoundBlockStatement node)
@@ -121,6 +133,9 @@ namespace BradLang.CodeAnalysis
         {
             switch (node.Kind)
             {
+                case BoundNodeKind.MethodInvocationExpression:
+                    return EvaluateMethodInvocationExpression((BoundMethodInvocationExpression)node);
+
                 case BoundNodeKind.LiteralExpression:
                     return EvaluateLiteralExpression((BoundLiteralExpression)node);
 
@@ -141,6 +156,15 @@ namespace BradLang.CodeAnalysis
             }
 
             throw new Exception($"Unexpected node {node.Kind}.");
+        }
+
+        object EvaluateMethodInvocationExpression(BoundMethodInvocationExpression expression)
+        {
+            _variables[expression.MethodInfo.Parameter] = EvaluateExpression(expression.ArgumentExpression);
+
+            EvaluateStatement(expression.MethodInfo.Body);
+
+            return _lastValue;
         }
 
         object EvaluateLiteralExpression(BoundLiteralExpression expression)
