@@ -286,6 +286,14 @@ namespace BradLang.CodeAnalysis.Syntax
             else
             {
                 left = ParseMethodInvocation();
+
+            }
+
+            if (CurrentToken.Kind.IsPostfixUnaryOperator())
+            {
+                var operatorToken = NextToken();
+
+                left = new PostfixUnaryExpressionSyntax(left, operatorToken);
             }
 
             while (true)
