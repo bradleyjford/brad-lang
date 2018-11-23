@@ -84,5 +84,11 @@ namespace BradLang.CodeAnalysis
             var message = $"Variable \"{name}\" is already declared.";
             Report(span, message);
         }
+
+        internal void ReportMethodNotDefinied(TextSpan span, string methodName)
+        {
+            var message = $"Method \"{methodName}\" is not defined.";
+            Report(span, message);        
+        }
     }
 }

@@ -83,6 +83,13 @@ namespace BradLang.CodeAnalysis.Syntax
 
         StatementSyntax ParseStatement(bool requireStatementTerminatorToken = true)
         {
+            if (CurrentToken.Kind == SyntaxKind.IdentifierToken && 
+                PeekToken(1).Kind == SyntaxKind.IdentifierToken &&
+                PeekToken(2).Kind == SyntaxKind.OpenParenthesisToken)
+            {
+                return ParseMethodDeclaration();
+            }
+
             switch (CurrentToken.Kind)
             {
                 case SyntaxKind.OpenBraceToken:
@@ -94,11 +101,33 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclarationStatement();
+                case SyntaxKind.ReturnKeyword:
+                    return ParseReturnStatement();
                 case SyntaxKind.WhileKeyword:
                     return ParseWhileStatement();
                 default:
                     return ParseExpressionStatement();
             }
+        }
+
+        StatementSyntax ParseMethodDeclaration()
+        {
+            var returnTypeToken = MatchToken(SyntaxKind.IdentifierToken);
+            var nameToken = MatchToken(SyntaxKind.IdentifierToken);
+            var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+            var parameterTypeToken = MatchToken(SyntaxKind.IdentifierToken);
+            var parameterNameToken = MatchToken(SyntaxKind.IdentifierToken);
+            var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+            var bodyStatement = ParseStatement();
+
+            return new MethodDeclarationSyntax(
+                returnTypeToken,
+                nameToken, 
+                openParenthesisToken, 
+                parameterTypeToken,
+                parameterNameToken, 
+                closeParenthesisToken, 
+                bodyStatement);
         }
 
         StatementSyntax ParseBlockStatement()
@@ -177,6 +206,15 @@ namespace BradLang.CodeAnalysis.Syntax
             return new VariableDeclarationStatementSyntax(keywordToken, identifierToken, equalsToken, initializer);
         }
 
+        StatementSyntax ParseReturnStatement()
+        {
+            var returnKeyword = MatchToken(SyntaxKind.ReturnKeyword);
+            var valueExpression = ParseExpression();
+
+            return new ReturnStatementSyntax(returnKeyword, valueExpression);
+        }
+
+
         StatementSyntax ParseWhileStatement()
         {
             var keywordToken = MatchToken(SyntaxKind.WhileKeyword);
@@ -247,7 +285,7 @@ namespace BradLang.CodeAnalysis.Syntax
             }
             else
             {
-                left = ParsePrimaryExpression();
+                left = ParseMethodInvocation();
             }
 
             while (true)
@@ -267,6 +305,22 @@ namespace BradLang.CodeAnalysis.Syntax
             }
 
             return left;
+        }
+
+        ExpressionSyntax ParseMethodInvocation()
+        {
+            if (CurrentToken.Kind == SyntaxKind.IdentifierToken &&
+                PeekToken(1).Kind == SyntaxKind.OpenParenthesisToken)
+            {
+                var methodNameIdentifier = MatchToken(SyntaxKind.IdentifierToken);
+                var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+                var argumentExpression = ParseExpression();
+                var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+
+                return new MethodInvocationExpressionSyntax(methodNameIdentifier, openParenthesisToken, argumentExpression, closeParenthesisToken);
+            }
+
+            return ParsePrimaryExpression();
         }
 
         ExpressionSyntax ParsePrimaryExpression()

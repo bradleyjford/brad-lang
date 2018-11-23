@@ -7,8 +7,10 @@ namespace BradLang.CodeAnalysis.Binding
         // Statements
         BlockStatement,
         ExpressionStatement,
-        IfStatement,
         ForStatement,
+        IfStatement,
+        MethodDeclaration,
+        ReturnStatement,
         VariableDeclaration,
         WhileStatement,
         
@@ -16,6 +18,7 @@ namespace BradLang.CodeAnalysis.Binding
         AssignmentExpression,
         BinaryExpression,
         LiteralExpression,       
+        MethodInvocationExpression,
         TernaryExpression,
         UnaryExpression,
         VariableExpression,
