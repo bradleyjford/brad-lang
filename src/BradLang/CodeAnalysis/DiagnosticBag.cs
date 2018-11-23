@@ -49,6 +49,12 @@ namespace BradLang.CodeAnalysis
             Report(span, message);
         }
 
+        internal void ReportUndefinedPostfixUnaryOperator(TextSpan span, string operatorText, Type operandType)
+        {
+            var message = $"Postfix unary operator '{operatorText}' is not defined for type {operandType}.";
+            Report(span, message);
+        }
+
         internal void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftType, Type rightType)
         {
             var message = $"Binary operator '{operatorText}' is not defined for types {leftType} and {rightType}.";

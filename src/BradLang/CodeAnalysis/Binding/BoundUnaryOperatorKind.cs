@@ -6,6 +6,10 @@ namespace BradLang.CodeAnalysis.Binding
     {
         Identity,
         Negation,
-        LogicalNegation
+        LogicalNegation,
+        PrefixIncrement,
+        PrefixDecrement,
+        PostfixIncrement,
+        PostfixDecrement,
     }
 }

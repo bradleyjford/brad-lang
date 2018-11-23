@@ -198,6 +198,54 @@ namespace BradLang.CodeAnalysis
                     return (int)operand;
                 case BoundUnaryOperatorKind.LogicalNegation:
                     return !(bool)operand;
+                case BoundUnaryOperatorKind.PrefixIncrement:
+                    var prefixIncrementValue = (int)operand + 1;
+
+                    if (expression.Operand.Kind == BoundNodeKind.VariableExpression)
+                    {
+                        var variableExpression = (BoundVariableExpression)expression.Operand;
+
+                        _variables[variableExpression.Variable] = prefixIncrementValue;
+                    }
+
+                    return prefixIncrementValue;
+                case BoundUnaryOperatorKind.PrefixDecrement:
+                    var prefixDecrementValue = (int)operand - 1;
+
+                    if (expression.Operand.Kind == BoundNodeKind.VariableExpression)
+                    {
+                        var variableExpression = (BoundVariableExpression)expression.Operand;
+
+                        _variables[variableExpression.Variable] = prefixDecrementValue;
+                    }
+
+                    return prefixDecrementValue;
+                case BoundUnaryOperatorKind.PostfixIncrement:
+                    var postfixIncrementValue = (int)operand + 1;
+
+                    if (expression.Operand.Kind == BoundNodeKind.VariableExpression)
+                    {
+                        var variableExpression = (BoundVariableExpression)expression.Operand;
+
+                        _variables[variableExpression.Variable] = postfixIncrementValue;
+
+                        return operand;
+                    }
+
+                    return postfixIncrementValue;
+                case BoundUnaryOperatorKind.PostfixDecrement:
+                    var postfixDecrementValue = (int)operand - 1;
+
+                    if (expression.Operand.Kind == BoundNodeKind.VariableExpression)
+                    {
+                        var variableExpression = (BoundVariableExpression)expression.Operand;
+
+                        _variables[variableExpression.Variable] = postfixDecrementValue;
+
+                        return operand;
+                    }
+
+                    return postfixDecrementValue;                    
                 default:
                     throw new Exception($"Unsupported unary operator {expression.Operator.Kind}.");
             }

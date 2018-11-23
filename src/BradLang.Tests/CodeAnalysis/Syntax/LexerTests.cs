@@ -183,6 +183,12 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             if (kind1 == SyntaxKind.AmpersandToken && kind2 == SyntaxKind.AmpersandAmpersandToken)
                 return false;
 
+            if (kind1 == SyntaxKind.PlusToken && kind2 == SyntaxKind.PlusToken)
+                return false;
+
+            if (kind1 == SyntaxKind.MinusToken && kind2 == SyntaxKind.MinusToken)
+                return false;
+
             return true;
         }
 

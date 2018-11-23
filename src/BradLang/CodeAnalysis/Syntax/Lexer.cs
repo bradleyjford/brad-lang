@@ -126,21 +126,33 @@ namespace BradLang.CodeAnalysis.Syntax
                     }
 
                     break;
-                case ':':
-                    _position++;
-                    _kind = SyntaxKind.ColonToken;
-                    break;
-                case '?':
-                    _position++;
-                    _kind = SyntaxKind.QuestionMarkToken;
-                    break;
                 case '+':
                     _position++;
-                    _kind = SyntaxKind.PlusToken;
+
+                    if (Current == '+')
+                    {
+                        _position++;
+                        _kind = SyntaxKind.PlusPlusToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.PlusToken;
+                    }
+
                     break;
                 case '-':
                     _position++;
-                    _kind = SyntaxKind.MinusToken;
+
+                    if (Current == '-')
+                    {
+                        _position++;
+                        _kind = SyntaxKind.MinusMinusToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.MinusToken;
+                    }
+
                     break;
                 case '*':
                     _position++;
@@ -149,6 +161,14 @@ namespace BradLang.CodeAnalysis.Syntax
                 case '/':
                     _position++;
                     _kind = SyntaxKind.SlashToken;
+                    break;
+                case ':':
+                    _position++;
+                    _kind = SyntaxKind.ColonToken;
+                    break;
+                case '?':
+                    _position++;
+                    _kind = SyntaxKind.QuestionMarkToken;
                     break;
                 case '(':
                     _position++;

@@ -288,6 +288,13 @@ namespace BradLang.CodeAnalysis.Syntax
                 left = ParseMethodInvocation();
             }
 
+            if (CurrentToken.Kind.IsPostfixUnaryOperator())
+            {
+                var operatorToken = NextToken();
+
+                left = new PostfixUnaryExpressionSyntax(left, operatorToken);
+            }
+
             while (true)
             {
                 var precedence = CurrentToken.Kind.GetBinaryOperatorPrecedence();
