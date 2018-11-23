@@ -5,10 +5,27 @@ namespace BradLang.CodeAnalysis.Syntax
 {
     public static class SyntaxFacts
     {
+        public static bool IsPostfixUnaryOperator(this SyntaxKind kind)
+        {
+            switch (kind)
+            {
+                case SyntaxKind.PlusPlusToken:
+                case SyntaxKind.MinusMinusToken:
+                    return true;
+
+                default: 
+                    return false;
+            }
+        }
+
         public static int GetUnaryOperatorPrecedence(this SyntaxKind kind)
         {
             switch (kind)
             {
+                case SyntaxKind.PlusPlusToken:
+                case SyntaxKind.MinusMinusToken:
+                    return 11;
+
                 case SyntaxKind.BangToken:
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
@@ -168,8 +185,12 @@ namespace BradLang.CodeAnalysis.Syntax
 
                 case SyntaxKind.PlusToken:
                     return "+";
+                case SyntaxKind.PlusPlusToken:
+                    return "++";
                 case SyntaxKind.MinusToken:
                     return "-";
+                case SyntaxKind.MinusMinusToken:
+                    return "--";
                 case SyntaxKind.StarToken:
                     return "*";
                 case SyntaxKind.SlashToken:

@@ -197,6 +197,8 @@ namespace BradLang.CodeAnalysis.Binding
                     return BindLiteralStringExpression((LiteralStringExpressionSyntax)syntax);
                 case SyntaxKind.UnaryExpression:
                     return BindUnaryExpression((UnaryExpressionSyntax)syntax);
+                case SyntaxKind.PostfixUnaryExpression:
+                    return BindPostfixUnaryExpression((PostfixUnaryExpressionSyntax)syntax);
                 case SyntaxKind.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionSyntax)syntax);
                 case SyntaxKind.TernaryExpression:
@@ -284,6 +286,21 @@ namespace BradLang.CodeAnalysis.Binding
             if (boundOperator == null)
             {
                 _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
+
+                return boundOperand;
+            }
+
+            return new BoundUnaryExpression(boundOperator, boundOperand);
+        }
+
+        BoundExpression BindPostfixUnaryExpression(PostfixUnaryExpressionSyntax syntax)
+        {
+            var boundOperand = BindExpression(syntax.Operand);
+            var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
+
+            if (boundOperator == null)
+            {
+                _diagnostics.ReportUndefinedPostfixUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
 
                 return boundOperand;
             }

@@ -12,7 +12,9 @@ namespace BradLang.CodeAnalysis.Syntax
         NumberToken,
 
         PlusToken,
+        PlusPlusToken,
         MinusToken,
+        MinusMinusToken,
         StarToken,
         SlashToken,
         PercentToken,
@@ -77,5 +79,6 @@ namespace BradLang.CodeAnalysis.Syntax
         ParenthesizedExpression,
         TernaryExpression,
         UnaryExpression,
+        PostfixUnaryExpression,
     }
 }

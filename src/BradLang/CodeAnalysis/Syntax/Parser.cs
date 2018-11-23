@@ -250,6 +250,13 @@ namespace BradLang.CodeAnalysis.Syntax
                 left = ParsePrimaryExpression();
             }
 
+            if (CurrentToken.Kind.IsPostfixUnaryOperator())
+            {
+                var operatorToken = NextToken();
+
+                left = new PostfixUnaryExpressionSyntax(left, operatorToken);
+            }
+
             while (true)
             {
                 var precedence = CurrentToken.Kind.GetBinaryOperatorPrecedence();
