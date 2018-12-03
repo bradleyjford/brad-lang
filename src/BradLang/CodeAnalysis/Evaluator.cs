@@ -221,9 +221,9 @@ namespace BradLang.CodeAnalysis
                         return operand;
                     }
 
-		    return postfixDecrementValue;
-		case BoundUnaryOperatorKind.OnesCompliment:
-		    return ~(int)operand;
+                    return postfixDecrementValue; 
+                case BoundUnaryOperatorKind.OnesCompliment:
+                    return ~(int)operand;
                 default:
                     throw new Exception($"Unsupported unary operator {expression.Operator.Kind}.");
             }
@@ -272,12 +272,12 @@ namespace BradLang.CodeAnalysis
                     return (bool)left && (bool)right;
                 case BoundBinaryOperatorKind.Modulus:
                     return (int)left % (int)right;
-		case BoundBinaryOperatorKind.BitwiseAnd:
-		    return (int)left & (int)right;
-		case BoundBinaryOperatorKind.BitwiseOr:
-		    return (int)left | (int)right;
-		case BoundBinaryOperatorKind.BitwiseXor:
-		    return (int)left ^ (int)right;
+                case BoundBinaryOperatorKind.BitwiseAnd:
+                    return (int)left & (int)right;
+                case BoundBinaryOperatorKind.BitwiseOr:
+                    return (int)left | (int)right;
+                case BoundBinaryOperatorKind.BitwiseXor:
+                    return (int)left ^ (int)right;
                 default:
                     throw new Exception($"Unexpected binary operator {expression.Operator.Kind}.");
             }
