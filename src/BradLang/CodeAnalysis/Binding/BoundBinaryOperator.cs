@@ -17,6 +17,10 @@ namespace BradLang.CodeAnalysis.Binding
             new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, typeof(int)),
             new BoundBinaryOperator(SyntaxKind.PercentToken, BoundBinaryOperatorKind.Modulus, typeof(int)),
 
+	    new BoundBinaryOperator(SyntaxKind.PipeToken, BoundBinaryOperatorKind.BitwiseOr, typeof(int)),
+	    new BoundBinaryOperator(SyntaxKind.AmpersandToken, BoundBinaryOperatorKind.BitwiseAnd, typeof(int)),
+	    new BoundBinaryOperator(SyntaxKind.HatToken, BoundBinaryOperatorKind.BitwiseXor, typeof(int)),
+
             new BoundBinaryOperator(SyntaxKind.LessThanToken, BoundBinaryOperatorKind.LessThan, typeof(int), typeof(bool)),
             new BoundBinaryOperator(SyntaxKind.LessThanEqualsToken, BoundBinaryOperatorKind.LessThanEquals, typeof(int), typeof(bool)),
             new BoundBinaryOperator(SyntaxKind.GreaterThanToken, BoundBinaryOperatorKind.GreaterThan, typeof(int), typeof(bool)),

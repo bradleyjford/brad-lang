@@ -18,6 +18,9 @@ namespace BradLang.CodeAnalysis.Binding
         NotEquals,
         LogicalAnd,
         LogicalOr,
-        Modulus
+	Modulus,
+	BitwiseOr,
+	BitwiseAnd,
+	BitwiseXor
     }
 }
