@@ -43,6 +43,9 @@ namespace BradLang.CodeAnalysis.Syntax
         PipeToken,
         PipePipeToken,
 
+        TildeToken,
+        HatToken,
+
         IdentifierToken,
 
         StringToken,

@@ -11,5 +11,6 @@ namespace BradLang.CodeAnalysis.Binding
         PrefixDecrement,
         PostfixIncrement,
         PostfixDecrement,
+        OnesCompliment,
     }
 }

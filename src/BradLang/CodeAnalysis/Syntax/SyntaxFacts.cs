@@ -24,11 +24,14 @@ namespace BradLang.CodeAnalysis.Syntax
             {
                 case SyntaxKind.PlusPlusToken:
                 case SyntaxKind.MinusMinusToken:
-                    return 11;
+                    return 12;
 
                 case SyntaxKind.BangToken:
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
+                    return 11;
+
+                case SyntaxKind.TildeToken:
                     return 10;
 
                 default:
@@ -59,10 +62,13 @@ namespace BradLang.CodeAnalysis.Syntax
                 case SyntaxKind.BangEqualsToken:
                     return 4;
 
+                case SyntaxKind.AmpersandToken:
                 case SyntaxKind.AmpersandAmpersandToken:
                     return 3;
 
+                case SyntaxKind.PipeToken:
                 case SyntaxKind.PipePipeToken:
+                case SyntaxKind.HatToken:
                     return 2;
 
                 default:
@@ -218,6 +224,11 @@ namespace BradLang.CodeAnalysis.Syntax
                     return ">";
                 case SyntaxKind.GreaterThanEqualsToken:
                     return ">=";
+
+                case SyntaxKind.HatToken:
+                    return "^";
+                case SyntaxKind.TildeToken:
+                    return "~";
 
                 case SyntaxKind.ElseKeyword:
                     return "else";

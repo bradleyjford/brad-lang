@@ -190,6 +190,14 @@ namespace BradLang.CodeAnalysis.Syntax
                     _position++;
                     _kind = SyntaxKind.PercentToken;
                     break;
+                case '~':
+                    _position++;
+                    _kind = SyntaxKind.TildeToken;
+                    break;
+                case '^':
+                    _position++;
+                    _kind = SyntaxKind.HatToken;
+                    break;
                 default:
                     var currentChar = Current;
 
