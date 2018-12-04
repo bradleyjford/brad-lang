@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -63,6 +64,13 @@ namespace BradLang.CodeAnalysis
             var result = evaluator.Evaluate();
 
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, result);
+        }
+
+        public void EmitTree(TextWriter writer)
+        {
+            var isConsole = writer == Console.Out;
+
+            BoundTreeDiagnosticWriter.Write(writer, GlobalScope.Statement);
         }
     }
 }

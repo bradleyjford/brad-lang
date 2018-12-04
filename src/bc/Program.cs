@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using BradLang.CodeAnalysis;
@@ -14,6 +15,9 @@ namespace BradLang.CommandLine
 
         static void Main()
         {
+            var showTree = false;
+            var showProgram = false;
+
             var variables = new Dictionary<VariableSymbol, object>();
 
             var input = new StringBuilder();
@@ -24,11 +28,11 @@ namespace BradLang.CommandLine
 
                 if (input.Length == 0)
                 {
-                    Console.Write("> ");
+                    Console.Write("» ");
                 }
                 else
                 {
-                    Console.Write("| ");
+                    Console.Write("· ");
                 }
 
                 Console.ResetColor();
@@ -42,7 +46,7 @@ namespace BradLang.CommandLine
                         return;
                     }
 
-                    Evaluate(input.ToString(), variables);
+                    Evaluate(input.ToString(), variables, showTree, showProgram);
 
                     input.Clear();
                 }
@@ -54,16 +58,15 @@ namespace BradLang.CommandLine
                     }
                     else if (line == "#variables")
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.WriteLine();
-
-                        foreach (var variable in variables)
-                        {
-                            Console.WriteLine($"    {variable.Key.Name} = {variable.Value}");
-                        }
-
-                        Console.WriteLine();
-                        Console.ResetColor();
+                        WriteVariables(variables);
+                    }
+                    else if (line == "#showTree")
+                    {
+                        showTree = !showTree;
+                    }
+                    else if (line == "#showProgram")
+                    {
+                        showProgram = !showProgram;
                     }
                     else
                     {
@@ -73,15 +76,18 @@ namespace BradLang.CommandLine
             }
         }
 
-        static void Evaluate(string text, IDictionary<VariableSymbol, object> variables)
+        static void Evaluate(string text, IDictionary<VariableSymbol, object> variables, bool showTree, bool showProgram)
         {
             var sourceText = SourceText.From(text);
             var syntaxTree = SyntaxTree.Parse(sourceText);
 
-            SyntaxNodeDiagnosticWriter.Write(Console.Out, syntaxTree.Root);
+            if (showTree)
+            {
+                SyntaxNodeDiagnosticWriter.Write(Console.Out, syntaxTree.Root);
+            }
 
-            var compilation = _compilation == null 
-                ? new Compilation(syntaxTree) 
+            var compilation = _compilation == null
+                ? new Compilation(syntaxTree)
                 : _compilation.ContinueWith(syntaxTree);
 
             try
@@ -90,6 +96,11 @@ namespace BradLang.CommandLine
 
                 if (!result.Diagnostics.Any())
                 {
+                    if (showProgram)
+                    {
+                        compilation.EmitTree(Console.Out);
+                    }
+
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"= {result.Value}");
                     Console.ResetColor();
@@ -98,35 +109,7 @@ namespace BradLang.CommandLine
                 }
                 else
                 {
-                    Console.WriteLine();
-
-                    foreach (var diagnostic in result.Diagnostics)
-                    {
-                        var lineIndex = sourceText.GetLineIndex(diagnostic.Span.Start);
-                        var line = sourceText.Lines[lineIndex];
-                        var columnNumber = diagnostic.Span.Start - line.Start + 1;
-
-                        var prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.Span.Start);
-                        var suffixSpan = TextSpan.FromBounds(diagnostic.Span.End, line.End);
-
-                        var prefix = sourceText.ToString(prefixSpan.Start, prefixSpan.Length);
-                        var error = sourceText.ToString(diagnostic.Span.Start, diagnostic.Span.Length);
-                        var suffix = sourceText.ToString(suffixSpan.Start, suffixSpan.Length);
-
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.Write($"({lineIndex + 1}, {columnNumber}): ");
-                        Console.WriteLine(diagnostic);
-
-                        Console.ResetColor();
-                        Console.Write("    ");
-                        Console.Write(prefix);
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.Write(error);
-                        Console.ResetColor();
-                        Console.WriteLine(suffix);
-                    }
-
-                    Console.WriteLine();
+                    WriteDiagnostics(sourceText, result.Diagnostics);
                 }
             }
             catch (Exception e)
@@ -135,6 +118,54 @@ namespace BradLang.CommandLine
                 Console.WriteLine(e);
                 Console.ResetColor();
             }
+        }
+
+        static void WriteVariables(Dictionary<VariableSymbol, object> variables)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine();
+
+            foreach (var variable in variables)
+            {
+                Console.WriteLine($"    {variable.Key.Name} = {variable.Value}");
+            }
+
+            Console.WriteLine();
+            Console.ResetColor();
+        }
+
+        static void WriteDiagnostics(SourceText sourceText, ImmutableArray<Diagnostic> diagnostics)
+        {
+            Console.WriteLine();
+
+            foreach (var diagnostic in diagnostics)
+            {
+                var lineIndex = sourceText.GetLineIndex(diagnostic.Span.Start);
+                var line = sourceText.Lines[lineIndex];
+                var columnNumber = diagnostic.Span.Start - line.Start + 1;
+
+                var prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.Span.Start);
+                var suffixSpan = TextSpan.FromBounds(diagnostic.Span.End, line.End);
+
+                var prefix = sourceText.ToString(prefixSpan.Start, prefixSpan.Length);
+                var error = sourceText.ToString(diagnostic.Span.Start, diagnostic.Span.Length);
+                var suffix = sourceText.ToString(suffixSpan.Start, suffixSpan.Length);
+
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.Write($"({lineIndex + 1}, {columnNumber}): ");
+                Console.WriteLine(diagnostic);
+
+                Console.ResetColor();
+                Console.Write("    ");
+                Console.Write(prefix);
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.Write(error);
+                Console.ResetColor();
+                Console.WriteLine(suffix);
+            }
+
+            Console.WriteLine();
+
         }
     }
 }

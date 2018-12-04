@@ -5,8 +5,21 @@ namespace BradLang.CodeAnalysis.Binding
 {
     sealed class BoundBinaryOperator
     {
-        static readonly BoundBinaryOperator[] _operators =
+        public static BoundBinaryOperator Bind(SyntaxKind syntaxKind, Type leftType, Type rightType)
         {
+            foreach (var op in _operators)
+            {
+                if (op.SyntaxKind == syntaxKind && op.LeftType == leftType && op.RightType == rightType)
+                {
+                    return op;
+                }
+            }
+
+            return null;
+        }
+
+        static readonly BoundBinaryOperator[] _operators =
+{
             new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, typeof(string)),
             new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, typeof(string), typeof(bool)),
             new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, typeof(string), typeof(bool)),
@@ -34,13 +47,11 @@ namespace BradLang.CodeAnalysis.Binding
         BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type type)
             : this(syntaxKind, kind, type, type, type)
         {
-
         }
 
         BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type operandType, Type resultType)
             : this(syntaxKind, kind, operandType, operandType, resultType)
         {
-
         }
 
         BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type leftType, Type rightType, Type resultType)
@@ -49,7 +60,7 @@ namespace BradLang.CodeAnalysis.Binding
             Kind = kind;
             LeftType = leftType;
             RightType = rightType;
-            
+
             Type = resultType;
         }
 
@@ -58,19 +69,6 @@ namespace BradLang.CodeAnalysis.Binding
         public Type LeftType { get; }
         public Type RightType { get; }
         public Type Type { get; }
-
-        public static BoundBinaryOperator Bind(SyntaxKind syntaxKind, Type leftType, Type rightType)
-        {
-            foreach (var op in _operators)
-            {
-                if (op.SyntaxKind == syntaxKind && op.LeftType == leftType && op.RightType == rightType)
-                {
-                    return op;
-                }
-            }
-
-            return null;
-        }
     }
 }
 

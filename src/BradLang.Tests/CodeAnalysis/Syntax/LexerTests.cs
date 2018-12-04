@@ -37,6 +37,14 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             Assert.Equal(text, tokens[0].Text);
         }
 
+        public static IEnumerable<object[]> GetSyntaxTokensData()
+        {
+            foreach (var t in GetSyntaxTokens().Concat(GetSeparatorSyntaxTokens()))
+            {
+                yield return new object[] { t.kind, t.text };
+            }
+        }
+
         [Theory]
         [MemberData(nameof(GetSyntaxTokenPairsData))]
         public void Lexer_Lex_CanParseTokenPairs(SyntaxKind kind1, string text1, SyntaxKind kind2, string text2)
@@ -49,6 +57,14 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             Assert.Equal(text1, tokens[0].Text);
             Assert.Equal(kind2, tokens[1].Kind);
             Assert.Equal(text2, tokens[1].Text);
+        }
+
+        public static IEnumerable<object[]> GetSyntaxTokenPairsData()
+        {
+            foreach (var t in GetSyntaxTokenPairs())
+            {
+                yield return new object[] { t.kind1, t.text1, t.kind2, t.text2 };
+            }
         }
 
         [Theory]
@@ -68,22 +84,6 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             Assert.Equal(SeparatorText, tokens[1].Text);
             Assert.Equal(kind2, tokens[2].Kind);
             Assert.Equal(text2, tokens[2].Text);
-        }
-
-        public static IEnumerable<object[]> GetSyntaxTokensData()
-        {
-            foreach (var t in GetSyntaxTokens().Concat(GetSeparatorSyntaxTokens()))
-            {
-                yield return new object[] { t.kind, t.text };
-            }
-        }
-
-        public static IEnumerable<object[]> GetSyntaxTokenPairsData()
-        {
-            foreach (var t in GetSyntaxTokenPairs())
-            {
-                yield return new object[] { t.kind1, t.text1, t.kind2, t.text2 };
-            }
         }
 
         public static IEnumerable<object[]> GetSyntaxTokenPairsWithSeparatorsData()
@@ -227,9 +227,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
         {
             return new[] {
                 (SyntaxKind.WhiteSpaceToken, " "),
-                (SyntaxKind.WhiteSpaceToken, "  "),
                 (SyntaxKind.WhiteSpaceToken, "\t"),
-                (SyntaxKind.WhiteSpaceToken, "\t\t"),
                 (SyntaxKind.WhiteSpaceToken, "\r"),
                 (SyntaxKind.WhiteSpaceToken, "\n"),
                 (SyntaxKind.WhiteSpaceToken, "\r\n"),
