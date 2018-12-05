@@ -9,18 +9,18 @@ namespace BradLang.CodeAnalysis.Binding
         ExpressionStatement,
         ForStatement,
         IfStatement,
-        MethodDeclaration,
-        ReturnStatement,
         VariableDeclaration,
         WhileStatement,
-        
+
         // Expressions
         AssignmentExpression,
         BinaryExpression,
-        LiteralExpression,       
-        MethodInvocationExpression,
+        LiteralExpression,
         TernaryExpression,
         UnaryExpression,
         VariableExpression,
+        Label,
+        GotoStatement,
+        ConditionalGotoStatement,
     }
 }

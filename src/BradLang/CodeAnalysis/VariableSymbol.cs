@@ -14,5 +14,7 @@ namespace BradLang.CodeAnalysis
         public string Name { get; }
         public Type Type { get; }
         public bool IsReadOnly { get; }
+
+        public override string ToString() => Name;
     }
 }

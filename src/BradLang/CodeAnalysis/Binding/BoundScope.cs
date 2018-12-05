@@ -5,7 +5,6 @@ namespace BradLang.CodeAnalysis.Binding
 {
     sealed class BoundScope
     {
-        readonly Dictionary<string, MethodInfo> _methods = new Dictionary<string, MethodInfo>();
         readonly Dictionary<string, VariableSymbol> _variables = new Dictionary<string, VariableSymbol>();
 
         public BoundScope(BoundScope parent)
@@ -14,36 +13,6 @@ namespace BradLang.CodeAnalysis.Binding
         }
 
         public BoundScope Parent { get; }
-
-        public bool TryDelcareMethod(MethodInfo method)
-        {
-            if (_methods.ContainsKey(method.Name))
-            {
-                return false;
-            }
-
-            _methods.Add(method.Name, method);
-
-            return true;
-        }
-
-        public bool TryLookupMethod(string name, out MethodInfo method)
-        {
-            if (_methods.ContainsKey(name))
-            {
-                method = _methods[name];
-                return true;
-            }
-
-            if (Parent != null && Parent.TryLookupMethod(name, out method))
-            {
-                return true;
-            }
-
-            method = null;
-            
-            return false;
-        }
 
         public bool TryDeclareVariable(VariableSymbol variable)
         {
