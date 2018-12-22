@@ -142,6 +142,7 @@ namespace BradLang.CodeAnalysis.Binding
         protected virtual BoundStatement RewriteLabelStatement(BoundLabelStatement node)
         {
             return node;
+        }
 
         protected virtual BoundStatement RewriteGotoStatement(BoundGotoStatement node)
         {
@@ -159,6 +160,7 @@ namespace BradLang.CodeAnalysis.Binding
 
             return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfFalse);
         }
+        
         public virtual BoundExpression RewriteExpression(BoundExpression node)
         {
             switch (node.Kind)
