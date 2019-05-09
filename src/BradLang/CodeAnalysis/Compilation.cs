@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using BradLang.CodeAnalysis.Binding;
+using BradLang.CodeAnalysis.Lowering;
+using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis
 {
     public sealed class Compilation
     {
-        BoundGlobalScope _globalScope;
+        private BoundGlobalScope _globalScope;
 
         public Compilation(SyntaxTree syntaxTree)
             : this(syntaxTree, null)
         {
         }
 
-        Compilation(SyntaxTree syntaxTree, Compilation previous)
+        private Compilation(SyntaxTree syntaxTree, Compilation previous)
         {
             SyntaxTree = syntaxTree;
             Previous = previous;
@@ -33,7 +34,7 @@ namespace BradLang.CodeAnalysis
             return new Compilation(syntaxTree, this);
         }
 
-        BoundGlobalScope GlobalScope 
+        private BoundGlobalScope GlobalScope 
         {
             get
             {
@@ -59,7 +60,9 @@ namespace BradLang.CodeAnalysis
                 return new EvaluationResult(diagnostics, null);
             }
 
-            var evaluator = new Evaluator(globalScope.Statement, variables);
+            var statement = GetStatement();
+
+            var evaluator = new Evaluator(statement, variables);
 
             var result = evaluator.Evaluate();
 
@@ -68,9 +71,14 @@ namespace BradLang.CodeAnalysis
 
         public void EmitTree(TextWriter writer)
         {
-            var isConsole = writer == Console.Out;
+            var statement = GetStatement();
 
-            BoundTreeDiagnosticWriter.Write(writer, GlobalScope.Statement);
+            BoundTreeDiagnosticWriter.Write(writer, statement);
+        }
+
+        private BoundBlockStatement GetStatement()
+        {
+            return Lowerer.Lower(GlobalScope.Statement);
         }
     }
 }

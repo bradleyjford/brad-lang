@@ -4,7 +4,7 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    abstract class BoundTreeRewriter
+    internal abstract class BoundTreeRewriter
     {
         public virtual BoundStatement RewriteStatement(BoundStatement node)
         {
@@ -19,10 +19,10 @@ namespace BradLang.CodeAnalysis.Binding
                 case BoundNodeKind.VariableDeclaration:
                     return RewriteVariableDeclaration((BoundVariableDeclaration)node);
                 case BoundNodeKind.WhileStatement:
-                    return BoundWhileStatement((BoundWhileStatement)node);
+                    return RewriteWhileStatement((BoundWhileStatement)node);
                 case BoundNodeKind.ExpressionStatement:
                     return RewriteExpressionStatement((BoundExpressionStatement)node);
-                case BoundNodeKind.Label:
+                case BoundNodeKind.LabelStatement:
                     return RewriteLabelStatement((BoundLabelStatement)node);
                 case BoundNodeKind.GotoStatement:
                     return RewriteGotoStatement((BoundGotoStatement)node);
@@ -113,7 +113,7 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundVariableDeclaration(node.VariableSymbol, initializer);
         }
 
-        protected virtual BoundStatement BoundWhileStatement(BoundWhileStatement node)
+        protected virtual BoundStatement RewriteWhileStatement(BoundWhileStatement node)
         {
             var condition = RewriteExpression(node.Condition);
             var body = RewriteStatement(node.Body);
@@ -158,7 +158,7 @@ namespace BradLang.CodeAnalysis.Binding
                 return node;
             }
 
-            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfFalse);
+            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfTrue);
         }
         
         public virtual BoundExpression RewriteExpression(BoundExpression node)

@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using BradLang.CodeAnalysis;
+using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Syntax;
 using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CommandLine
 {
-    sealed class BradLangRepl : Repl
+    internal sealed class BradLangRepl : Repl
     {
         private Compilation _compilation;
-        private Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
+        private readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
         private bool _showTree;
         private bool _showProgram;
 
@@ -23,7 +24,7 @@ namespace BradLang.CommandLine
             }
             else if (command == "#variables")
             {
-                WriteVariables(variables);
+                WriteVariables(_variables);
             }
             else if (command == "#showTree")
             {
@@ -41,7 +42,7 @@ namespace BradLang.CommandLine
             }
         }
 
-        static void WriteVariables(Dictionary<VariableSymbol, object> variables)
+        private static void WriteVariables(Dictionary<VariableSymbol, object> variables)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine();
@@ -71,7 +72,7 @@ namespace BradLang.CommandLine
 
             try
             {
-                var result = compilation.Evaluate(variables);
+                var result = compilation.Evaluate(_variables);
 
                 if (!result.Diagnostics.Any())
                 {
@@ -120,10 +121,23 @@ namespace BradLang.CommandLine
             var syntaxTree = SyntaxTree.Parse(text);
 
             // Use Statement because we need to exclude the EndOfFileToken.
-            //if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
-            //    return false;
+            if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
+            {
+                return false;
+            }
 
             return true;
+        }
+
+        private static SyntaxToken GetLastToken(SyntaxNode node)
+        {
+            if (node is SyntaxToken token)
+            {
+                return token;
+            }
+
+            // A syntax node should always contain at least 1 token.
+            return GetLastToken(node.GetChildren().Last());
         }
 
         protected override void RenderLine(string line)
@@ -133,15 +147,25 @@ namespace BradLang.CommandLine
             foreach (var token in tokens)
             {
                 if (token.Kind.IsKeyword())
+                {
                     Console.ForegroundColor = ConsoleColor.Blue;
+                }
                 else if (token.Kind.IsIdentifier())
+                {
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
+                }
                 else if (token.Kind.IsNumber())
+                {
                     Console.ForegroundColor = ConsoleColor.Cyan;
+                }
                 else if (token.Kind.IsString())
+                {
                     Console.ForegroundColor = ConsoleColor.Magenta;
+                }
                 else
+                {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
+                }
 
                 Console.Write(token.Text);
 
@@ -149,7 +173,7 @@ namespace BradLang.CommandLine
             }
         }
 
-        static void WriteDiagnostics(SourceText sourceText, ImmutableArray<Diagnostic> diagnostics)
+        private static void WriteDiagnostics(SourceText sourceText, ImmutableArray<Diagnostic> diagnostics)
         {
             Console.WriteLine();
 

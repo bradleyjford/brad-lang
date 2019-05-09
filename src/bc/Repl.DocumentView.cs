@@ -5,7 +5,7 @@ namespace BradLang.CommandLine
 {
     partial class Repl
     {
-        class DocumentView
+        private class DocumentView
         {
             private readonly ObservableCollection<string> _document;
             private readonly Action<string> _lineRenderer;
@@ -101,9 +101,9 @@ namespace BradLang.CommandLine
 
                 _renderedLineCount = lineCount;
 
-                UpdateCursorPosition();
-
                 Console.CursorVisible = true;
+
+                UpdateCursorPosition();
             }
         }
     }

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    sealed class BoundScope
+    internal sealed class BoundScope
     {
-        readonly Dictionary<string, VariableSymbol> _variables = new Dictionary<string, VariableSymbol>();
+        private readonly Dictionary<string, VariableSymbol> _variables = new Dictionary<string, VariableSymbol>();
 
         public BoundScope(BoundScope parent)
         {

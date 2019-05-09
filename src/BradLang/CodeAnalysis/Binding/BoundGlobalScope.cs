@@ -1,9 +1,10 @@
 using System.Collections.Immutable;
+using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    sealed class BoundGlobalScope
+    internal sealed class BoundGlobalScope
     {
         public BoundGlobalScope(
             BoundGlobalScope previous,

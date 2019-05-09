@@ -1,123 +1,163 @@
 using System;
 using System.Collections.Generic;
 using BradLang.CodeAnalysis.Binding;
+using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis
 {
-    sealed class Evaluator
+    internal sealed class Evaluator
     {
-        readonly BoundStatement _root;
-        readonly IDictionary<VariableSymbol, object> _variables;
+        private readonly BoundBlockStatement _root;
+        private readonly IDictionary<VariableSymbol, object> _variables;
+        private readonly IDictionary<BoundLabel, int> _labels = new Dictionary<BoundLabel, int>();
 
-        object _lastValue;
+        private object _lastValue;
 
-        public Evaluator(BoundStatement root, IDictionary<VariableSymbol, object> variables)
+        public Evaluator(BoundBlockStatement root, IDictionary<VariableSymbol, object> variables)
         {
             _root = root;
             _variables = variables;
+
+            IndexLabels();
+        }
+
+        private void IndexLabels()
+        {
+            for (var i = 0; i < _root.Statements.Length; i++)
+            {
+                if (_root.Statements[i] is BoundLabelStatement l)
+                {
+                    _labels.Add(l.Label, i + 1);
+                }
+            }
         }
 
         public object Evaluate()
         {
-            EvaluateStatement(_root);
+            var ip = 0;
+
+            while (ip < _root.Statements.Length)
+            {
+                var statement = _root.Statements[ip];
+
+                switch (statement.Kind)
+                {
+                    case BoundNodeKind.BlockStatement:
+                        EvaluateBlockStatement((BoundBlockStatement)statement);
+                        ip++;
+
+                        break;
+
+                    case BoundNodeKind.GotoStatement:
+                        var label = ((BoundGotoStatement)statement).Label;
+
+                        ip = _labels[label];
+
+                        break;
+
+                    case BoundNodeKind.ConditionalGotoStatement:
+                        var conditionalGoto = (BoundConditionalGotoStatement)statement;
+
+                        var condition = (bool)EvaluateExpression(conditionalGoto.Condition);
+
+                        if (condition == conditionalGoto.JumpIfTrue)
+                        {
+                            ip = _labels[conditionalGoto.Label];
+                        }
+                        else
+                        {
+                            ip++;
+                        }
+
+                        break;
+
+                    case BoundNodeKind.VariableDeclaration:
+                        EvaluateVariableDeclaration((BoundVariableDeclaration)statement);
+                        ip++;
+
+                        break;
+
+                    case BoundNodeKind.ExpressionStatement:
+                        EvaluateExpressionStatement((BoundExpressionStatement)statement);
+                        ip++;
+
+                        break;
+
+                    case BoundNodeKind.LabelStatement:
+                        ip++;
+
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Unexpected node {statement.Kind}.");
+                }
+
+            }
 
             return _lastValue;
         }
 
-        void EvaluateStatement(BoundStatement statement)
-        {
-            switch (statement.Kind)
-            {
-                case BoundNodeKind.BlockStatement:
-                    EvaluateBlockStatement((BoundBlockStatement)statement);
-                    break;
-
-                case BoundNodeKind.ForStatement:
-                    EvaluateForStatement((BoundForStatement)statement);
-                    break;
-
-                case BoundNodeKind.IfStatement:
-                    EvaluateIfStatement((BoundIfStatement)statement);
-                    break;
-
-                case BoundNodeKind.VariableDeclaration:
-                    EvaluateVariableDeclaration((BoundVariableDeclaration)statement);
-                    break;
-
-                case BoundNodeKind.WhileStatement:
-                    EvaluateWhileStatement((BoundWhileStatement)statement);
-                    break;
-
-                case BoundNodeKind.ExpressionStatement:
-                    EvaluateExpressionStatement((BoundExpressionStatement)statement);
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"Unexpected node {statement.Kind}.");
-            }
-        }
-
-        void EvaluateBlockStatement(BoundBlockStatement node)
+        private void EvaluateBlockStatement(BoundBlockStatement node)
         {
             foreach (var statement in node.Statements)
             {
-                EvaluateStatement(statement);
+                //EvaluateStatement(statement);
             }
         }
 
-        void EvaluateForStatement(BoundForStatement statement)
-        {
-            var lowerBound = (int)EvaluateExpression(statement.LowerBound);
-            var upperBound = (int)EvaluateExpression(statement.UpperBound);
+        //private void EvaluateForStatement(BoundForStatement statement)
+        //{
+        //    var lowerBound = (int)EvaluateExpression(statement.LowerBound);
+        //    var upperBound = (int)EvaluateExpression(statement.UpperBound);
 
-            for (var i = lowerBound; i <= upperBound; i++)
-            {
-                _variables[statement.Variable] = i;
+        //    for (var i = lowerBound; i <= upperBound; i++)
+        //    {
+        //        _variables[statement.Variable] = i;
 
-                EvaluateStatement(statement.Body);
-            }
-        }
+        //        EvaluateStatement(statement.Body);
+        //    }
+        //}
 
-        void EvaluateIfStatement(BoundIfStatement statement)
-        {
-            var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
+        //private void EvaluateIfStatement(BoundIfStatement statement)
+        //{
+        //    var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
 
-            if (conditionStatisfied)
-            {
-                EvaluateStatement(statement.ThenStatement);
-            }
-            else if (statement.ElseStatement != null)
-            {
-                EvaluateStatement(statement.ElseStatement);
-            }
-        }
+        //    if (conditionStatisfied)
+        //    {
+        //        EvaluateStatement(statement.ThenStatement);
+        //    }
+        //    else if (statement.ElseStatement != null)
+        //    {
+        //        EvaluateStatement(statement.ElseStatement);
+        //    }
+        //}
 
-        void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
+        //private void EvaluateWhileStatement(BoundWhileStatement statement)
+        //{
+        //    while (true)
+        //    {
+        //        var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
+
+        //        if (!conditionStatisfied)
+        //        {
+        //            break;
+        //        }
+
+        //        EvaluateStatement(statement.Body);
+        //    }
+        //}
+
+        private void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
         {
             _variables[statement.VariableSymbol] = EvaluateExpression(statement.Initializer);
         }
 
-        void EvaluateWhileStatement(BoundWhileStatement statement)
-        {
-            while(true)
-            {
-                var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
-
-                if (!conditionStatisfied)
-                {
-                    break;
-                }
-
-                EvaluateStatement(statement.Body);
-            }
-        }
-
-        void EvaluateExpressionStatement(BoundExpressionStatement node)
+        private void EvaluateExpressionStatement(BoundExpressionStatement node)
         {
             _lastValue = EvaluateExpression(node.Expression);
         }
 
-        object EvaluateExpression(BoundNode node)
+        private object EvaluateExpression(BoundNode node)
         {
             switch (node.Kind)
             {
@@ -143,17 +183,17 @@ namespace BradLang.CodeAnalysis
             throw new Exception($"Unexpected node {node.Kind}.");
         }
 
-        object EvaluateLiteralExpression(BoundLiteralExpression expression)
+        private object EvaluateLiteralExpression(BoundLiteralExpression expression)
         {
             return expression.Value;
         }
 
-        object EvaluateVariableExpression(BoundVariableExpression expression)
+        private object EvaluateVariableExpression(BoundVariableExpression expression)
         {
             return _variables[expression.Variable];
         }
 
-        object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
+        private object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
         {
             var value = EvaluateExpression(expression.Expression);
 
@@ -162,7 +202,7 @@ namespace BradLang.CodeAnalysis
             return value;
         }
 
-        object EvaluateUnaryExpression(BoundUnaryExpression expression)
+        private object EvaluateUnaryExpression(BoundUnaryExpression expression)
         {
             var operand = EvaluateExpression(expression.Operand);
 
@@ -229,7 +269,7 @@ namespace BradLang.CodeAnalysis
             }
         }
 
-        object EvaluateBinaryExpression(BoundBinaryExpression expression)
+        private object EvaluateBinaryExpression(BoundBinaryExpression expression)
         {
             var left = EvaluateExpression(expression.Left);
             var right = EvaluateExpression(expression.Right);
@@ -237,12 +277,12 @@ namespace BradLang.CodeAnalysis
             switch (expression.Operator.Kind)
             {
                 case BoundBinaryOperatorKind.Addition:
-                    if (expression.Type == typeof(int))
+                    if (expression.Type == TypeSymbol.Int)
                     {
                         return (int)left + (int)right;
                     }
 
-                    if (expression.Type == typeof(string))
+                    if (expression.Type == TypeSymbol.String)
                     {
                         return String.Concat(left, right);
                     }
@@ -283,7 +323,7 @@ namespace BradLang.CodeAnalysis
             }
         }
 
-        object EvaluateTernaryExpression(BoundTernaryExpression expression)
+        private object EvaluateTernaryExpression(BoundTernaryExpression expression)
         {
             var conditionResult = (bool)EvaluateExpression(expression.Condition);
 

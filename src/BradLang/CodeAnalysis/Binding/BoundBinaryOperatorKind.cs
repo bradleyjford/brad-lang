@@ -2,7 +2,7 @@ using System;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    enum BoundBinaryOperatorKind
+    internal enum BoundBinaryOperatorKind
     {
         Addition,
         Subtraction,

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace BradLang.CommandLine
 {
-    abstract partial class Repl
+    internal abstract partial class Repl
     {
         private readonly List<string> _history = new List<string>();
         private int _historyIndex;
@@ -64,7 +64,7 @@ namespace BradLang.CommandLine
 
         private void HandleKey(ConsoleKeyInfo key, ObservableCollection<string> document, DocumentView view)
         {
-            if (key.Modifiers == default(ConsoleModifiers))
+            if (key.Modifiers == default)
             {
                 switch (key.Key)
                 {
@@ -242,6 +242,7 @@ namespace BradLang.CommandLine
                 }
 
                 var nextLine = document[view.CurrentLine + 1];
+
                 document[view.CurrentLine] += nextLine;
                 document.RemoveAt(view.CurrentLine + 1);
 
@@ -290,6 +291,11 @@ namespace BradLang.CommandLine
 
         private void SetDocumentFromHistory(ObservableCollection<string> document, DocumentView view)
         {
+            if (_history.Count== 0)
+            {
+                return;
+            }
+
             var lines = _history[_historyIndex].Split(Environment.NewLine);
 
             document.Clear();

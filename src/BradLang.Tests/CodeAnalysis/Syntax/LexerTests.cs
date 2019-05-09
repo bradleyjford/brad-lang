@@ -94,7 +94,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             }
         }
 
-        static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind kind2, string text2)> GetSyntaxTokenPairs()
+        private static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind kind2, string text2)> GetSyntaxTokenPairs()
         {
             foreach (var t1 in GetSyntaxTokens())
             {
@@ -110,7 +110,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             }
         }
 
-        static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind SeparatorKind, string SeparatorText, SyntaxKind kind2, string text2)> GetSyntaxTokenPairsWithSeparators()
+        private static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind SeparatorKind, string SeparatorText, SyntaxKind kind2, string text2)> GetSyntaxTokenPairsWithSeparators()
         {
             foreach (var t1 in GetSyntaxTokens())
             {
@@ -126,7 +126,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
                 }
             }
         }
-        static bool CanPairToken(SyntaxKind kind1, SyntaxKind kind2) 
+        private static bool CanPairToken(SyntaxKind kind1, SyntaxKind kind2) 
         {
             if (kind1 == SyntaxKind.IdentifierToken && kind2 == SyntaxKind.IdentifierToken)
                 return false;
@@ -198,7 +198,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             return true;
         }
 
-        static IEnumerable<(SyntaxKind kind, string text)> GetSyntaxTokens()
+        private static IEnumerable<(SyntaxKind kind, string text)> GetSyntaxTokens()
         {
             var fixedLengthTokens = Enum.GetValues(typeof(SyntaxKind))
                 .Cast<SyntaxKind>()
@@ -223,7 +223,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             return fixedLengthTokens.Concat(variableLengthTokens);
         }
 
-        static IEnumerable<(SyntaxKind kind, string text)> GetSeparatorSyntaxTokens()
+        private static IEnumerable<(SyntaxKind kind, string text)> GetSeparatorSyntaxTokens()
         {
             return new[] {
                 (SyntaxKind.WhiteSpaceToken, " "),
@@ -234,7 +234,7 @@ namespace BradLang.Tests.CodeAnalysis.Syntax
             };
         }
 
-        IEnumerable<SyntaxToken> ParseTokens(string text)
+        private IEnumerable<SyntaxToken> ParseTokens(string text)
         {
             return SyntaxTree.ParseTokens(text);
         }

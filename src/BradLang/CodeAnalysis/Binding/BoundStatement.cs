@@ -1,6 +1,6 @@
 namespace BradLang.CodeAnalysis.Binding
 {
-    abstract class BoundStatement : BoundNode
+    internal abstract class BoundStatement : BoundNode
     {
     }
 }

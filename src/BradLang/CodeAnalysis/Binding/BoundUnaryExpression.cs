@@ -1,8 +1,9 @@
 using System;
+using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    sealed class BoundUnaryExpression : BoundExpression
+    internal sealed class BoundUnaryExpression : BoundExpression
     {
         public BoundUnaryExpression(BoundUnaryOperator @operator, BoundExpression operand)
         {
@@ -11,7 +12,7 @@ namespace BradLang.CodeAnalysis.Binding
         }
 
         public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
-        public override Type Type => Operand.Type;
+        public override TypeSymbol Type => Operand.Type;
 
         public BoundUnaryOperator Operator { get; }
         public BoundExpression Operand { get; }

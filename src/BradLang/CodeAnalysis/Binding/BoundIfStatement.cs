@@ -1,6 +1,6 @@
 namespace BradLang.CodeAnalysis.Binding
 {
-    sealed class BoundIfStatement : BoundStatement
+    internal sealed class BoundIfStatement : BoundStatement
     {
         public BoundIfStatement(BoundExpression condition, BoundStatement thenStatement, BoundStatement elseStatement)
         {

@@ -1,6 +1,8 @@
+using BradLang.CodeAnalysis.Symbols;
+
 namespace BradLang.CodeAnalysis.Binding
 {
-    sealed class BoundVariableDeclaration : BoundStatement
+    internal sealed class BoundVariableDeclaration : BoundStatement
     {
         public BoundVariableDeclaration(VariableSymbol variableSymbol, BoundExpression initializer)
         {

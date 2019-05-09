@@ -22,6 +22,8 @@ namespace BradLang.CodeAnalysis.Syntax
         public string Text { get; }
         public object Value { get; }
 
+        public bool IsMissing => Text == null;
+
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             return Enumerable.Empty<SyntaxNode>();

@@ -10,16 +10,16 @@ namespace BradLang.CodeAnalysis.Text
             return new SourceText(text);
         }
 
-        readonly string _text;
+        private readonly string _text;
 
-        SourceText(string text)
+        private SourceText(string text)
         {
             _text = text;
 
             Lines = ParseLines(this, text);
         }
 
-        static ImmutableArray<TextLine> ParseLines(SourceText sourceText, string text)
+        private static ImmutableArray<TextLine> ParseLines(SourceText sourceText, string text)
         {
             var result = ImmutableArray.CreateBuilder<TextLine>();
 
@@ -55,14 +55,14 @@ namespace BradLang.CodeAnalysis.Text
             return result.ToImmutable();
         }
 
-        static TextLine CreateLine(SourceText sourceText, int position, int lineStart, int lineBreakWidth)
+        private static TextLine CreateLine(SourceText sourceText, int position, int lineStart, int lineBreakWidth)
         {
             var lineLength = position - lineStart;
 
             return new TextLine(sourceText, lineStart, lineLength, lineLength + lineBreakWidth);
         }
 
-        static int GetLineBreakWidth(string text, int position)
+        private static int GetLineBreakWidth(string text, int position)
         {
             var c = text[position];
             var l = position + 1 >= text.Length ? '\0' : text[position + 1];

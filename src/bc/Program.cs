@@ -9,9 +9,9 @@ using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CommandLine
 {
-    static class Program
+    public static class Program
     {
-        static void Main()
+        public static void Main()
         {
             var repl = new BradLangRepl();
 

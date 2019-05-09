@@ -52,7 +52,7 @@ namespace BradLang.Tests.CodeAnalysis
             return new AnnotatedText(textBuilder.ToString(), spanBuilder.ToImmutable());
         }
 
-        AnnotatedText(string text, ImmutableArray<TextSpan> spans)
+        private AnnotatedText(string text, ImmutableArray<TextSpan> spans)
         {
             Text = text;
             Spans = spans;

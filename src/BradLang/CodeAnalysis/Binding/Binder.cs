@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    sealed class Binder
+    internal sealed class Binder
     {
         public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, SyntaxTree syntaxTree)
         {
@@ -26,7 +27,7 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundGlobalScope(previous, variables, diagnostics, statement);
         }
 
-        static BoundScope CreateParentScope(BoundGlobalScope previous)
+        private static BoundScope CreateParentScope(BoundGlobalScope previous)
         {
             var stack = new Stack<BoundGlobalScope>();
 
@@ -56,18 +57,18 @@ namespace BradLang.CodeAnalysis.Binding
             return parent;
         }
 
-        readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+        private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
-        BoundScope _scope;
+        private BoundScope _scope;
 
-        Binder(BoundScope parent)
+        private Binder(BoundScope parent)
         {
             _scope = new BoundScope(parent);
         }
 
         public DiagnosticBag Diagnostics => _diagnostics;
 
-        BoundStatement BindStatement(StatementSyntax syntax)
+        private BoundStatement BindStatement(StatementSyntax syntax)
         {
             switch (syntax.Kind)
             {
@@ -86,7 +87,7 @@ namespace BradLang.CodeAnalysis.Binding
             }
         }
 
-        BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
+        private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
         {
             _scope = new BoundScope(_scope);
 
@@ -104,16 +105,16 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundBlockStatement(statements.ToImmutable());
         }
 
-        BoundStatement BindForStatement(ForStatementSyntax syntax)
+        private BoundStatement BindForStatement(ForStatementSyntax syntax)
         {
-            var lowerBound = BindExpression(syntax.LowerBoundExpression, typeof(int));
-            var upperBound = BindExpression(syntax.UpperBoundExpression, typeof(int));
+            var lowerBound = BindExpression(syntax.LowerBoundExpression, TypeSymbol.Int);
+            var upperBound = BindExpression(syntax.UpperBoundExpression, TypeSymbol.Int);
 
             _scope = new BoundScope(_scope);
 
             var name = syntax.IdentifierToken.Text;
 
-            var variable = new VariableSymbol(name, typeof(int), true);
+            var variable = new VariableSymbol(name, TypeSymbol.Int, true);
             
             if (!_scope.TryDeclareVariable(variable))
             {
@@ -127,9 +128,9 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundForStatement(variable, lowerBound, upperBound, body);
         }
 
-        BoundStatement BindIfStatement(IfStatementSyntax syntax)
+        private BoundStatement BindIfStatement(IfStatementSyntax syntax)
         {
-            var condition = BindExpression(syntax.ConditionExpression, typeof(bool));
+            var condition = BindExpression(syntax.ConditionExpression, TypeSymbol.Bool);
 
             var thenStatement = BindStatement(syntax.ThenStatement);
             BoundStatement elseStatement = null;
@@ -142,7 +143,7 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundIfStatement(condition, thenStatement, elseStatement);
         }
 
-        BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
+        private BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
         {
             var initializerExpression = BindExpression(syntax.Initializer);
 
@@ -158,22 +159,22 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundVariableDeclaration(variableSymbol, initializerExpression);
         }
 
-        BoundStatement BoundWhileStatement(WhileStatementSyntax syntax)
+        private BoundStatement BoundWhileStatement(WhileStatementSyntax syntax)
         {
-            var condition = BindExpression(syntax.ConditionExpression, typeof(bool));
+            var condition = BindExpression(syntax.ConditionExpression, TypeSymbol.Bool);
             var body = BindStatement(syntax.Body);
 
             return new BoundWhileStatement(condition, body);
         }
 
-        BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+        private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
         {
             var expression = BindExpression(syntax.Expression);
 
             return new BoundExpressionStatement(expression);
         }
 
-        BoundExpression BindExpression(ExpressionSyntax syntax, Type expectedType)
+        private BoundExpression BindExpression(ExpressionSyntax syntax, TypeSymbol expectedType)
         {
             var expression = BindExpression(syntax);
 
@@ -185,7 +186,7 @@ namespace BradLang.CodeAnalysis.Binding
             return expression;
         }
 
-        BoundExpression BindExpression(ExpressionSyntax syntax)
+        private BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
             {
@@ -212,7 +213,7 @@ namespace BradLang.CodeAnalysis.Binding
             }
         }
 
-        BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
+        private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
         {
             var name = syntax.IdentifierToken.Text;
             var boundExpression = BindExpression(syntax.Expression);
@@ -238,7 +239,7 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundAssignmentExpression(variable, boundExpression);
         }
 
-        BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+        private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
         {
             var name = syntax.NameToken.Text;
 
@@ -253,32 +254,32 @@ namespace BradLang.CodeAnalysis.Binding
             {
                 _diagnostics.ReportUndefinedName(syntax.NameToken.Span, name);
 
-                return new BoundLiteralExpression(null);
+                return new BoundLiteralExpression(name);
             }
 
             return new BoundVariableExpression(variable);
         }
 
-        BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
+        private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
         {
             return BindExpression(syntax.Expression);
         }
 
-        BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
+        private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
         {
             var value = syntax.Value;
 
             return new BoundLiteralExpression(value);
         }
 
-        BoundExpression BindLiteralStringExpression(LiteralStringExpressionSyntax syntax)
+        private BoundExpression BindLiteralStringExpression(LiteralStringExpressionSyntax syntax)
         {
             var value = syntax.Value.Replace("\\", "");
 
             return new BoundLiteralExpression(value);
         }
 
-        BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
+        private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
         {
             var boundOperand = BindExpression(syntax.Operand);
             var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
@@ -293,7 +294,7 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundUnaryExpression(boundOperator, boundOperand);
         }
 
-        BoundExpression BindPostfixUnaryExpression(PostfixUnaryExpressionSyntax syntax)
+        private BoundExpression BindPostfixUnaryExpression(PostfixUnaryExpressionSyntax syntax)
         {
             var boundOperand = BindExpression(syntax.Operand);
             var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
@@ -308,7 +309,7 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundUnaryExpression(boundOperator, boundOperand);
         }
 
-        BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
+        private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
         {
             var left = BindExpression(syntax.LeftExpression);
             var right = BindExpression(syntax.RightExpression);
@@ -324,15 +325,15 @@ namespace BradLang.CodeAnalysis.Binding
             return new BoundBinaryExpression(left, boundOperator, right);
         }
 
-        BoundExpression BindTernaryExpression(ConditionalExpressionSyntax syntax)
+        private BoundExpression BindTernaryExpression(ConditionalExpressionSyntax syntax)
         {
             var condition = BindExpression(syntax.ConditionExpression);
             var trueExpression = BindExpression(syntax.TrueExpression);
             var falseExpression = BindExpression(syntax.FalseExpression);
 
-            if (condition.Type != typeof(bool))
+            if (condition.Type != TypeSymbol.Bool)
             {
-                _diagnostics.ReportTypeMismatch(syntax.QuestionMarkToken.Span, condition.Type, typeof(bool));
+                _diagnostics.ReportTypeMismatch(syntax.QuestionMarkToken.Span, condition.Type, TypeSymbol.Bool);
 
                 return trueExpression;
             }

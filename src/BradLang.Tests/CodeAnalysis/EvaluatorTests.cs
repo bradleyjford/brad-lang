@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BradLang.CodeAnalysis;
+using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Syntax;
 using Xunit;
 
@@ -54,8 +55,8 @@ namespace BradLang.Tests.CodeAnalysis
         [InlineData("1 == 2 ? \"Incorrect\" : \"Correct\"", "Correct")]
         [InlineData("{ var a = 10 if (a == 10) { a = 50 } a}", 50)]
         [InlineData("{ var a = 10 if (a == 50) { a = 50 } a}", 10)]
-        [InlineData("{ var a = 10 if (a == 10) { a = 50 } else { a = 0 } a}", 50)]
-        [InlineData("{ var a = 10 if (a == 50) { a = 50 } else { a = 0 } a}", 0)]
+        [InlineData("{ var a = 10 if (a == 10) { a = 50 } else { a = 0 } a }", 50)]
+        [InlineData("{ var a = 10 if (a == 50) { a = 50 } else { a = 0 } a }", 0)]
         [InlineData("{ var a = 0 while (a < 10) { a = a + 1 } a }", 10)]
         public void Evaluator_Evaluate(string text, object expectedValue)
         {

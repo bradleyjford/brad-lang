@@ -2,7 +2,7 @@ using System;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    enum BoundUnaryOperatorKind
+    internal enum BoundUnaryOperatorKind
     {
         Identity,
         Negation,

@@ -2,7 +2,7 @@ using System;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    enum BoundNodeKind
+    internal enum BoundNodeKind
     {
         // Statements
         BlockStatement,
@@ -19,7 +19,7 @@ namespace BradLang.CodeAnalysis.Binding
         TernaryExpression,
         UnaryExpression,
         VariableExpression,
-        Label,
+        LabelStatement,
         GotoStatement,
         ConditionalGotoStatement,
     }

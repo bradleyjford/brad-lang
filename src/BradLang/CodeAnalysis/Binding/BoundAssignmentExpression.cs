@@ -1,8 +1,9 @@
 using System;
+using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding
 {
-    sealed class BoundAssignmentExpression : BoundExpression
+    internal sealed class BoundAssignmentExpression : BoundExpression
     {
         public BoundAssignmentExpression(VariableSymbol variable, BoundExpression expression)
         {
@@ -11,7 +12,7 @@ namespace BradLang.CodeAnalysis.Binding
         }
 
         public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpression;
-        public override Type Type => Expression.Type;
+        public override TypeSymbol Type => Expression.Type;
 
         public VariableSymbol Variable { get; }
         public BoundExpression Expression { get; }

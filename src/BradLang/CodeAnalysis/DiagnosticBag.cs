@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Syntax;
 using BradLang.CodeAnalysis.Text;
 
@@ -8,7 +9,7 @@ namespace BradLang.CodeAnalysis
 {
     public sealed class DiagnosticBag : IEnumerable<Diagnostic>
     {
-        readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
+        private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
 
         public IEnumerator<Diagnostic> GetEnumerator() => _diagnostics.GetEnumerator();
 
@@ -19,12 +20,12 @@ namespace BradLang.CodeAnalysis
             _diagnostics.AddRange(diagnostics);
         }
 
-        void Report(TextSpan span, string message)
+        private void Report(TextSpan span, string message)
         {
             _diagnostics.Add(new Diagnostic(span, message));
         }
 
-        internal void ReportInvalidNumber(TextSpan span, string text, Type expectedType)
+        internal void ReportInvalidNumber(TextSpan span, string text, TypeSymbol expectedType)
         {
             var message = $"ERROR: Unable to convert \"{text}\" to type '{expectedType}'.";
             Report(span, message);
@@ -43,19 +44,19 @@ namespace BradLang.CodeAnalysis
             Report(span, message);
         }
 
-        internal void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
+        internal void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
         {
             var message = $"Unary operator '{operatorText}' is not defined for type {operandType}.";
             Report(span, message);
         }
 
-        internal void ReportUndefinedPostfixUnaryOperator(TextSpan span, string operatorText, Type operandType)
+        internal void ReportUndefinedPostfixUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
         {
             var message = $"Postfix unary operator '{operatorText}' is not defined for type {operandType}.";
             Report(span, message);
         }
 
-        internal void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftType, Type rightType)
+        internal void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType)
         {
             var message = $"Binary operator '{operatorText}' is not defined for types {leftType} and {rightType}.";
             Report(span, message);
@@ -73,7 +74,7 @@ namespace BradLang.CodeAnalysis
             Report(span, message);
         }
 
-        internal void  ReportTypeMismatch(TextSpan span, Type fromType, Type toType)
+        internal void  ReportTypeMismatch(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
         {
             var message = $"Cannot convert from type '{fromType}' to '{toType}'.";
             Report(span, message);

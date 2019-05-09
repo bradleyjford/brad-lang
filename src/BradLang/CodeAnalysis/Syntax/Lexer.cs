@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
+using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CodeAnalysis.Syntax
 {
     public class Lexer
     {
-        readonly SourceText _text;
-        readonly DiagnosticBag _diagnostics;
+        private readonly SourceText _text;
+        private readonly DiagnosticBag _diagnostics;
 
-        int _start;
-        int _position;
+        private int _start;
+        private int _position;
 
-        SyntaxKind _kind;
-        object _value;
+        private SyntaxKind _kind;
+        private object _value;
 
         public Lexer(SourceText text)
         {
@@ -237,7 +238,7 @@ namespace BradLang.CodeAnalysis.Syntax
             return new SyntaxToken(_kind, _start, tokenText, _value);
         }
 
-        void ReadWhiteSpace()
+        private void ReadWhiteSpace()
         {
             do
             {
@@ -247,7 +248,7 @@ namespace BradLang.CodeAnalysis.Syntax
             _kind = SyntaxKind.WhiteSpaceToken;
         }
 
-        void ReadKeywordOrIdentifier()
+        private void ReadKeywordOrIdentifier()
         {
             do
             {
@@ -259,7 +260,7 @@ namespace BradLang.CodeAnalysis.Syntax
             _kind = SyntaxFacts.GetKeywordKind(textValue);
         }
 
-        void ReadNumber()
+        private void ReadNumber()
         {
             do
             {
@@ -270,14 +271,14 @@ namespace BradLang.CodeAnalysis.Syntax
 
             if (!Int32.TryParse(textValue, out var value))
             {
-                _diagnostics.ReportInvalidNumber(new TextSpan(_start, _position - _start), textValue, typeof(int));
+                _diagnostics.ReportInvalidNumber(new TextSpan(_start, _position - _start), textValue, TypeSymbol.Int);
             }
 
             _kind = SyntaxKind.NumberToken;
             _value = value;
         }
 
-        void ReadString()
+        private void ReadString()
         {
             _kind = SyntaxKind.StringToken;
 
@@ -306,7 +307,7 @@ namespace BradLang.CodeAnalysis.Syntax
             }
         }
 
-        char Current
+        private char Current
         {
             get
             {
@@ -319,11 +320,11 @@ namespace BradLang.CodeAnalysis.Syntax
             }
         }
 
-        char Previous => Peek(-1);
+        private char Previous => Peek(-1);
 
-        char PeekNext => Peek(1);
+        private char PeekNext => Peek(1);
 
-        char Peek(int offset)
+        private char Peek(int offset)
         {
             var index = _position + offset;
 

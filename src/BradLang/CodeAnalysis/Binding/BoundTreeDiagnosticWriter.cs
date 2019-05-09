@@ -13,7 +13,7 @@ namespace BradLang.CodeAnalysis.Binding
             writer.WriteLine();
         }
 
-        static void Write(TextWriter writer, BoundNode node, string indent, bool isLast)
+        private static void Write(TextWriter writer, BoundNode node, string indent, bool isLast)
         {
             var isToConsole = writer == Console.Out;
 
@@ -94,7 +94,7 @@ namespace BradLang.CodeAnalysis.Binding
             }
         }
 
-        static string GetText(BoundNode node)
+        private static string GetText(BoundNode node)
         {
             if (node is BoundBinaryExpression b)
             {
@@ -109,7 +109,7 @@ namespace BradLang.CodeAnalysis.Binding
             return node.Kind.ToString();
         }
 
-        static ConsoleColor GetColor(BoundNode node)
+        private static ConsoleColor GetColor(BoundNode node)
         {
             if (node is BoundExpression)
                 return ConsoleColor.Blue;
