@@ -99,6 +99,56 @@ namespace BradLang.CommandLine
             }
         }
 
+        protected override bool IsCompleteDocument(string text)
+        {
+            if (String.IsNullOrEmpty(text))
+            {
+                return true;
+            }
+
+            var lastTwoLinesAreBlank = text.Split(Environment.NewLine)
+                .Reverse()
+                .TakeWhile(s => string.IsNullOrEmpty(s))
+                .Take(2)
+                .Count() == 2;
+
+            if (lastTwoLinesAreBlank)
+            {
+                return true;
+            }
+
+            var syntaxTree = SyntaxTree.Parse(text);
+
+            // Use Statement because we need to exclude the EndOfFileToken.
+            //if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
+            //    return false;
+
+            return true;
+        }
+
+        protected override void RenderLine(string line)
+        {
+            var tokens = SyntaxTree.ParseTokens(line);
+
+            foreach (var token in tokens)
+            {
+                if (token.Kind.IsKeyword())
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                else if (token.Kind.IsIdentifier())
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                else if (token.Kind.IsNumber())
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                else if (token.Kind.IsString())
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                else
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                Console.Write(token.Text);
+
+                Console.ResetColor();
+            }
+        }
+
         static void WriteDiagnostics(SourceText sourceText, ImmutableArray<Diagnostic> diagnostics)
         {
             Console.WriteLine();

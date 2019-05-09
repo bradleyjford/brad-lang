@@ -1,15 +1,19 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bc", "src\bc\bc.csproj", "{2106E13A-87C7-4587-847E-3C64186D1F4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BradLang", "src\BradLang\BradLang.csproj", "{64A8451F-01ED-4768-970E-87E54957EEE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BradLang", "src\BradLang\BradLang.csproj", "{64A8451F-01ED-4768-970E-87E54957EEE2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B6F0FF5C-C284-4F22-87DE-07FCD9460A23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BradLang.Tests", "src\BradLang.Tests\BradLang.Tests.csproj", "{B450DC2D-BA88-426E-9168-38E75D05904D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BradLang.Tests", "src\BradLang.Tests\BradLang.Tests.csproj", "{B450DC2D-BA88-426E-9168-38E75D05904D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BB617A86-8639-4B28-82E4-165B6370A7FE}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,10 +65,10 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A53139ED-F3A1-451F-B08F-2186A97DAD28}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B450DC2D-BA88-426E-9168-38E75D05904D} = {B6F0FF5C-C284-4F22-87DE-07FCD9460A23}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A53139ED-F3A1-451F-B08F-2186A97DAD28}
 	EndGlobalSection
 EndGlobal

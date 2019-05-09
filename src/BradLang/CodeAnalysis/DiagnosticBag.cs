@@ -67,7 +67,7 @@ namespace BradLang.CodeAnalysis
             Report(span, message);
         }
 
-        internal void ReportUnterminatedStringConstant(TextSpan span)
+        internal void ReportUnterminatedStringLiteral(TextSpan span)
         {
             var message = $"Unterminated string constant.";
             Report(span, message);

@@ -13,6 +13,7 @@ namespace BradLang.CommandLine
 
         protected abstract void EvaluateMetaCommand(string command);
         protected abstract void EvaluateCommand(string command);
+        protected abstract bool IsCompleteDocument(string text);
 
         public void Run()
         {
@@ -83,6 +84,10 @@ namespace BradLang.CommandLine
                         HandleDelete(document, view);
                         break;
 
+                    case ConsoleKey.Tab:
+                        HandleTab(document, view);
+                        break;
+
                     case ConsoleKey.PageUp:
                         HandlePageUp(document, view);
                         break;
@@ -106,6 +111,14 @@ namespace BradLang.CommandLine
                     case ConsoleKey.DownArrow:
                         HandleDownArrow(document, view);
                         break;
+
+                    case ConsoleKey.Home:
+                        HandleHome(document, view);
+                        break;
+
+                    case ConsoleKey.End:
+                        HandleEnd(document, view);
+                        break;
                 }
             }
             else if (key.Modifiers == ConsoleModifiers.Control)
@@ -126,11 +139,19 @@ namespace BradLang.CommandLine
 
         private void HandleControlEnter(ObservableCollection<string> document, DocumentView view)
         {
-            _done = true;
+            InsertLine(document, view);
         }
 
         private void HandleEnter(ObservableCollection<string> document, DocumentView view)
         {
+            var submissionText = String.Join(Environment.NewLine, document);
+
+            if (submissionText.StartsWith("#") || IsCompleteDocument(submissionText))
+            {
+                _done = true;
+                return;
+            }
+
             InsertLine(document, view);
         }
 
@@ -158,23 +179,50 @@ namespace BradLang.CommandLine
             view.CurrentCharacter = 0;
         }
 
+        private void HandleTab(ObservableCollection<string> document, DocumentView view)
+        {
+            const int TabWidth = 4;
+
+            var start = view.CurrentCharacter;
+            var remainingSpaces = TabWidth - start % TabWidth;
+            var line = document[view.CurrentLine];
+
+            document[view.CurrentLine] = line.Insert(start, new string(' ', remainingSpaces));
+
+            view.CurrentCharacter += remainingSpaces;
+        }
+
         private void HandleBackspace(ObservableCollection<string> document, DocumentView view)
         {
-            if (view.CurrentCharacter == 0)
+            var start = view.CurrentCharacter;
+
+            if (start == 0)
             {
-                if (view.CurrentLine > 0)
-                {   
-                    view.CurrentLine--;
-                    view.CurrentCharacter = document[view.CurrentLine].Length;
+                if (view.CurrentLine == 0)
+                {
+                    return;
                 }
+
+                var currentLine = document[view.CurrentLine];
+                var previousLine = document[view.CurrentLine - 1];
+
+                document.RemoveAt(view.CurrentLine);
+
+                view.CurrentLine--;
+
+                document[view.CurrentLine] = previousLine + currentLine;
+
+                view.CurrentCharacter = previousLine.Length;
             }
             else
             {
-                var line = document[view.CurrentLine];
+                var lineIndex = view.CurrentLine;
+                var line = document[lineIndex];
 
-                line = line.Substring(0, view.CurrentCharacter - 1) + line.Substring(view.CurrentCharacter);
+                var before = line.Substring(0, start - 1);
+                var after = line.Substring(start);
 
-                document[view.CurrentLine] = line;
+                document[lineIndex] = before + after;
 
                 view.CurrentCharacter--;
             }
@@ -182,6 +230,38 @@ namespace BradLang.CommandLine
 
         private void HandleDelete(ObservableCollection<string> document, DocumentView view)
         {
+            var lineIndex = view.CurrentLine;
+            var line = document[lineIndex];
+            var start = view.CurrentCharacter;
+
+            if (start >= line.Length)
+            {
+                if (view.CurrentLine == document.Count - 1)
+                {
+                    return;
+                }
+
+                var nextLine = document[view.CurrentLine + 1];
+                document[view.CurrentLine] += nextLine;
+                document.RemoveAt(view.CurrentLine + 1);
+
+                return;
+            }
+
+            var before = line.Substring(0, start);
+            var after = line.Substring(start + 1);
+
+            document[lineIndex] = before + after;
+        }
+
+        private void HandleHome(ObservableCollection<string> document, DocumentView view)
+        {
+            view.CurrentCharacter = 0;
+        }
+
+        private void HandleEnd(ObservableCollection<string> document, DocumentView view)
+        {
+            view.CurrentCharacter = document[view.CurrentLine].Length;
         }
 
         private void HandlePageUp(ObservableCollection<string> document, DocumentView view)
@@ -235,7 +315,7 @@ namespace BradLang.CommandLine
         {
             var line = document[view.CurrentLine];
 
-            if (view.CurrentCharacter < line.Length - 1)
+            if (view.CurrentCharacter <= line.Length - 1)
             {
                 view.CurrentCharacter++;
             }

@@ -279,24 +279,31 @@ namespace BradLang.CodeAnalysis.Syntax
 
         void ReadString()
         {
-            do
+            _kind = SyntaxKind.StringToken;
+
+            var done = false;
+
+            while (!done)
             {
                 _position++;
 
                 if (Current == '\0')
                 {
-                    _diagnostics.ReportUnterminatedStringConstant(new TextSpan(_start, _position - _start));
+                    _diagnostics.ReportUnterminatedStringLiteral(new TextSpan(_start, 1));
 
-                    _kind = SyntaxKind.EndOfFileToken;
+                    _value = _text.ToString(_start + 1, _position - _start - 1);
+
+                    done = true;
                 }
                 else if (Current == '"' && Previous != '\\')
                 {
                     _position++;
-                    
-                    _kind = SyntaxKind.StringToken;
+
                     _value = _text.ToString(_start + 1, _position - _start - 2);
+
+                    done = true;
                 }
-            } while (_kind == SyntaxKind.UnknownToken);
+            }
         }
 
         char Current
