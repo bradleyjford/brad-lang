@@ -178,9 +178,13 @@ namespace BradLang.CodeAnalysis.Binding
         {
             var expression = BindExpression(syntax);
 
-            if (expression.Type != expectedType)
+            if (expectedType != TypeSymbol.Error &&
+                expression.Type != TypeSymbol.Error &&
+                expression.Type != expectedType)
             {
                 _diagnostics.ReportTypeMismatch(syntax.Span, expression.Type, expectedType);
+
+                return new BoundErrorExpression();
             }
 
             return expression;
@@ -206,6 +210,8 @@ namespace BradLang.CodeAnalysis.Binding
                     return BindTernaryExpression((ConditionalExpressionSyntax)syntax);
                 case SyntaxKind.AssignmentExpression:
                     return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
+                case SyntaxKind.CallExpression:
+                    return BindCallExpression((CallExpressionSyntax)syntax);
                 case SyntaxKind.NameExpression:
                     return BindNameExpression((NameExpressionSyntax)syntax);
                 default:
@@ -221,22 +227,70 @@ namespace BradLang.CodeAnalysis.Binding
             if (!_scope.TryLookupVariable(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
-                return boundExpression;
+
+                return new BoundErrorExpression();
             }
             
             if (variable.IsReadOnly)
             {
                 _diagnostics.ReportCannotAssign(syntax.IdentifierToken.Span, name);
-                return boundExpression;
+
+                return new BoundErrorExpression();
             }
 
             if (variable.Type != boundExpression.Type)
             {
                 _diagnostics.ReportTypeMismatch(syntax.Expression.Span, boundExpression.Type, variable.Type);
-                return boundExpression;
+
+                return new BoundErrorExpression();
             }
 
             return new BoundAssignmentExpression(variable, boundExpression);
+        }
+
+        private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
+        {
+            var arguments = ImmutableArray.CreateBuilder<BoundExpression>();
+
+            foreach (var argument in syntax.Arguments)
+            {
+                var boundArgument = BindExpression(argument);
+
+                arguments.Add(boundArgument);
+            }
+
+            var functions = BuiltinFunctions.GetAll();
+
+            var function = functions.SingleOrDefault(f => f.Name == syntax.IdentifierToken.Text);
+
+            if (function == null)
+            {
+                _diagnostics.ReportUndefinedFunction(syntax.IdentifierToken.Span, syntax.IdentifierToken.Text);
+
+                return new BoundErrorExpression();
+            }
+
+            if (syntax.Arguments.Count != function.Parameters.Length)
+            {
+                _diagnostics.ReportIncorrectArgumentCount(syntax.Span, function.Name, function.Parameters.Length, syntax.Arguments.Count);
+
+                return new BoundErrorExpression();
+            }
+
+            for (var i = 0; i < function.Parameters.Length; i++)
+            {
+                var parameter = function.Parameters[i];
+                var argument = arguments[i];
+
+                if (parameter.Type != argument.Type)
+                {
+                    _diagnostics.ReportTypeMismatch(syntax.Span, argument.Type, function.Parameters[i].Type);
+
+                    return new BoundErrorExpression();
+                }
+            }
+
+            return new BoundCallExpression(function, arguments.ToImmutable());
         }
 
         private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
@@ -247,14 +301,14 @@ namespace BradLang.CodeAnalysis.Binding
             {
                 // Specified syntax was inserted by the Parser as a result of a parse error.
                 // Diagnostic has already been reported by the Parser.
-                return new BoundLiteralExpression(String.Empty);
+                return new BoundErrorExpression();
             }
 
             if (!_scope.TryLookupVariable(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.NameToken.Span, name);
 
-                return new BoundLiteralExpression(name);
+                return new BoundErrorExpression();
             }
 
             return new BoundVariableExpression(variable);
@@ -282,13 +336,19 @@ namespace BradLang.CodeAnalysis.Binding
         private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
         {
             var boundOperand = BindExpression(syntax.Operand);
+
+            if (boundOperand.Type == TypeSymbol.Error)
+            {
+                return new BoundErrorExpression();
+            }
+
             var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
 
             if (boundOperator == null)
             {
                 _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
 
-                return boundOperand;
+                return new BoundErrorExpression();
             }
 
             return new BoundUnaryExpression(boundOperator, boundOperand);
@@ -313,13 +373,19 @@ namespace BradLang.CodeAnalysis.Binding
         {
             var left = BindExpression(syntax.LeftExpression);
             var right = BindExpression(syntax.RightExpression);
+
+            if (left.Type == TypeSymbol.Error || right.Type == TypeSymbol.Error)
+            {
+                return new BoundErrorExpression();
+            }
+
             var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, left.Type, right.Type);
 
             if (boundOperator == null)
             {
                 _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, left.Type, right.Type);
 
-                return left;
+                return new BoundErrorExpression();
             }
 
             return new BoundBinaryExpression(left, boundOperator, right);
@@ -335,7 +401,7 @@ namespace BradLang.CodeAnalysis.Binding
             {
                 _diagnostics.ReportTypeMismatch(syntax.QuestionMarkToken.Span, condition.Type, TypeSymbol.Bool);
 
-                return trueExpression;
+                return new BoundErrorExpression();
             }
 
             var boundOperator = BoundTernaryOperator.Bind(syntax.Kind, condition.Type, trueExpression.Type, falseExpression.Type);
@@ -344,7 +410,7 @@ namespace BradLang.CodeAnalysis.Binding
             {
                 _diagnostics.ReportTypeMismatch(syntax.ColonToken.Span, trueExpression.Type, falseExpression.Type);
 
-                return trueExpression;
+                return new BoundErrorExpression();
             }
 
             return new BoundTernaryExpression(boundOperator, condition, trueExpression, falseExpression);

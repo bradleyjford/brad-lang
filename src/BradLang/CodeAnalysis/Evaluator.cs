@@ -42,12 +42,6 @@ namespace BradLang.CodeAnalysis
 
                 switch (statement.Kind)
                 {
-                    case BoundNodeKind.BlockStatement:
-                        EvaluateBlockStatement((BoundBlockStatement)statement);
-                        ip++;
-
-                        break;
-
                     case BoundNodeKind.GotoStatement:
                         var label = ((BoundGotoStatement)statement).Label;
 
@@ -97,56 +91,6 @@ namespace BradLang.CodeAnalysis
             return _lastValue;
         }
 
-        private void EvaluateBlockStatement(BoundBlockStatement node)
-        {
-            foreach (var statement in node.Statements)
-            {
-                //EvaluateStatement(statement);
-            }
-        }
-
-        //private void EvaluateForStatement(BoundForStatement statement)
-        //{
-        //    var lowerBound = (int)EvaluateExpression(statement.LowerBound);
-        //    var upperBound = (int)EvaluateExpression(statement.UpperBound);
-
-        //    for (var i = lowerBound; i <= upperBound; i++)
-        //    {
-        //        _variables[statement.Variable] = i;
-
-        //        EvaluateStatement(statement.Body);
-        //    }
-        //}
-
-        //private void EvaluateIfStatement(BoundIfStatement statement)
-        //{
-        //    var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
-
-        //    if (conditionStatisfied)
-        //    {
-        //        EvaluateStatement(statement.ThenStatement);
-        //    }
-        //    else if (statement.ElseStatement != null)
-        //    {
-        //        EvaluateStatement(statement.ElseStatement);
-        //    }
-        //}
-
-        //private void EvaluateWhileStatement(BoundWhileStatement statement)
-        //{
-        //    while (true)
-        //    {
-        //        var conditionStatisfied = (bool)EvaluateExpression(statement.Condition);
-
-        //        if (!conditionStatisfied)
-        //        {
-        //            break;
-        //        }
-
-        //        EvaluateStatement(statement.Body);
-        //    }
-        //}
-
         private void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
         {
             _variables[statement.VariableSymbol] = EvaluateExpression(statement.Initializer);
@@ -161,6 +105,9 @@ namespace BradLang.CodeAnalysis
         {
             switch (node.Kind)
             {
+                case BoundNodeKind.CallExpression:
+                    return EvalulateCallExpression((BoundCallExpression)node);
+
                 case BoundNodeKind.LiteralExpression:
                     return EvaluateLiteralExpression((BoundLiteralExpression)node);
 
@@ -181,6 +128,26 @@ namespace BradLang.CodeAnalysis
             }
 
             throw new Exception($"Unexpected node {node.Kind}.");
+        }
+
+        private object EvalulateCallExpression(BoundCallExpression node)
+        {
+            if (node.Function == BuiltinFunctions.Input)
+            {
+                return Console.ReadLine();
+            }
+            else if (node.Function == BuiltinFunctions.Print)
+            {
+                var message = (string)EvaluateExpression(node.Arguments[0]);
+
+                Console.WriteLine(message);
+
+                return null;
+            }
+            else
+            {
+                throw new Exception($"Unknown function \"{node.Function.Name}\".");
+            }
         }
 
         private object EvaluateLiteralExpression(BoundLiteralExpression expression)

@@ -20,6 +20,7 @@ namespace BradLang.CodeAnalysis.Syntax
         PercentToken,
 
         ColonToken,
+        CommaToken,
         SemicolonToken,
         QuestionMarkToken,
 
@@ -80,12 +81,13 @@ namespace BradLang.CodeAnalysis.Syntax
         // Expressions
         AssignmentExpression,
         BinaryExpression,
+        CallExpression,
         LiteralExpression,
         LiteralStringExpression,
         NameExpression,
         ParenthesizedExpression,
+        PostfixUnaryExpression,
         TernaryExpression,
         UnaryExpression,
-        PostfixUnaryExpression,
     }
 }

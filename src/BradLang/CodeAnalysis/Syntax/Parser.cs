@@ -285,7 +285,7 @@ namespace BradLang.CodeAnalysis.Syntax
             }
             else
             {
-                left = ParseMethodInvocation();
+                left = ParsePrimaryExpression();
 
             }
 
@@ -322,22 +322,6 @@ namespace BradLang.CodeAnalysis.Syntax
             return left;
         }
 
-        private ExpressionSyntax ParseMethodInvocation()
-        {
-            if (CurrentToken.Kind == SyntaxKind.IdentifierToken &&
-                PeekToken(1).Kind == SyntaxKind.OpenParenthesisToken)
-            {
-                var methodNameIdentifier = MatchToken(SyntaxKind.IdentifierToken);
-                var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
-                var argumentExpression = ParseExpression();
-                var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
-
-                return new MethodInvocationExpressionSyntax(methodNameIdentifier, openParenthesisToken, argumentExpression, closeParenthesisToken);
-            }
-
-            return ParsePrimaryExpression();
-        }
-
         private ExpressionSyntax ParsePrimaryExpression()
         {
             switch (CurrentToken.Kind)
@@ -357,7 +341,7 @@ namespace BradLang.CodeAnalysis.Syntax
 
                 case SyntaxKind.IdentifierToken:
                 default:
-                    return ParseNameExpression();
+                    return ParseNameOrCallExpression();
             }
         }
 
@@ -392,11 +376,55 @@ namespace BradLang.CodeAnalysis.Syntax
             return new LiteralExpressionSyntax(numberToken);
         }
 
+        private ExpressionSyntax ParseNameOrCallExpression()
+        {
+            if (PeekToken(0).Kind == SyntaxKind.IdentifierToken &&
+                PeekToken(1).Kind == SyntaxKind.OpenParenthesisToken)
+            {
+                return ParseCallExpression();
+            }
+
+            return ParseNameExpression();
+        }
+
+        private ExpressionSyntax ParseCallExpression()
+        {
+            var nameToken = MatchToken(SyntaxKind.IdentifierToken);
+            var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+            var arguments = ParseArguments();
+            var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+
+            return new CallExpressionSyntax(nameToken, openParenthesisToken, arguments, closeParenthesisToken);
+        }
+
+        private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
+        {
+            var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+
+            while (CurrentToken.Kind != SyntaxKind.CloseParenthesisToken &&
+                CurrentToken.Kind != SyntaxKind.EndOfFileToken)
+            {
+                var expression = ParseExpression();
+
+                nodesAndSeparators.Add(expression);
+
+                if (CurrentToken.Kind != SyntaxKind.CloseParenthesisToken)
+                {
+                    var comma = MatchToken(SyntaxKind.CommaToken);
+
+                    nodesAndSeparators.Add( comma);
+                }
+            }
+
+            return new SeparatedSyntaxList<ExpressionSyntax>(nodesAndSeparators.ToImmutable());
+        }
+
         private ExpressionSyntax ParseNameExpression()
         {
             var nameToken = MatchToken(SyntaxKind.IdentifierToken);
 
             return new NameExpressionSyntax(nameToken);
         }
+
     }
 }

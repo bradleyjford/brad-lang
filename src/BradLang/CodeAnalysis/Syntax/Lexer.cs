@@ -43,6 +43,10 @@ namespace BradLang.CodeAnalysis.Syntax
                     _position++;
                     _kind = SyntaxKind.SemicolonToken;
                     break;
+                case ',':
+                    _position++;
+                    _kind = SyntaxKind.CommaToken;
+                    break;
                 case '<':
                     _position++;
 

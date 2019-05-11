@@ -15,12 +15,14 @@ namespace BradLang.CodeAnalysis.Binding
         // Expressions
         AssignmentExpression,
         BinaryExpression,
+        CallExpression,
+        ConditionalGotoStatement,
+        ErrorExpression,
+        GotoStatement,
+        LabelStatement,
         LiteralExpression,
         TernaryExpression,
         UnaryExpression,
         VariableExpression,
-        LabelStatement,
-        GotoStatement,
-        ConditionalGotoStatement,
     }
 }

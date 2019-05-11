@@ -142,6 +142,15 @@ namespace BradLang.CommandLine
 
         protected override void RenderLine(string line)
         {
+            if (line.StartsWith("#"))
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(line);
+                Console.ResetColor();
+
+                return;
+            }
+
             var tokens = SyntaxTree.ParseTokens(line);
 
             foreach (var token in tokens)

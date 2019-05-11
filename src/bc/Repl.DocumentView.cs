@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace BradLang.CommandLine
 {
-    partial class Repl
+    internal partial class Repl
     {
         private class DocumentView
         {

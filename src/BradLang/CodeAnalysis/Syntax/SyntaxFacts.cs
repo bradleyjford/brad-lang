@@ -173,6 +173,8 @@ namespace BradLang.CodeAnalysis.Syntax
                     return "!";
                 case SyntaxKind.ColonToken:
                     return ":";
+                case SyntaxKind.CommaToken:
+                    return ",";
                 case SyntaxKind.EqualsToken:
                     return "=";
                 case SyntaxKind.PipeToken:

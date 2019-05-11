@@ -92,10 +92,16 @@ namespace BradLang.CodeAnalysis
             Report(span, message);
         }
 
-        internal void ReportMethodNotDefinied(TextSpan span, string methodName)
+        internal void ReportUndefinedFunction(TextSpan span, string name)
         {
-            var message = $"Method \"{methodName}\" is not defined.";
-            Report(span, message);        
+            var message = $"Function \"{name}\" is not defined.";
+            Report(span, message);
+        }
+
+        internal void ReportIncorrectArgumentCount(TextSpan span, string name, int expectedCount, int actualCount)
+        {
+            var message = $"Function '{name}' requires {expectedCount} arguments but was given {actualCount}.";
+            Report(span, message);
         }
     }
 }

@@ -33,6 +33,7 @@ namespace BradLang.CodeAnalysis.Lowering
         {
             var builder = ImmutableArray.CreateBuilder<BoundStatement>();
             var stack = new Stack<BoundStatement>();
+
             stack.Push(statement);
 
             while (stack.Count > 0)
@@ -42,7 +43,9 @@ namespace BradLang.CodeAnalysis.Lowering
                 if (current is BoundBlockStatement block)
                 {
                     foreach (var s in block.Statements.Reverse())
+                    {
                         stack.Push(s);
+                    }
                 }
                 else
                 {
@@ -68,7 +71,8 @@ namespace BradLang.CodeAnalysis.Lowering
                 var endLabel = GenerateLabel();
                 var gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, false);
                 var endLabelStatement = new BoundLabelStatement(endLabel);
-                var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(gotoFalse, node.ThenStatement, endLabelStatement));
+                var result = new BoundBlockStatement(ImmutableArray.Create(gotoFalse, node.ThenStatement, endLabelStatement));
+
                 return RewriteStatement(result);
             }
             else
@@ -94,7 +98,7 @@ namespace BradLang.CodeAnalysis.Lowering
                 var gotoEndStatement = new BoundGotoStatement(endLabel);
                 var elseLabelStatement = new BoundLabelStatement(elseLabel);
                 var endLabelStatement = new BoundLabelStatement(endLabel);
-                var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                var result = new BoundBlockStatement(ImmutableArray.Create(
                     gotoFalse,
                     node.ThenStatement,
                     gotoEndStatement,
@@ -132,7 +136,7 @@ namespace BradLang.CodeAnalysis.Lowering
             var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition);
             var endLabelStatement = new BoundLabelStatement(endLabel);
 
-            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+            var result = new BoundBlockStatement(ImmutableArray.Create(
                 gotoCheck,
                 continueLabelStatement,
                 node.Body,
