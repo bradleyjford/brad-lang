@@ -1,18 +1,17 @@
 using BradLang.CodeAnalysis.Symbols;
 
-namespace BradLang.CodeAnalysis.Binding
+namespace BradLang.CodeAnalysis.Binding;
+
+internal sealed class BoundVariableDeclaration : BoundStatement
 {
-    internal sealed class BoundVariableDeclaration : BoundStatement
+    public BoundVariableDeclaration(VariableSymbol variableSymbol, BoundExpression initializer)
     {
-        public BoundVariableDeclaration(VariableSymbol variableSymbol, BoundExpression initializer)
-        {
-            VariableSymbol = variableSymbol;
-            Initializer = initializer;
-        }
-
-        public override BoundNodeKind Kind => BoundNodeKind.VariableDeclaration;
-
-        public VariableSymbol VariableSymbol { get; }
-        public BoundExpression Initializer { get; }
+        VariableSymbol = variableSymbol;
+        Initializer = initializer;
     }
+
+    public override BoundNodeKind Kind => BoundNodeKind.VariableDeclaration;
+
+    public VariableSymbol VariableSymbol { get; }
+    public BoundExpression Initializer { get; }
 }

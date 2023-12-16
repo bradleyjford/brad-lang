@@ -1,16 +1,13 @@
-using System;
+namespace BradLang.CodeAnalysis.Binding;
 
-namespace BradLang.CodeAnalysis.Binding
+internal sealed class BoundExpressionStatement : BoundStatement
 {
-    internal sealed class BoundExpressionStatement : BoundStatement
+    public BoundExpressionStatement(BoundExpression expression)
     {
-        public BoundExpressionStatement(BoundExpression expression)
-        {
-            Expression = expression;
-        }
-
-        public override BoundNodeKind Kind => BoundNodeKind.ExpressionStatement;
-
-        public BoundExpression Expression { get; }
+        Expression = expression;
     }
+
+    public override BoundNodeKind Kind => BoundNodeKind.ExpressionStatement;
+
+    public BoundExpression Expression { get; }
 }

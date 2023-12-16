@@ -1,28 +1,25 @@
-using System;
+namespace BradLang.CodeAnalysis.Binding;
 
-namespace BradLang.CodeAnalysis.Binding
+internal enum BoundNodeKind
 {
-    internal enum BoundNodeKind
-    {
-        // Statements
-        BlockStatement,
-        ExpressionStatement,
-        ForStatement,
-        IfStatement,
-        VariableDeclaration,
-        WhileStatement,
+    // Statements
+    BlockStatement,
+    ExpressionStatement,
+    ForStatement,
+    IfStatement,
+    VariableDeclaration,
+    WhileStatement,
 
-        // Expressions
-        AssignmentExpression,
-        BinaryExpression,
-        CallExpression,
-        ConditionalGotoStatement,
-        ErrorExpression,
-        GotoStatement,
-        LabelStatement,
-        LiteralExpression,
-        TernaryExpression,
-        UnaryExpression,
-        VariableExpression,
-    }
+    // Expressions
+    AssignmentExpression,
+    BinaryExpression,
+    CallExpression,
+    ConditionalGotoStatement,
+    ErrorExpression,
+    GotoStatement,
+    LabelStatement,
+    LiteralExpression,
+    TernaryExpression,
+    UnaryExpression,
+    VariableExpression,
 }

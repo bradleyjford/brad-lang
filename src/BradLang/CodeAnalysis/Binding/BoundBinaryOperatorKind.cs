@@ -1,26 +1,23 @@
-using System;
+namespace BradLang.CodeAnalysis.Binding;
 
-namespace BradLang.CodeAnalysis.Binding
+internal enum BoundBinaryOperatorKind
 {
-    internal enum BoundBinaryOperatorKind
-    {
-        Addition,
-        Subtraction,
-        Multiplication,
-        Division,
+    Addition,
+    Subtraction,
+    Multiplication,
+    Division,
         
-        LessThan,
-        LessThanEquals,
-        GreaterThan,
-        GreaterThanEquals,
+    LessThan,
+    LessThanEquals,
+    GreaterThan,
+    GreaterThanEquals,
         
-        Equals,
-        NotEquals,
-        LogicalAnd,
-        LogicalOr,
-        Modulus,
-        BitwiseOr,
-        BitwiseAnd,
-        BitwiseXor
-    }
+    Equals,
+    NotEquals,
+    LogicalAnd,
+    LogicalOr,
+    Modulus,
+    BitwiseOr,
+    BitwiseAnd,
+    BitwiseXor
 }

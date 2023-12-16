@@ -1,16 +1,13 @@
-using System;
+namespace BradLang.CodeAnalysis.Binding;
 
-namespace BradLang.CodeAnalysis.Binding
+internal enum BoundUnaryOperatorKind
 {
-    internal enum BoundUnaryOperatorKind
-    {
-        Identity,
-        Negation,
-        LogicalNegation,
-        PrefixIncrement,
-        PrefixDecrement,
-        PostfixIncrement,
-        PostfixDecrement,
-        OnesCompliment,
-    }
+    Identity,
+    Negation,
+    LogicalNegation,
+    PrefixIncrement,
+    PrefixDecrement,
+    PostfixIncrement,
+    PostfixDecrement,
+    OnesCompliment,
 }

@@ -5,76 +5,76 @@ using BradLang.CodeAnalysis.Symbols;
 using BradLang.CodeAnalysis.Syntax;
 using Xunit;
 
-namespace BradLang.Tests.CodeAnalysis
+namespace BradLang.Tests.CodeAnalysis;
+
+public class EvaluatorTests
 {
-    public class EvaluatorTests
+    [Theory]
+    [InlineData("1", 1)]
+    [InlineData("+45", 45)]
+    [InlineData("-1", -1)]
+    [InlineData("1 + 2", 3)]
+    [InlineData("17 - 9", 8)]
+    [InlineData("2 * 7", 14)]
+    [InlineData("21 / 7", 3)]
+    [InlineData("5 % 3", 2)]
+    [InlineData("1 + 2 * 3", 7)]
+    [InlineData("(1 + 2) * 3", 9)]
+    [InlineData("1 & 3", 1)]
+    [InlineData("1 & 0", 0)]
+    [InlineData("1 | 2", 3)]
+    [InlineData("1 ^ 3", 2)]
+    [InlineData("(540)", 540)]
+    [InlineData("true", true)]
+    [InlineData("false", false)]
+    [InlineData("!true", false)]
+    [InlineData("!false", true)]
+    [InlineData("~1", -2)]
+    [InlineData("10 == 10", true)]
+    [InlineData("50 != 12", true)]
+    [InlineData("10 > 9", true)]
+    [InlineData("10 > 100", false)]
+    [InlineData("10 >= 10", true)]
+    [InlineData("10 >= 100", false)]
+    [InlineData("9 < 10", true)]
+    [InlineData("100 < 10", false)]
+    [InlineData("10 <= 10", true)]
+    [InlineData("100 <= 10", false)]
+    [InlineData("true && true", true)]
+    [InlineData("true || false", true)]
+    [InlineData("true && false", false)]
+    [InlineData("\"Hello\"", "Hello")]
+    [InlineData("\"Hello, \" + \"World!\"", "Hello, World!")]
+    [InlineData("\"Hello\" == \"Hello\"", true)]
+    [InlineData("\"Hello\" == \"World\"", false)]
+    [InlineData("\"Hello\" != \"Hello\"", false)]
+    [InlineData("\"Hello\" != \"World\"", true)]
+    [InlineData("{ var a = 42 a }", 42)]
+    [InlineData("{ var a = 0 var b = 0 a = b = 10 a }", 10)]
+    [InlineData("1 == 1 ? \"Correct\" : \"Incorrect\"", "Correct")]
+    [InlineData("1 == 2 ? \"Incorrect\" : \"Correct\"", "Correct")]
+    [InlineData("{ var a = 10 if (a == 10) { a = 50 } a}", 50)]
+    [InlineData("{ var a = 10 if (a == 50) { a = 50 } a}", 10)]
+    [InlineData("{ var a = 10 if (a == 10) { a = 50 } else { a = 0 } a }", 50)]
+    [InlineData("{ var a = 10 if (a == 50) { a = 50 } else { a = 0 } a }", 0)]
+    [InlineData("{ var a = 0 while (a < 10) { a = a + 1 } a }", 10)]
+    public void Evaluator_Evaluate(string text, object expectedValue)
     {
-        [Theory]
-        [InlineData("1", 1)]
-        [InlineData("+45", 45)]
-        [InlineData("-1", -1)]
-        [InlineData("1 + 2", 3)]
-        [InlineData("17 - 9", 8)]
-        [InlineData("2 * 7", 14)]
-        [InlineData("21 / 7", 3)]
-        [InlineData("5 % 3", 2)]
-        [InlineData("1 + 2 * 3", 7)]
-        [InlineData("(1 + 2) * 3", 9)]
-        [InlineData("1 & 3", 1)]
-        [InlineData("1 & 0", 0)]
-        [InlineData("1 | 2", 3)]
-        [InlineData("1 ^ 3", 2)]
-        [InlineData("(540)", 540)]
-        [InlineData("true", true)]
-        [InlineData("false", false)]
-        [InlineData("!true", false)]
-        [InlineData("!false", true)]
-        [InlineData("~1", -2)]
-        [InlineData("10 == 10", true)]
-        [InlineData("50 != 12", true)]
-        [InlineData("10 > 9", true)]
-        [InlineData("10 > 100", false)]
-        [InlineData("10 >= 10", true)]
-        [InlineData("10 >= 100", false)]
-        [InlineData("9 < 10", true)]
-        [InlineData("100 < 10", false)]
-        [InlineData("10 <= 10", true)]
-        [InlineData("100 <= 10", false)]
-        [InlineData("true && true", true)]
-        [InlineData("true || false", true)]
-        [InlineData("true && false", false)]
-        [InlineData("\"Hello\"", "Hello")]
-        [InlineData("\"Hello, \" + \"World!\"", "Hello, World!")]
-        [InlineData("\"Hello\" == \"Hello\"", true)]
-        [InlineData("\"Hello\" == \"World\"", false)]
-        [InlineData("\"Hello\" != \"Hello\"", false)]
-        [InlineData("\"Hello\" != \"World\"", true)]
-        [InlineData("{ var a = 42 a }", 42)]
-        [InlineData("{ var a = 0 var b = 0 a = b = 10 a }", 10)]
-        [InlineData("1 == 1 ? \"Correct\" : \"Incorrect\"", "Correct")]
-        [InlineData("1 == 2 ? \"Incorrect\" : \"Correct\"", "Correct")]
-        [InlineData("{ var a = 10 if (a == 10) { a = 50 } a}", 50)]
-        [InlineData("{ var a = 10 if (a == 50) { a = 50 } a}", 10)]
-        [InlineData("{ var a = 10 if (a == 10) { a = 50 } else { a = 0 } a }", 50)]
-        [InlineData("{ var a = 10 if (a == 50) { a = 50 } else { a = 0 } a }", 0)]
-        [InlineData("{ var a = 0 while (a < 10) { a = a + 1 } a }", 10)]
-        public void Evaluator_Evaluate(string text, object expectedValue)
-        {
-            var syntaxTree = SyntaxTree.Parse(text);   
-            var compilation = new Compilation(syntaxTree);
+        var syntaxTree = SyntaxTree.Parse(text);   
+        var compilation = new Compilation(syntaxTree);
             
-            var variables = new Dictionary<VariableSymbol, object>();
+        var variables = new Dictionary<VariableSymbol, object>();
 
-            var result = compilation.Evaluate(variables);
+        var result = compilation.Evaluate(variables);
 
-            Assert.Empty(result.Diagnostics);
-            Assert.Equal(expectedValue, result.Value);
-        }
+        Assert.Empty(result.Diagnostics);
+        Assert.Equal(expectedValue, result.Value);
+    }
 
-        [Fact]
-        public void Evaluator_VariableDeclaration_Reports_Redeclaration()
-        {
-            var text = @"
+    [Fact]
+    public void Evaluator_VariableDeclaration_Reports_Redeclaration()
+    {
+        var text = @"
                 {
                     var x = 10
                     var y = 100
@@ -85,59 +85,58 @@ namespace BradLang.Tests.CodeAnalysis
                 }
             ";
 
-            var diagnostics = @"
+        var diagnostics = @"
                 Variable ""x"" is already declared.
             ";
 
-            AssertDiagnostics(text, diagnostics);
-        }
+        AssertDiagnostics(text, diagnostics);
+    }
 
-        [Fact]
-        public void Evaluator_BlockStatement_NoInfiniteLoop()
-        {
-            var text = @"
+    [Fact]
+    public void Evaluator_BlockStatement_NoInfiniteLoop()
+    {
+        var text = @"
                 {
                 [)][]
             ";
 
-            var diagnostics = @"
+        var diagnostics = @"
                 Unexpected token <CloseParenthesisToken>, expected <IdentifierToken>.
                 Unexpected token <EndOfFileToken>, expected <CloseBraceToken>.
             ";
 
-            AssertDiagnostics(text, diagnostics);
-        }
+        AssertDiagnostics(text, diagnostics);
+    }
 
-        private void AssertDiagnostics(string text, string diagnosticText)
-        {
-            var annotatedText = AnnotatedText.Parse(text);
-            var syntaxTree = SyntaxTree.Parse(annotatedText.Text);
+    private void AssertDiagnostics(string text, string diagnosticText)
+    {
+        var annotatedText = AnnotatedText.Parse(text);
+        var syntaxTree = SyntaxTree.Parse(annotatedText.Text);
             
-            var compilation = new Compilation(syntaxTree);
+        var compilation = new Compilation(syntaxTree);
 
-            var result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
+        var result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
 
-            var expectedDiagnostics = diagnosticText.UnindentLines();
+        var expectedDiagnostics = diagnosticText.UnindentLines();
 
-            if (annotatedText.Spans.Length != expectedDiagnostics.Length)
-            {
-                throw new Exception("ERROR: Must mark as many spans as there are expected diagnostics");
-            }
-
-            Assert.Equal(expectedDiagnostics.Length, result.Diagnostics.Length);
-
-            for (var i = 0; i < expectedDiagnostics.Length; i++)
-            {
-                var expectedMessage = expectedDiagnostics[i];
-                var actualMessage = result.Diagnostics[i].Message;
-
-                Assert.Equal(expectedMessage, actualMessage);
-
-                var expectedSpan = annotatedText.Spans[i];
-                var actualSpan = result.Diagnostics[i].Span;
-
-                Assert.Equal(expectedSpan, actualSpan);
-            }
+        if (annotatedText.Spans.Length != expectedDiagnostics.Length)
+        {
+            throw new Exception("ERROR: Must mark as many spans as there are expected diagnostics");
         }
-    } 
+
+        Assert.Equal(expectedDiagnostics.Length, result.Diagnostics.Length);
+
+        for (var i = 0; i < expectedDiagnostics.Length; i++)
+        {
+            var expectedMessage = expectedDiagnostics[i];
+            var actualMessage = result.Diagnostics[i].Message;
+
+            Assert.Equal(expectedMessage, actualMessage);
+
+            var expectedSpan = annotatedText.Spans[i];
+            var actualSpan = result.Diagnostics[i].Span;
+
+            Assert.Equal(expectedSpan, actualSpan);
+        }
+    }
 }

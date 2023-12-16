@@ -1,7 +1,6 @@
-﻿using BradLang.CodeAnalysis.Text;
-using Xunit;
+﻿using Xunit;
 
-namespace BradLang.Tests.CodeAnalysis
+namespace BradLang.Tests
 {
     public class StringExtensionTests
     {

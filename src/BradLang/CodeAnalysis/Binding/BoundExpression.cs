@@ -1,10 +1,8 @@
-using System;
 using BradLang.CodeAnalysis.Symbols;
 
-namespace BradLang.CodeAnalysis.Binding
+namespace BradLang.CodeAnalysis.Binding;
+
+internal abstract class BoundExpression : BoundNode
 {
-    internal abstract class BoundExpression : BoundNode
-    {
-        public abstract TypeSymbol Type { get; }
-    }
+    public abstract TypeSymbol Type { get; }
 }

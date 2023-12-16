@@ -1,93 +1,90 @@
-using System;
+namespace BradLang.CodeAnalysis.Syntax;
 
-namespace BradLang.CodeAnalysis.Syntax
+public enum SyntaxKind
 {
-    public enum SyntaxKind
-    {
-        // Tokens
-        UnknownToken,
-        EndOfFileToken,
-        WhiteSpaceToken,
+    // Tokens
+    UnknownToken,
+    EndOfFileToken,
+    WhiteSpaceToken,
 
-        NumberToken,
+    NumberToken,
 
-        PlusToken,
-        PlusPlusToken,
-        MinusToken,
-        MinusMinusToken,
-        StarToken,
-        SlashToken,
-        PercentToken,
+    PlusToken,
+    PlusPlusToken,
+    MinusToken,
+    MinusMinusToken,
+    StarToken,
+    SlashToken,
+    PercentToken,
 
-        ColonToken,
-        CommaToken,
-        SemicolonToken,
-        QuestionMarkToken,
+    ColonToken,
+    CommaToken,
+    SemicolonToken,
+    QuestionMarkToken,
 
-        OpenParenthesisToken,
-        CloseParenthesisToken,
-        OpenBraceToken,
-        CloseBraceToken,
-        LessThanToken,
-        LessThanEqualsToken,
-        GreaterThanToken,
-        GreaterThanEqualsToken,
+    OpenParenthesisToken,
+    CloseParenthesisToken,
+    OpenBraceToken,
+    CloseBraceToken,
+    LessThanToken,
+    LessThanEqualsToken,
+    GreaterThanToken,
+    GreaterThanEqualsToken,
 
-        EqualsToken,
-        EqualsEqualsToken,
+    EqualsToken,
+    EqualsEqualsToken,
 
-        BangToken,
-        BangEqualsToken,
+    BangToken,
+    BangEqualsToken,
 
-        AmpersandToken,
-        AmpersandAmpersandToken,
-        PipeToken,
-        PipePipeToken,
+    AmpersandToken,
+    AmpersandAmpersandToken,
+    PipeToken,
+    PipePipeToken,
 
-        TildeToken,
-        HatToken,
+    TildeToken,
+    HatToken,
 
-        IdentifierToken,
+    IdentifierToken,
 
-        StringToken,
+    StringToken,
 
-        // Nodes
-        CompilationUnit,
+    // Nodes
+    CompilationUnit,
 
-        // Keyword
-        ElseKeyword,
-        FalseKeyword,
-        ForKeyword,
-        IfKeyword,
-        LetKeyword,
-        ReturnKeyword,
-        ToKeyword,
-        TrueKeyword,
-        VarKeyword,
-        WhileKeyword,
+    // Keyword
+    ElseKeyword,
+    FalseKeyword,
+    ForKeyword,
+    IfKeyword,
+    LetKeyword,
+    ReturnKeyword,
+    ToKeyword,
+    TrueKeyword,
+    VarKeyword,
+    WhileKeyword,
 
-        // Statements
-        BlockStatement,
-        ElseClause,
-        ForStatement,
-        IfStatement,
-        MethodDeclaration,
-        MethodInvocation,
-        ReturnStatement,
-        StatementExpression,
-        VariableDeclarationStatement,
-        WhileStatement,
+    // Statements
+    BlockStatement,
+    ElseClause,
+    ForStatement,
+    IfStatement,
+    MethodDeclaration,
+    MethodInvocation,
+    ReturnStatement,
+    StatementExpression,
+    VariableDeclarationStatement,
+    WhileStatement,
 
-        // Expressions
-        AssignmentExpression,
-        BinaryExpression,
-        CallExpression,
-        LiteralExpression,
-        LiteralStringExpression,
-        NameExpression,
-        ParenthesizedExpression,
-        PostfixUnaryExpression,
-        TernaryExpression,
-        UnaryExpression,
-    }
+    // Expressions
+    AssignmentExpression,
+    BinaryExpression,
+    CallExpression,
+    LiteralExpression,
+    LiteralStringExpression,
+    NameExpression,
+    ParenthesizedExpression,
+    PostfixUnaryExpression,
+    TernaryExpression,
+    UnaryExpression,
 }

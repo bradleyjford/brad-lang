@@ -1,53 +1,51 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 
-namespace BradLang.CodeAnalysis.Syntax
+namespace BradLang.CodeAnalysis.Syntax;
+
+public sealed class SyntaxNodeDiagnosticWriter
 {
-    public sealed class SyntaxNodeDiagnosticWriter
+    public static void Write(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
     {
-        public static void Write(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
+        if (node == null)
         {
-            if (node == null)
-            {
-                return;
-            }
+            return;
+        }
 
-            var isConsoleWriter = writer == Console.Out;
+        var isConsoleWriter = writer == Console.Out;
 
-            var marker = isLast ? "└──" : "├──";
+        var marker = isLast ? "└──" : "├──";
 
-            writer.Write(indent);
-            writer.Write(marker);
+        writer.Write(indent);
+        writer.Write(marker);
 
-            if (isConsoleWriter)
-            {
-                Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.Cyan;
-            }
+        if (isConsoleWriter)
+        {
+            Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.Cyan;
+        }
             
-            writer.Write(node.Kind);
+        writer.Write(node.Kind);
 
-            if (node is SyntaxToken t && t.Value != null)
-            {
-                writer.Write(" ");
-                writer.Write(t.Value);
-            }
+        if (node is SyntaxToken t && t.Value != null)
+        {
+            writer.Write(" ");
+            writer.Write(t.Value);
+        }
 
-            if (isConsoleWriter)
-            {
-                Console.ResetColor();
-            }
+        if (isConsoleWriter)
+        {
+            Console.ResetColor();
+        }
 
-            writer.WriteLine();
+        writer.WriteLine();
 
-            indent += isLast ? "   " : "│  ";
+        indent += isLast ? "   " : "│  ";
 
-            var lastChild = node.GetChildren().LastOrDefault();
+        var lastChild = node.GetChildren().LastOrDefault();
 
-            foreach (var child in node.GetChildren())
-            {
-                Write(writer, child, indent, child == lastChild);
-            }
+        foreach (var child in node.GetChildren())
+        {
+            Write(writer, child, indent, child == lastChild);
         }
     }
 }

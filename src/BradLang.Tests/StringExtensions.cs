@@ -4,7 +4,7 @@ using System.IO;
 
 namespace BradLang.Tests
 {
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         public static string Unindent(this string text)
         {

@@ -1,11 +1,10 @@
 ﻿using BradLang.CodeAnalysis.Symbols;
 
-namespace BradLang.CodeAnalysis.Binding
-{
-    internal class BoundErrorExpression : BoundExpression
-    {
-        public override TypeSymbol Type => TypeSymbol.Error;
+namespace BradLang.CodeAnalysis.Binding;
 
-        public override BoundNodeKind Kind => BoundNodeKind.ErrorExpression;
-    }
+internal class BoundErrorExpression : BoundExpression
+{
+    public override TypeSymbol Type => TypeSymbol.Error;
+
+    public override BoundNodeKind Kind => BoundNodeKind.ErrorExpression;
 }

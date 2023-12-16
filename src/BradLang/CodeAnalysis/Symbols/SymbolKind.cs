@@ -1,12 +1,9 @@
-﻿using System;
+﻿namespace BradLang.CodeAnalysis.Symbols;
 
-namespace BradLang.CodeAnalysis.Symbols
+public enum SymbolKind
 {
-    public enum SymbolKind
-    {
-        FunctionSymbol,
-        ParameterSymbol,
-        TypeSymbol,
-        VariableSymbol
-    }
+    FunctionSymbol,
+    ParameterSymbol,
+    TypeSymbol,
+    VariableSymbol
 }

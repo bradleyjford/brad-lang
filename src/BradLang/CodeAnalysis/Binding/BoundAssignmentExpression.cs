@@ -1,20 +1,18 @@
-using System;
 using BradLang.CodeAnalysis.Symbols;
 
-namespace BradLang.CodeAnalysis.Binding
+namespace BradLang.CodeAnalysis.Binding;
+
+internal sealed class BoundAssignmentExpression : BoundExpression
 {
-    internal sealed class BoundAssignmentExpression : BoundExpression
+    public BoundAssignmentExpression(VariableSymbol variable, BoundExpression expression)
     {
-        public BoundAssignmentExpression(VariableSymbol variable, BoundExpression expression)
-        {
-            Variable = variable;
-            Expression = expression;
-        }
-
-        public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpression;
-        public override TypeSymbol Type => Expression.Type;
-
-        public VariableSymbol Variable { get; }
-        public BoundExpression Expression { get; }
+        Variable = variable;
+        Expression = expression;
     }
+
+    public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpression;
+    public override TypeSymbol Type => Expression.Type;
+
+    public VariableSymbol Variable { get; }
+    public BoundExpression Expression { get; }
 }

@@ -1,6 +1,5 @@
-namespace BradLang.CodeAnalysis.Syntax
+namespace BradLang.CodeAnalysis.Syntax;
+
+public abstract class StatementSyntax : SyntaxNode
 {
-    public abstract class StatementSyntax : SyntaxNode
-    {
-    }
 }

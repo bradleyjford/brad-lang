@@ -1,26 +1,23 @@
-using System;
-using System.Collections.Generic;
 using BradLang.CodeAnalysis.Text;
 
-namespace BradLang.CodeAnalysis.Syntax
+namespace BradLang.CodeAnalysis.Syntax;
+
+public sealed class NameExpressionSyntax : ExpressionSyntax
 {
-    public sealed class NameExpressionSyntax : ExpressionSyntax
+    public NameExpressionSyntax(SyntaxToken nameToken)
     {
-        public NameExpressionSyntax(SyntaxToken nameToken)
-        {
-            NameToken = nameToken;
+        NameToken = nameToken;
 
-            Span = nameToken.Span;
-        }
+        Span = nameToken.Span;
+    }
 
-        public override SyntaxKind Kind => SyntaxKind.NameExpression;
-        public override TextSpan Span { get; }
+    public override SyntaxKind Kind => SyntaxKind.NameExpression;
+    public override TextSpan Span { get; }
 
-        public SyntaxToken NameToken { get; }
+    public SyntaxToken NameToken { get; }
 
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            yield return NameToken;
-        }
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return NameToken;
     }
 }

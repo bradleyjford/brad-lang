@@ -1,38 +1,35 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BradLang.CodeAnalysis.Text;
 
-namespace BradLang.CodeAnalysis.Syntax
+namespace BradLang.CodeAnalysis.Syntax;
+
+public abstract class SyntaxNode
 {
-    public abstract class SyntaxNode
+    public abstract SyntaxKind Kind { get; }
+
+    public abstract IEnumerable<SyntaxNode> GetChildren();
+
+    public abstract TextSpan Span { get; }
+
+    public SyntaxToken GetLastToken()
     {
-        public abstract SyntaxKind Kind { get; }
-
-        public abstract IEnumerable<SyntaxNode> GetChildren();
-
-        public abstract TextSpan Span { get; }
-
-        public SyntaxToken GetLastToken()
+        if (this is SyntaxToken token)
         {
-            if (this is SyntaxToken token)
-            {
-                return token;
-            }
-
-            // A syntax node should always contain at least 1 token.
-            return GetChildren().Last().GetLastToken();
+            return token;
         }
 
-        public override string ToString()
-        {
-            using (var writer = new StringWriter())
-            {
-                SyntaxNodeDiagnosticWriter.Write(writer, this);
+        // A syntax node should always contain at least 1 token.
+        return GetChildren().Last().GetLastToken();
+    }
 
-                return writer.ToString();
-            }
+    public override string ToString()
+    {
+        using (var writer = new StringWriter())
+        {
+            SyntaxNodeDiagnosticWriter.Write(writer, this);
+
+            return writer.ToString();
         }
     }
 }

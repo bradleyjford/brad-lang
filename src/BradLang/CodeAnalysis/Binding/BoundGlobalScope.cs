@@ -1,26 +1,24 @@
 using System.Collections.Immutable;
 using BradLang.CodeAnalysis.Symbols;
-using BradLang.CodeAnalysis.Syntax;
 
-namespace BradLang.CodeAnalysis.Binding
+namespace BradLang.CodeAnalysis.Binding;
+
+internal sealed class BoundGlobalScope
 {
-    internal sealed class BoundGlobalScope
+    public BoundGlobalScope(
+        BoundGlobalScope previous,
+        ImmutableArray<VariableSymbol> variables, 
+        ImmutableArray<Diagnostic> diagnostics, 
+        BoundStatement statement)
     {
-        public BoundGlobalScope(
-            BoundGlobalScope previous,
-            ImmutableArray<VariableSymbol> variables, 
-            ImmutableArray<Diagnostic> diagnostics, 
-            BoundStatement statement)
-        {
-            Previous = previous;
-            Variables = variables;
-            Diagnostics = diagnostics;
-            Statement = statement;
-        }
-
-        public BoundGlobalScope Previous { get; }
-        public ImmutableArray<VariableSymbol> Variables { get; }
-        public ImmutableArray<Diagnostic> Diagnostics { get; }
-        public BoundStatement Statement { get; }
+        Previous = previous;
+        Variables = variables;
+        Diagnostics = diagnostics;
+        Statement = statement;
     }
+
+    public BoundGlobalScope Previous { get; }
+    public ImmutableArray<VariableSymbol> Variables { get; }
+    public ImmutableArray<Diagnostic> Diagnostics { get; }
+    public BoundStatement Statement { get; }
 }

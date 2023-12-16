@@ -4,83 +4,82 @@ using System.Linq;
 using BradLang.CodeAnalysis.Syntax;
 using Xunit;
 
-namespace BradLang.Tests.CodeAnalysis.Syntax
+namespace BradLang.Tests.CodeAnalysis.Syntax;
+
+internal sealed class AssertingEnumerator : IDisposable
 {
-    internal sealed class AssertingEnumerator : IDisposable
+    private readonly IEnumerator<SyntaxNode> _enumerator;
+    private bool _hasErrors;
+
+    public AssertingEnumerator(SyntaxNode node)
     {
-        private readonly IEnumerator<SyntaxNode> _enumerator;
-        private bool _hasErrors;
+        _enumerator = Flatten(node).GetEnumerator();
+    }
 
-        public AssertingEnumerator(SyntaxNode node)
+    private bool MarkFailed()
+    {
+        _hasErrors = true;
+
+        return false;
+    }
+
+    public void Dispose()
+    {
+        if (!_hasErrors)
         {
-            _enumerator = Flatten(node).GetEnumerator();
+            Assert.False(_enumerator.MoveNext());
         }
 
-        private bool MarkFailed()
-        {
-            _hasErrors = true;
+        _enumerator.Dispose();
+    }
 
-            return false;
-        }
+    private static IEnumerable<SyntaxNode> Flatten(SyntaxNode node)
+    {
+        var stack = new Stack<SyntaxNode>();
 
-        public void Dispose()
+        stack.Push(node);
+
+        while (stack.Count > 0)
         {
-            if (!_hasErrors)
+            var currentNode = stack.Pop();
+
+            yield return currentNode;
+
+            foreach (var child in currentNode.GetChildren().Reverse())
             {
-                Assert.False(_enumerator.MoveNext());
-            }
-
-            _enumerator.Dispose();
-        }
-
-        private static IEnumerable<SyntaxNode> Flatten(SyntaxNode node)
-        {
-            var stack = new Stack<SyntaxNode>();
-
-            stack.Push(node);
-
-            while (stack.Count > 0)
-            {
-                var currentNode = stack.Pop();
-
-                yield return currentNode;
-
-                foreach (var child in currentNode.GetChildren().Reverse())
-                {
-                    stack.Push(child);
-                }
+                stack.Push(child);
             }
         }
+    }
 
-        public void AssertNode(SyntaxKind kind)
+    public void AssertNode(SyntaxKind kind)
+    {
+        try
         {
-            try
-            {
-                Assert.True(_enumerator.MoveNext());
-                Assert.Equal(kind, _enumerator.Current.Kind);
-                Assert.IsNotType<SyntaxToken>(_enumerator.Current);
-            }
-            catch when (MarkFailed())
-            {
-                throw;
-            }
+            Assert.True(_enumerator.MoveNext());
+            Assert.Equal(kind, _enumerator.Current.Kind);
+            Assert.IsNotType<SyntaxToken>(_enumerator.Current);
         }
-
-        public void AssertToken(SyntaxKind kind, string text)
+        catch when (MarkFailed())
         {
-            try
-            {
-                Assert.True(_enumerator.MoveNext());
-                Assert.Equal(kind, _enumerator.Current.Kind);
+            throw;
+        }
+    }
 
-                var token = Assert.IsType<SyntaxToken>(_enumerator.Current);
+    public void AssertToken(SyntaxKind kind, string text)
+    {
+        try
+        {
+            Assert.True(_enumerator.MoveNext());
+            Assert.Equal(kind, _enumerator.Current.Kind);
+
+            var token = Assert.IsType<SyntaxToken>(_enumerator.Current);
                 
-                Assert.Equal(text, token.Text);
-            }
-            catch when (MarkFailed())
-            {
-                throw;
-            }
+            Assert.Equal(text, token.Text);
+        }
+        catch when (MarkFailed())
+        {
+            throw;
         }
     }
 }

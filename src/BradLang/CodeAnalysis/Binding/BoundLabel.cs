@@ -1,16 +1,13 @@
-using System;
+namespace BradLang.CodeAnalysis.Binding;
 
-namespace BradLang.CodeAnalysis.Binding
+internal sealed class BoundLabel
 {
-    internal sealed class BoundLabel
+    public BoundLabel(string name)
     {
-        public BoundLabel(string name)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
-
-        public override string ToString() => Name;
+        Name = name;
     }
+
+    public string Name { get; }
+
+    public override string ToString() => Name;
 }

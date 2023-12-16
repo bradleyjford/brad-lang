@@ -4,61 +4,60 @@ using System.Collections.Immutable;
 using System.Text;
 using BradLang.CodeAnalysis.Text;
 
-namespace BradLang.Tests.CodeAnalysis
+namespace BradLang.Tests.CodeAnalysis;
+
+public sealed class AnnotatedText
 {
-    public sealed class AnnotatedText
+    public static AnnotatedText Parse(string text)
     {
-        public static AnnotatedText Parse(string text)
+        text = text.Unindent();
+
+        var textBuilder = new StringBuilder();
+        var spanBuilder = ImmutableArray.CreateBuilder<TextSpan>();
+        var startStack = new Stack<int>();
+
+        var position = 0;
+
+        foreach (var c in text)
         {
-            text = text.Unindent();
-
-            var textBuilder = new StringBuilder();
-            var spanBuilder = ImmutableArray.CreateBuilder<TextSpan>();
-            var startStack = new Stack<int>();
-
-            var position = 0;
-
-            foreach (var c in text)
+            if (c == '[')
             {
-                if (c == '[')
-                {
-                    startStack.Push(position);
-                }
-                else if (c == ']')
-                {
-                    if (startStack.Count == 0)
-                    {
-                        throw new ArgumentException("Too many ']' in text", nameof(text));
-                    }
-
-                    var start = startStack.Pop();
-                    var span = TextSpan.FromBounds(start, position);
-
-                    spanBuilder.Add(span);
-                }
-                else
-                {
-                    position++;
-
-                    textBuilder.Append(c);
-                }
+                startStack.Push(position);
             }
-
-            if (startStack.Count > 0)
+            else if (c == ']')
             {
-                throw new ArgumentException("Missing ']' in text", nameof(text));
-            }
+                if (startStack.Count == 0)
+                {
+                    throw new ArgumentException("Too many ']' in text", nameof(text));
+                }
 
-            return new AnnotatedText(textBuilder.ToString(), spanBuilder.ToImmutable());
+                var start = startStack.Pop();
+                var span = TextSpan.FromBounds(start, position);
+
+                spanBuilder.Add(span);
+            }
+            else
+            {
+                position++;
+
+                textBuilder.Append(c);
+            }
         }
 
-        private AnnotatedText(string text, ImmutableArray<TextSpan> spans)
+        if (startStack.Count > 0)
         {
-            Text = text;
-            Spans = spans;
+            throw new ArgumentException("Missing ']' in text", nameof(text));
         }
 
-        public string Text { get; }
-        public ImmutableArray<TextSpan> Spans { get; }
+        return new AnnotatedText(textBuilder.ToString(), spanBuilder.ToImmutable());
     }
+
+    private AnnotatedText(string text, ImmutableArray<TextSpan> spans)
+    {
+        Text = text;
+        Spans = spans;
+    }
+
+    public string Text { get; }
+    public ImmutableArray<TextSpan> Spans { get; }
 }

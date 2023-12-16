@@ -1,22 +1,20 @@
-using System;
 using BradLang.CodeAnalysis.Symbols;
 
-namespace BradLang.CodeAnalysis.Binding
+namespace BradLang.CodeAnalysis.Binding;
+
+internal sealed class BoundBinaryExpression : BoundExpression
 {
-    internal sealed class BoundBinaryExpression : BoundExpression
+    public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator @operator, BoundExpression right)
     {
-        public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator @operator, BoundExpression right)
-        {
-            Left = left;
-            Operator = @operator;
-            Right = right;
-        }
-
-        public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
-        public override TypeSymbol Type => Operator.Type;
-
-        public BoundExpression Left { get; }
-        public BoundBinaryOperator Operator { get; }
-        public BoundExpression Right { get; }
+        Left = left;
+        Operator = @operator;
+        Right = right;
     }
+
+    public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
+    public override TypeSymbol Type => Operator.Type;
+
+    public BoundExpression Left { get; }
+    public BoundBinaryOperator Operator { get; }
+    public BoundExpression Right { get; }
 }

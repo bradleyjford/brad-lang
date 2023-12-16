@@ -1,8 +1,5 @@
-using System;
+namespace BradLang.CodeAnalysis.Syntax;
 
-namespace BradLang.CodeAnalysis.Syntax
+public abstract class ExpressionSyntax : SyntaxNode
 {
-    public abstract class ExpressionSyntax : SyntaxNode
-    {
-    }
 }

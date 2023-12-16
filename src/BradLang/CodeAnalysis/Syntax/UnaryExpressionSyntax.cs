@@ -1,30 +1,27 @@
-using System;
-using System.Collections.Generic;
 using BradLang.CodeAnalysis.Text;
 
-namespace BradLang.CodeAnalysis.Syntax
+namespace BradLang.CodeAnalysis.Syntax;
+
+public sealed class UnaryExpressionSyntax : ExpressionSyntax
 {
-    public sealed class UnaryExpressionSyntax : ExpressionSyntax
+    public SyntaxToken OperatorToken { get; }
+    public ExpressionSyntax Operand { get; }
+
+    public UnaryExpressionSyntax(SyntaxToken operatorToken, ExpressionSyntax operand)
     {
-        public SyntaxToken OperatorToken { get; }
-        public ExpressionSyntax Operand { get; }
+        OperatorToken = operatorToken;
+        Operand = operand;
 
-        public UnaryExpressionSyntax(SyntaxToken operatorToken, ExpressionSyntax operand)
-        {
-            OperatorToken = operatorToken;
-            Operand = operand;
+        Span = TextSpan.FromBounds(operatorToken.Span.Start, operand.Span.End);
+    }
 
-            Span = TextSpan.FromBounds(operatorToken.Span.Start, operand.Span.End);
-        }
+    public override SyntaxKind Kind => SyntaxKind.UnaryExpression;
 
-        public override SyntaxKind Kind => SyntaxKind.UnaryExpression;
+    public override TextSpan Span { get; }
 
-        public override TextSpan Span { get; }
-
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            yield return OperatorToken;
-            yield return Operand;
-        }
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return OperatorToken;
+        yield return Operand;
     }
 }

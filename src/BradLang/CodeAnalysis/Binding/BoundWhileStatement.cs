@@ -1,16 +1,15 @@
-namespace BradLang.CodeAnalysis.Binding
+namespace BradLang.CodeAnalysis.Binding;
+
+internal sealed class BoundWhileStatement : BoundStatement
 {
-    internal sealed class BoundWhileStatement : BoundStatement
+    public BoundWhileStatement(BoundExpression condition, BoundStatement bodyStatement)
     {
-        public BoundWhileStatement(BoundExpression condition, BoundStatement bodyStatement)
-        {
-            Condition = condition;
-            Body = bodyStatement;
-        }
-
-        public override BoundNodeKind Kind => BoundNodeKind.WhileStatement;
-
-        public BoundExpression Condition { get; }
-        public BoundStatement Body { get; }
+        Condition = condition;
+        Body = bodyStatement;
     }
+
+    public override BoundNodeKind Kind => BoundNodeKind.WhileStatement;
+
+    public BoundExpression Condition { get; }
+    public BoundStatement Body { get; }
 }
