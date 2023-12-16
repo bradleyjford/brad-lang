@@ -2,7 +2,7 @@ using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundBinaryExpression : BoundExpression
+sealed class BoundBinaryExpression : BoundExpression
 {
     public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator @operator, BoundExpression right)
     {

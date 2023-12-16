@@ -1,6 +1,6 @@
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundLabelStatement : BoundStatement
+sealed class BoundLabelStatement : BoundStatement
 {
     public BoundLabelStatement(BoundLabel label)
     {

@@ -9,12 +9,12 @@ using BradLang.CodeAnalysis.Text;
 
 namespace BradLang.CommandLine;
 
-internal sealed class BradLangRepl : Repl
+sealed class BradLangRepl : Repl
 {
-    private Compilation _compilation;
-    private readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
-    private bool _showTree;
-    private bool _showProgram;
+    Compilation _compilation;
+    readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
+    bool _showTree;
+    bool _showProgram;
 
     protected override void EvaluateMetaCommand(string command)
     {
@@ -42,7 +42,7 @@ internal sealed class BradLangRepl : Repl
         }
     }
 
-    private static void WriteVariables(Dictionary<VariableSymbol, object> variables)
+    static void WriteVariables(Dictionary<VariableSymbol, object> variables)
     {
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.WriteLine();
@@ -102,7 +102,7 @@ internal sealed class BradLangRepl : Repl
 
     protected override bool IsCompleteDocument(string text)
     {
-        if (String.IsNullOrEmpty(text))
+        if (string.IsNullOrEmpty(text))
         {
             return true;
         }
@@ -129,7 +129,7 @@ internal sealed class BradLangRepl : Repl
         return true;
     }
 
-    private static SyntaxToken GetLastToken(SyntaxNode node)
+    static SyntaxToken GetLastToken(SyntaxNode node)
     {
         if (node is SyntaxToken token)
         {
@@ -182,7 +182,7 @@ internal sealed class BradLangRepl : Repl
         }
     }
 
-    private static void WriteDiagnostics(SourceText sourceText, ImmutableArray<Diagnostic> diagnostics)
+    static void WriteDiagnostics(SourceText sourceText, ImmutableArray<Diagnostic> diagnostics)
     {
         Console.WriteLine();
 

@@ -5,7 +5,7 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class Binder
+sealed class Binder
 {
     public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, SyntaxTree syntaxTree)
     {
@@ -25,7 +25,7 @@ internal sealed class Binder
         return new BoundGlobalScope(previous, variables, diagnostics, statement);
     }
 
-    private static BoundScope CreateParentScope(BoundGlobalScope previous)
+    static BoundScope CreateParentScope(BoundGlobalScope previous)
     {
         var stack = new Stack<BoundGlobalScope>();
 
@@ -55,18 +55,18 @@ internal sealed class Binder
         return parent;
     }
 
-    private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+    readonly DiagnosticBag _diagnostics = new DiagnosticBag();
 
-    private BoundScope _scope;
+    BoundScope _scope;
 
-    private Binder(BoundScope parent)
+    Binder(BoundScope parent)
     {
         _scope = new BoundScope(parent);
     }
 
     public DiagnosticBag Diagnostics => _diagnostics;
 
-    private BoundStatement BindStatement(StatementSyntax syntax)
+    BoundStatement BindStatement(StatementSyntax syntax)
     {
         switch (syntax.Kind)
         {
@@ -85,7 +85,7 @@ internal sealed class Binder
         }
     }
 
-    private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
+    BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
     {
         _scope = new BoundScope(_scope);
 
@@ -103,7 +103,7 @@ internal sealed class Binder
         return new BoundBlockStatement(statements.ToImmutable());
     }
 
-    private BoundStatement BindForStatement(ForStatementSyntax syntax)
+    BoundStatement BindForStatement(ForStatementSyntax syntax)
     {
         var lowerBound = BindExpression(syntax.LowerBoundExpression, TypeSymbol.Int);
         var upperBound = BindExpression(syntax.UpperBoundExpression, TypeSymbol.Int);
@@ -126,7 +126,7 @@ internal sealed class Binder
         return new BoundForStatement(variable, lowerBound, upperBound, body);
     }
 
-    private BoundStatement BindIfStatement(IfStatementSyntax syntax)
+    BoundStatement BindIfStatement(IfStatementSyntax syntax)
     {
         var condition = BindExpression(syntax.ConditionExpression, TypeSymbol.Bool);
 
@@ -141,7 +141,7 @@ internal sealed class Binder
         return new BoundIfStatement(condition, thenStatement, elseStatement);
     }
 
-    private BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
+    BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
     {
         var initializerExpression = BindExpression(syntax.Initializer);
 
@@ -157,7 +157,7 @@ internal sealed class Binder
         return new BoundVariableDeclaration(variableSymbol, initializerExpression);
     }
 
-    private BoundStatement BoundWhileStatement(WhileStatementSyntax syntax)
+    BoundStatement BoundWhileStatement(WhileStatementSyntax syntax)
     {
         var condition = BindExpression(syntax.ConditionExpression, TypeSymbol.Bool);
         var body = BindStatement(syntax.Body);
@@ -165,14 +165,14 @@ internal sealed class Binder
         return new BoundWhileStatement(condition, body);
     }
 
-    private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+    BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
     {
         var expression = BindExpression(syntax.Expression);
 
         return new BoundExpressionStatement(expression);
     }
 
-    private BoundExpression BindExpression(ExpressionSyntax syntax, TypeSymbol expectedType)
+    BoundExpression BindExpression(ExpressionSyntax syntax, TypeSymbol expectedType)
     {
         var expression = BindExpression(syntax);
 
@@ -188,7 +188,7 @@ internal sealed class Binder
         return expression;
     }
 
-    private BoundExpression BindExpression(ExpressionSyntax syntax)
+    BoundExpression BindExpression(ExpressionSyntax syntax)
     {
         switch (syntax.Kind)
         {
@@ -217,7 +217,7 @@ internal sealed class Binder
         }
     }
 
-    private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
+    BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
     {
         var name = syntax.IdentifierToken.Text;
         var boundExpression = BindExpression(syntax.Expression);
@@ -246,7 +246,7 @@ internal sealed class Binder
         return new BoundAssignmentExpression(variable, boundExpression);
     }
 
-    private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
+    BoundExpression BindCallExpression(CallExpressionSyntax syntax)
     {
         var arguments = ImmutableArray.CreateBuilder<BoundExpression>();
 
@@ -291,11 +291,11 @@ internal sealed class Binder
         return new BoundCallExpression(function, arguments.ToImmutable());
     }
 
-    private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+    BoundExpression BindNameExpression(NameExpressionSyntax syntax)
     {
         var name = syntax.NameToken.Text;
 
-        if (String.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name))
         {
             // Specified syntax was inserted by the Parser as a result of a parse error.
             // Diagnostic has already been reported by the Parser.
@@ -312,26 +312,26 @@ internal sealed class Binder
         return new BoundVariableExpression(variable);
     }
 
-    private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
+    BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
     {
         return BindExpression(syntax.Expression);
     }
 
-    private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
+    BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
         var value = syntax.Value;
 
         return new BoundLiteralExpression(value);
     }
 
-    private BoundExpression BindLiteralStringExpression(LiteralStringExpressionSyntax syntax)
+    BoundExpression BindLiteralStringExpression(LiteralStringExpressionSyntax syntax)
     {
         var value = syntax.Value.Replace("\\", "");
 
         return new BoundLiteralExpression(value);
     }
 
-    private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
+    BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var boundOperand = BindExpression(syntax.Operand);
 
@@ -352,7 +352,7 @@ internal sealed class Binder
         return new BoundUnaryExpression(boundOperator, boundOperand);
     }
 
-    private BoundExpression BindPostfixUnaryExpression(PostfixUnaryExpressionSyntax syntax)
+    BoundExpression BindPostfixUnaryExpression(PostfixUnaryExpressionSyntax syntax)
     {
         var boundOperand = BindExpression(syntax.Operand);
         var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
@@ -367,7 +367,7 @@ internal sealed class Binder
         return new BoundUnaryExpression(boundOperator, boundOperand);
     }
 
-    private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
+    BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
     {
         var left = BindExpression(syntax.LeftExpression);
         var right = BindExpression(syntax.RightExpression);
@@ -389,7 +389,7 @@ internal sealed class Binder
         return new BoundBinaryExpression(left, boundOperator, right);
     }
 
-    private BoundExpression BindTernaryExpression(ConditionalExpressionSyntax syntax)
+    BoundExpression BindTernaryExpression(ConditionalExpressionSyntax syntax)
     {
         var condition = BindExpression(syntax.ConditionExpression);
         var trueExpression = BindExpression(syntax.TrueExpression);

@@ -3,16 +3,16 @@ using System.Collections.ObjectModel;
 
 namespace BradLang.CommandLine;
 
-internal partial class Repl
+partial class Repl
 {
-    private class DocumentView
+    class DocumentView
     {
-        private readonly ObservableCollection<string> _document;
-        private readonly Action<string> _lineRenderer;
-        private readonly int _cursorTop;
-        private int _currentLine;
-        private int _currentCharacter;
-        private int _renderedLineCount;
+        readonly ObservableCollection<string> _document;
+        readonly Action<string> _lineRenderer;
+        readonly int _cursorTop;
+        int _currentLine;
+        int _currentCharacter;
+        int _renderedLineCount;
 
         public DocumentView(ObservableCollection<string> document, Action<string> lineRenderer)
         {
@@ -26,7 +26,7 @@ internal partial class Repl
             Render();
         }
 
-        private void UpdateCursorPosition()
+        void UpdateCursorPosition()
         {
             Console.CursorTop = _cursorTop + _currentLine;
 

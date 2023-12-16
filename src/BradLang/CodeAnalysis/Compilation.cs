@@ -11,14 +11,14 @@ namespace BradLang.CodeAnalysis;
 
 public sealed class Compilation
 {
-    private BoundGlobalScope _globalScope;
+    BoundGlobalScope _globalScope;
 
     public Compilation(SyntaxTree syntaxTree)
         : this(syntaxTree, null)
     {
     }
 
-    private Compilation(SyntaxTree syntaxTree, Compilation previous)
+    Compilation(SyntaxTree syntaxTree, Compilation previous)
     {
         SyntaxTree = syntaxTree;
         Previous = previous;
@@ -32,7 +32,7 @@ public sealed class Compilation
         return new Compilation(syntaxTree, this);
     }
 
-    private BoundGlobalScope GlobalScope 
+    BoundGlobalScope GlobalScope 
     {
         get
         {
@@ -74,7 +74,7 @@ public sealed class Compilation
         BoundTreeDiagnosticWriter.Write(writer, statement);
     }
 
-    private BoundBlockStatement GetStatement()
+    BoundBlockStatement GetStatement()
     {
         return Lowerer.Lower(GlobalScope.Statement);
     }

@@ -3,9 +3,9 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundUnaryOperator
+sealed class BoundUnaryOperator
 {
-    private static readonly BoundUnaryOperator[] _operators =
+    static readonly BoundUnaryOperator[] Operators =
     {
         new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, TypeSymbol.Bool),
         new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, TypeSymbol.Int),
@@ -15,12 +15,12 @@ internal sealed class BoundUnaryOperator
         new BoundUnaryOperator(SyntaxKind.TildeToken, BoundUnaryOperatorKind.OnesCompliment, TypeSymbol.Int),
     };
 
-    private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, TypeSymbol operandType)
+    BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, TypeSymbol operandType)
         : this(syntaxKind, kind, operandType, operandType)
     {
     }
 
-    private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, TypeSymbol operandType, TypeSymbol resultType)
+    BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, TypeSymbol operandType, TypeSymbol resultType)
     {
         SyntaxKind = syntaxKind;
         Kind = kind;
@@ -35,7 +35,7 @@ internal sealed class BoundUnaryOperator
 
     public static BoundUnaryOperator Bind(SyntaxKind syntaxKind, TypeSymbol operandType)
     {
-        foreach (var op in _operators)
+        foreach (var op in Operators)
         {
             if (op.SyntaxKind == syntaxKind && op.OperandType == operandType)
             {

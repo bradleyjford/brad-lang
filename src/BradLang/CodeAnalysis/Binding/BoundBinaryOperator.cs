@@ -3,11 +3,11 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundBinaryOperator
+sealed class BoundBinaryOperator
 {
     public static BoundBinaryOperator Bind(SyntaxKind syntaxKind, TypeSymbol leftType, TypeSymbol rightType)
     {
-        foreach (var op in _operators)
+        foreach (var op in Operators)
         {
             if (op.SyntaxKind == syntaxKind && op.LeftType == leftType && op.RightType == rightType)
             {
@@ -18,7 +18,7 @@ internal sealed class BoundBinaryOperator
         return null;
     }
 
-    private static readonly BoundBinaryOperator[] _operators =
+    static readonly BoundBinaryOperator[] Operators =
     {
         new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, TypeSymbol.String),
         new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, TypeSymbol.String, TypeSymbol.Bool),
@@ -48,17 +48,17 @@ internal sealed class BoundBinaryOperator
         new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, TypeSymbol.Bool),
     };
 
-    private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, TypeSymbol type)
+    BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, TypeSymbol type)
         : this(syntaxKind, kind, type, type, type)
     {
     }
 
-    private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, TypeSymbol operandType, TypeSymbol resultType)
+    BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, TypeSymbol operandType, TypeSymbol resultType)
         : this(syntaxKind, kind, operandType, operandType, resultType)
     {
     }
 
-    private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, TypeSymbol leftType, TypeSymbol rightType, TypeSymbol resultType)
+    BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, TypeSymbol leftType, TypeSymbol rightType, TypeSymbol resultType)
     {
         SyntaxKind = syntaxKind;
         Kind = kind;

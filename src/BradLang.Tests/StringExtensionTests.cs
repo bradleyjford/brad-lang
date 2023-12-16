@@ -1,13 +1,13 @@
 ﻿using Xunit;
 
-namespace BradLang.Tests
+namespace BradLang.Tests;
+
+public class StringExtensionTests
 {
-    public class StringExtensionTests
+    [Fact]
+    public void StringExtensions_Unintent_RemovesLeadingIndent()
     {
-        [Fact]
-        public void StringExtensions_Unintent_RemovesLeadingIndent()
-        {
-            var text = @"
+        var text = @"
                 {
                     var a = 10
 
@@ -18,8 +18,8 @@ namespace BradLang.Tests
                 }
             ";
 
-            var expected = 
-@"{
+        var expected = 
+            @"{
     var a = 10
 
     if (a < 100)
@@ -28,9 +28,8 @@ namespace BradLang.Tests
     }
 }";
 
-            var result = text.Unindent();
+        var result = text.Unindent();
 
-            Assert.Equal(expected, result);
-        }
+        Assert.Equal(expected, result);
     }
 }

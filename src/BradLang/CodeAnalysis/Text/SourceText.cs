@@ -9,16 +9,16 @@ public sealed class SourceText
         return new SourceText(text);
     }
 
-    private readonly string _text;
+    readonly string _text;
 
-    private SourceText(string text)
+    SourceText(string text)
     {
         _text = text;
 
         Lines = ParseLines(this, text);
     }
 
-    private static ImmutableArray<TextLine> ParseLines(SourceText sourceText, string text)
+    static ImmutableArray<TextLine> ParseLines(SourceText sourceText, string text)
     {
         var result = ImmutableArray.CreateBuilder<TextLine>();
 
@@ -54,14 +54,14 @@ public sealed class SourceText
         return result.ToImmutable();
     }
 
-    private static TextLine CreateLine(SourceText sourceText, int position, int lineStart, int lineBreakWidth)
+    static TextLine CreateLine(SourceText sourceText, int position, int lineStart, int lineBreakWidth)
     {
         var lineLength = position - lineStart;
 
         return new TextLine(sourceText, lineStart, lineLength, lineLength + lineBreakWidth);
     }
 
-    private static int GetLineBreakWidth(string text, int position)
+    static int GetLineBreakWidth(string text, int position)
     {
         var c = text[position];
         var l = position + 1 >= text.Length ? '\0' : text[position + 1];

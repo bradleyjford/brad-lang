@@ -71,17 +71,17 @@ public class LexerTests
     [MemberData(nameof(GetSyntaxTokenPairsWithSeparatorsData))]
     public void Lexer_Lex_CanParseTokenPairsWithSeparator(
         SyntaxKind kind1, string text1, 
-        SyntaxKind SeparatorKind, string SeparatorText,
+        SyntaxKind separatorKind, string separatorText,
         SyntaxKind kind2, string text2)
     {
-        var tokens = ParseTokens(text1 + SeparatorText + text2).ToArray();
+        var tokens = ParseTokens(text1 + separatorText + text2).ToArray();
 
         Assert.Equal(3, tokens.Length);
 
         Assert.Equal(kind1, tokens[0].Kind);
         Assert.Equal(text1, tokens[0].Text);
-        Assert.Equal(SeparatorKind, tokens[1].Kind);
-        Assert.Equal(SeparatorText, tokens[1].Text);
+        Assert.Equal(separatorKind, tokens[1].Kind);
+        Assert.Equal(separatorText, tokens[1].Text);
         Assert.Equal(kind2, tokens[2].Kind);
         Assert.Equal(text2, tokens[2].Text);
     }
@@ -94,7 +94,7 @@ public class LexerTests
         }
     }
 
-    private static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind kind2, string text2)> GetSyntaxTokenPairs()
+    static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind kind2, string text2)> GetSyntaxTokenPairs()
     {
         foreach (var t1 in GetSyntaxTokens())
         {
@@ -110,7 +110,7 @@ public class LexerTests
         }
     }
 
-    private static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind SeparatorKind, string SeparatorText, SyntaxKind kind2, string text2)> GetSyntaxTokenPairsWithSeparators()
+    static IEnumerable<(SyntaxKind kind1, string text1, SyntaxKind SeparatorKind, string SeparatorText, SyntaxKind kind2, string text2)> GetSyntaxTokenPairsWithSeparators()
     {
         foreach (var t1 in GetSyntaxTokens())
         {
@@ -126,7 +126,7 @@ public class LexerTests
             }
         }
     }
-    private static bool CanPairToken(SyntaxKind kind1, SyntaxKind kind2) 
+    static bool CanPairToken(SyntaxKind kind1, SyntaxKind kind2) 
     {
         if (kind1 == SyntaxKind.IdentifierToken && kind2 == SyntaxKind.IdentifierToken)
             return false;
@@ -198,7 +198,7 @@ public class LexerTests
         return true;
     }
 
-    private static IEnumerable<(SyntaxKind kind, string text)> GetSyntaxTokens()
+    static IEnumerable<(SyntaxKind kind, string text)> GetSyntaxTokens()
     {
         var fixedLengthTokens = Enum.GetValues(typeof(SyntaxKind))
             .Cast<SyntaxKind>()
@@ -223,7 +223,7 @@ public class LexerTests
         return fixedLengthTokens.Concat(variableLengthTokens);
     }
 
-    private static IEnumerable<(SyntaxKind kind, string text)> GetSeparatorSyntaxTokens()
+    static IEnumerable<(SyntaxKind kind, string text)> GetSeparatorSyntaxTokens()
     {
         return new[] {
             (SyntaxKind.WhiteSpaceToken, " "),
@@ -234,7 +234,7 @@ public class LexerTests
         };
     }
 
-    private IEnumerable<SyntaxToken> ParseTokens(string text)
+    IEnumerable<SyntaxToken> ParseTokens(string text)
     {
         return SyntaxTree.ParseTokens(text);
     }

@@ -2,7 +2,7 @@ using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundVariableExpression : BoundExpression
+sealed class BoundVariableExpression : BoundExpression
 {
     public BoundVariableExpression(VariableSymbol variable)
     {

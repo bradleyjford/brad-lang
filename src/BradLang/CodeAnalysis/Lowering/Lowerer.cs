@@ -6,15 +6,15 @@ using System.Linq;
 
 namespace BradLang.CodeAnalysis.Lowering;
 
-internal sealed class Lowerer : BoundTreeRewriter
+sealed class Lowerer : BoundTreeRewriter
 {
-    private int _labelCount;
+    int _labelCount;
 
-    private Lowerer()
+    Lowerer()
     {
     }
 
-    private BoundLabel GenerateLabel()
+    BoundLabel GenerateLabel()
     {
         var name = $"Label{++_labelCount}";
 
@@ -28,7 +28,7 @@ internal sealed class Lowerer : BoundTreeRewriter
         return Flatten(result);
     }
 
-    private static BoundBlockStatement Flatten(BoundStatement statement)
+    static BoundBlockStatement Flatten(BoundStatement statement)
     {
         var builder = ImmutableArray.CreateBuilder<BoundStatement>();
         var stack = new Stack<BoundStatement>();

@@ -2,7 +2,7 @@ using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundVariableDeclaration : BoundStatement
+sealed class BoundVariableDeclaration : BoundStatement
 {
     public BoundVariableDeclaration(VariableSymbol variableSymbol, BoundExpression initializer)
     {

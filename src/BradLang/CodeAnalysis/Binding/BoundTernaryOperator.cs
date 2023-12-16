@@ -3,9 +3,9 @@ using BradLang.CodeAnalysis.Syntax;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundTernaryOperator
+sealed class BoundTernaryOperator
 {
-    private BoundTernaryOperator(TypeSymbol conditionType, TypeSymbol trueType, TypeSymbol falseType)
+    BoundTernaryOperator(TypeSymbol conditionType, TypeSymbol trueType, TypeSymbol falseType)
     {
         ConditionType = conditionType;
         TrueType = trueType;

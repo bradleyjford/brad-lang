@@ -5,14 +5,14 @@ namespace BradLang.CodeAnalysis.Syntax;
 
 public class Lexer
 {
-    private readonly SourceText _text;
-    private readonly DiagnosticBag _diagnostics;
+    readonly SourceText _text;
+    readonly DiagnosticBag _diagnostics;
 
-    private int _start;
-    private int _position;
+    int _start;
+    int _position;
 
-    private SyntaxKind _kind;
-    private object _value;
+    SyntaxKind _kind;
+    object _value;
 
     public Lexer(SourceText text)
     {
@@ -204,15 +204,15 @@ public class Lexer
             default:
                 var currentChar = Current;
 
-                if (Char.IsWhiteSpace(currentChar))
+                if (char.IsWhiteSpace(currentChar))
                 {
                     ReadWhiteSpace();
                 }
-                else if (Char.IsLetter(currentChar))
+                else if (char.IsLetter(currentChar))
                 {
                     ReadKeywordOrIdentifier();
                 }
-                else if (Char.IsDigit(currentChar))
+                else if (char.IsDigit(currentChar))
                 {
                     ReadNumber();
                 }
@@ -240,38 +240,38 @@ public class Lexer
         return new SyntaxToken(_kind, _start, tokenText, _value);
     }
 
-    private void ReadWhiteSpace()
+    void ReadWhiteSpace()
     {
         do
         {
             _position++;
-        } while (Char.IsWhiteSpace(Current));
+        } while (char.IsWhiteSpace(Current));
 
         _kind = SyntaxKind.WhiteSpaceToken;
     }
 
-    private void ReadKeywordOrIdentifier()
+    void ReadKeywordOrIdentifier()
     {
         do
         {
             _position++;
-        } while (Char.IsLetter(Current) || Char.IsDigit(Current));
+        } while (char.IsLetter(Current) || char.IsDigit(Current));
 
         var textValue = _text.ToString(_start, _position - _start);
 
         _kind = SyntaxFacts.GetKeywordKind(textValue);
     }
 
-    private void ReadNumber()
+    void ReadNumber()
     {
         do
         {
             _position++;
-        } while (Char.IsDigit(Current));
+        } while (char.IsDigit(Current));
 
         var textValue = _text.ToString(_start, _position - _start);
 
-        if (!Int32.TryParse(textValue, out var value))
+        if (!int.TryParse(textValue, out var value))
         {
             _diagnostics.ReportInvalidNumber(new TextSpan(_start, _position - _start), textValue, TypeSymbol.Int);
         }
@@ -280,7 +280,7 @@ public class Lexer
         _value = value;
     }
 
-    private void ReadString()
+    void ReadString()
     {
         _kind = SyntaxKind.StringToken;
 
@@ -309,7 +309,7 @@ public class Lexer
         }
     }
 
-    private char Current
+    char Current
     {
         get
         {
@@ -322,11 +322,11 @@ public class Lexer
         }
     }
 
-    private char Previous => Peek(-1);
+    char Previous => Peek(-1);
 
-    private char PeekNext => Peek(1);
+    char PeekNext => Peek(1);
 
-    private char Peek(int offset)
+    char Peek(int offset)
     {
         var index = _position + offset;
 

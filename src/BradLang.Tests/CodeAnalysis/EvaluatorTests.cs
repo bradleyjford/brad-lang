@@ -108,7 +108,7 @@ public class EvaluatorTests
         AssertDiagnostics(text, diagnostics);
     }
 
-    private void AssertDiagnostics(string text, string diagnosticText)
+    void AssertDiagnostics(string text, string diagnosticText)
     {
         var annotatedText = AnnotatedText.Parse(text);
         var syntaxTree = SyntaxTree.Parse(annotatedText.Text);

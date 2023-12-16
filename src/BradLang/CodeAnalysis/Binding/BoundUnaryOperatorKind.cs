@@ -1,6 +1,6 @@
 namespace BradLang.CodeAnalysis.Binding;
 
-internal enum BoundUnaryOperatorKind
+enum BoundUnaryOperatorKind
 {
     Identity,
     Negation,

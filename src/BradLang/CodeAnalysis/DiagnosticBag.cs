@@ -7,7 +7,7 @@ namespace BradLang.CodeAnalysis;
 
 public sealed class DiagnosticBag : IEnumerable<Diagnostic>
 {
-    private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
+    readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
 
     public IEnumerator<Diagnostic> GetEnumerator() => _diagnostics.GetEnumerator();
 
@@ -18,7 +18,7 @@ public sealed class DiagnosticBag : IEnumerable<Diagnostic>
         _diagnostics.AddRange(diagnostics);
     }
 
-    private void Report(TextSpan span, string message)
+    void Report(TextSpan span, string message)
     {
         _diagnostics.Add(new Diagnostic(span, message));
     }

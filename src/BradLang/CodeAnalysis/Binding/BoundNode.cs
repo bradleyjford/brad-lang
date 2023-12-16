@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal abstract class BoundNode
+abstract class BoundNode
 {
     public abstract BoundNodeKind Kind { get; }
 

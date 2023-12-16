@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundTreeDiagnosticWriter
+sealed class BoundTreeDiagnosticWriter
 {
     public static void Write(TextWriter writer, BoundNode node)
     {
@@ -12,7 +12,7 @@ internal sealed class BoundTreeDiagnosticWriter
         writer.WriteLine();
     }
 
-    private static void Write(TextWriter writer, BoundNode node, string indent, bool isLast)
+    static void Write(TextWriter writer, BoundNode node, string indent, bool isLast)
     {
         var isToConsole = writer == Console.Out;
 
@@ -93,7 +93,7 @@ internal sealed class BoundTreeDiagnosticWriter
         }
     }
 
-    private static string GetText(BoundNode node)
+    static string GetText(BoundNode node)
     {
         if (node is BoundBinaryExpression b)
         {
@@ -108,7 +108,7 @@ internal sealed class BoundTreeDiagnosticWriter
         return node.Kind.ToString();
     }
 
-    private static ConsoleColor GetColor(BoundNode node)
+    static ConsoleColor GetColor(BoundNode node)
     {
         if (node is BoundExpression)
             return ConsoleColor.Blue;

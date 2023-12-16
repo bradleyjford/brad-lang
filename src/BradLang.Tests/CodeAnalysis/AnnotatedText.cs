@@ -52,7 +52,7 @@ public sealed class AnnotatedText
         return new AnnotatedText(textBuilder.ToString(), spanBuilder.ToImmutable());
     }
 
-    private AnnotatedText(string text, ImmutableArray<TextSpan> spans)
+    AnnotatedText(string text, ImmutableArray<TextSpan> spans)
     {
         Text = text;
         Spans = spans;

@@ -11,7 +11,7 @@ public abstract class SeparatedSyntaxList
 public sealed class SeparatedSyntaxList<T> : SeparatedSyntaxList, IEnumerable<T>
     where T : SyntaxNode
 {
-    private readonly ImmutableArray<SyntaxNode> _nodesAndSeparators;
+    readonly ImmutableArray<SyntaxNode> _nodesAndSeparators;
 
     public SeparatedSyntaxList(ImmutableArray<SyntaxNode> separatorsAndNotes)
     {

@@ -3,9 +3,9 @@ using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundScope
+sealed class BoundScope
 {
-    private readonly Dictionary<string, VariableSymbol> _variables = new Dictionary<string, VariableSymbol>();
+    readonly Dictionary<string, VariableSymbol> _variables = new Dictionary<string, VariableSymbol>();
 
     public BoundScope(BoundScope parent)
     {

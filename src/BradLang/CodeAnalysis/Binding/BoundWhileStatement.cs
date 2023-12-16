@@ -1,6 +1,6 @@
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundWhileStatement : BoundStatement
+sealed class BoundWhileStatement : BoundStatement
 {
     public BoundWhileStatement(BoundExpression condition, BoundStatement bodyStatement)
     {

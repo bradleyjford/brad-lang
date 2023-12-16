@@ -4,12 +4,12 @@ using System.Collections.ObjectModel;
 
 namespace BradLang.CommandLine;
 
-internal abstract partial class Repl
+abstract partial class Repl
 {
-    private readonly List<string> _history = new List<string>();
-    private int _historyIndex;
+    readonly List<string> _history = new List<string>();
+    int _historyIndex;
 
-    private bool _done;
+    bool _done;
 
     protected abstract void EvaluateMetaCommand(string command);
     protected abstract void EvaluateCommand(string command);
@@ -21,7 +21,7 @@ internal abstract partial class Repl
         {
             var command = ReadCommand();
 
-            if (String.IsNullOrEmpty(command))
+            if (string.IsNullOrEmpty(command))
             {
                 return;
             }
@@ -40,7 +40,7 @@ internal abstract partial class Repl
         }
     }
 
-    private string ReadCommand()
+    string ReadCommand()
     {
         var document = new ObservableCollection<string>() { "" };
         var view = new DocumentView(document, RenderLine);
@@ -59,10 +59,10 @@ internal abstract partial class Repl
 
         Console.WriteLine();
 
-        return String.Join(Environment.NewLine, document);
+        return string.Join(Environment.NewLine, document);
     }
 
-    private void HandleKey(ConsoleKeyInfo key, ObservableCollection<string> document, DocumentView view)
+    void HandleKey(ConsoleKeyInfo key, ObservableCollection<string> document, DocumentView view)
     {
         if (key.Modifiers == default)
         {
@@ -137,14 +137,14 @@ internal abstract partial class Repl
         }
     }
 
-    private void HandleControlEnter(ObservableCollection<string> document, DocumentView view)
+    void HandleControlEnter(ObservableCollection<string> document, DocumentView view)
     {
         InsertLine(document, view);
     }
 
-    private void HandleEnter(ObservableCollection<string> document, DocumentView view)
+    void HandleEnter(ObservableCollection<string> document, DocumentView view)
     {
-        var submissionText = String.Join(Environment.NewLine, document);
+        var submissionText = string.Join(Environment.NewLine, document);
 
         if (submissionText.StartsWith("#") || IsCompleteDocument(submissionText))
         {
@@ -155,7 +155,7 @@ internal abstract partial class Repl
         InsertLine(document, view);
     }
 
-    private static void InsertLine(ObservableCollection<string> document, DocumentView view)
+    static void InsertLine(ObservableCollection<string> document, DocumentView view)
     {
         var remainder = document[view.CurrentLine].Substring(view.CurrentCharacter);
 
@@ -169,22 +169,22 @@ internal abstract partial class Repl
         view.CurrentLine = lineIndex;
     }
 
-    private void HandleEscape(ObservableCollection<string> document, DocumentView view)
+    void HandleEscape(ObservableCollection<string> document, DocumentView view)
     {
         document.Clear();
 
-        document.Add(String.Empty);
+        document.Add(string.Empty);
 
         view.CurrentLine = 0;
         view.CurrentCharacter = 0;
     }
 
-    private void HandleTab(ObservableCollection<string> document, DocumentView view)
+    void HandleTab(ObservableCollection<string> document, DocumentView view)
     {
-        const int TabWidth = 4;
+        const int tabWidth = 4;
 
         var start = view.CurrentCharacter;
-        var remainingSpaces = TabWidth - start % TabWidth;
+        var remainingSpaces = tabWidth - start % tabWidth;
         var line = document[view.CurrentLine];
 
         document[view.CurrentLine] = line.Insert(start, new string(' ', remainingSpaces));
@@ -192,7 +192,7 @@ internal abstract partial class Repl
         view.CurrentCharacter += remainingSpaces;
     }
 
-    private void HandleBackspace(ObservableCollection<string> document, DocumentView view)
+    void HandleBackspace(ObservableCollection<string> document, DocumentView view)
     {
         var start = view.CurrentCharacter;
 
@@ -228,7 +228,7 @@ internal abstract partial class Repl
         }
     }
 
-    private void HandleDelete(ObservableCollection<string> document, DocumentView view)
+    void HandleDelete(ObservableCollection<string> document, DocumentView view)
     {
         var lineIndex = view.CurrentLine;
         var line = document[lineIndex];
@@ -255,17 +255,17 @@ internal abstract partial class Repl
         document[lineIndex] = before + after;
     }
 
-    private void HandleHome(ObservableCollection<string> document, DocumentView view)
+    void HandleHome(ObservableCollection<string> document, DocumentView view)
     {
         view.CurrentCharacter = 0;
     }
 
-    private void HandleEnd(ObservableCollection<string> document, DocumentView view)
+    void HandleEnd(ObservableCollection<string> document, DocumentView view)
     {
         view.CurrentCharacter = document[view.CurrentLine].Length;
     }
 
-    private void HandlePageUp(ObservableCollection<string> document, DocumentView view)
+    void HandlePageUp(ObservableCollection<string> document, DocumentView view)
     {
         _historyIndex--;
 
@@ -277,7 +277,7 @@ internal abstract partial class Repl
         SetDocumentFromHistory(document, view);
     }
 
-    private void HandlePageDown(ObservableCollection<string> document, DocumentView view)
+    void HandlePageDown(ObservableCollection<string> document, DocumentView view)
     {
         _historyIndex++;
 
@@ -289,7 +289,7 @@ internal abstract partial class Repl
         SetDocumentFromHistory(document, view);
     }
 
-    private void SetDocumentFromHistory(ObservableCollection<string> document, DocumentView view)
+    void SetDocumentFromHistory(ObservableCollection<string> document, DocumentView view)
     {
         if (_history.Count== 0)
         {
@@ -309,7 +309,7 @@ internal abstract partial class Repl
         view.CurrentCharacter = document[document.Count - 1].Length - 1;
     }
 
-    private void HandleLeftArrow(ObservableCollection<string> document, DocumentView view)
+    void HandleLeftArrow(ObservableCollection<string> document, DocumentView view)
     {
         if (view.CurrentCharacter > 0)
         {
@@ -317,7 +317,7 @@ internal abstract partial class Repl
         }
     }
 
-    private void HandleRightArrow(ObservableCollection<string> document, DocumentView view)
+    void HandleRightArrow(ObservableCollection<string> document, DocumentView view)
     {
         var line = document[view.CurrentLine];
 
@@ -327,7 +327,7 @@ internal abstract partial class Repl
         }
     }
 
-    private void HandleUpArrow(ObservableCollection<string> document, DocumentView view)
+    void HandleUpArrow(ObservableCollection<string> document, DocumentView view)
     {
         if (view.CurrentLine > 0)
         {
@@ -335,7 +335,7 @@ internal abstract partial class Repl
         }
     }
 
-    private void HandleDownArrow(ObservableCollection<string> document, DocumentView view)
+    void HandleDownArrow(ObservableCollection<string> document, DocumentView view)
     {
         if (view.CurrentLine < document.Count - 1)
         {
@@ -343,7 +343,7 @@ internal abstract partial class Repl
         }
     }
 
-    private void HandleOtherKey(char key, ObservableCollection<string> document, DocumentView view)
+    void HandleOtherKey(char key, ObservableCollection<string> document, DocumentView view)
     {
         var text = key.ToString();
 

@@ -121,7 +121,7 @@ public class ParserTests
         }
     }
 
-    private static ExpressionSyntax ParseExpression(string text)
+    static ExpressionSyntax ParseExpression(string text)
     {
         var syntaxTree = SyntaxTree.Parse(text);
         var root = syntaxTree.Root;

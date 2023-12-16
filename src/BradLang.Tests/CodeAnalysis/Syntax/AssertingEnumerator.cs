@@ -6,17 +6,17 @@ using Xunit;
 
 namespace BradLang.Tests.CodeAnalysis.Syntax;
 
-internal sealed class AssertingEnumerator : IDisposable
+sealed class AssertingEnumerator : IDisposable
 {
-    private readonly IEnumerator<SyntaxNode> _enumerator;
-    private bool _hasErrors;
+    readonly IEnumerator<SyntaxNode> _enumerator;
+    bool _hasErrors;
 
     public AssertingEnumerator(SyntaxNode node)
     {
         _enumerator = Flatten(node).GetEnumerator();
     }
 
-    private bool MarkFailed()
+    bool MarkFailed()
     {
         _hasErrors = true;
 
@@ -33,7 +33,7 @@ internal sealed class AssertingEnumerator : IDisposable
         _enumerator.Dispose();
     }
 
-    private static IEnumerable<SyntaxNode> Flatten(SyntaxNode node)
+    static IEnumerable<SyntaxNode> Flatten(SyntaxNode node)
     {
         var stack = new Stack<SyntaxNode>();
 

@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal abstract class BoundTreeRewriter
+abstract class BoundTreeRewriter
 {
     public virtual BoundStatement RewriteStatement(BoundStatement node)
     {

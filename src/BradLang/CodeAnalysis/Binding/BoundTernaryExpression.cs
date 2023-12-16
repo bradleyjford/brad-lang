@@ -2,7 +2,7 @@
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundTernaryExpression : BoundExpression
+sealed class BoundTernaryExpression : BoundExpression
 {
     public BoundTernaryExpression(BoundTernaryOperator @operator, BoundExpression condition, BoundExpression trueExpression, BoundExpression falseExpression)
     {

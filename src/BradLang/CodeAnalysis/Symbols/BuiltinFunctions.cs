@@ -2,7 +2,7 @@
 
 namespace BradLang.CodeAnalysis.Symbols;
 
-internal static class BuiltinFunctions
+static class BuiltinFunctions
 {
     public static readonly FunctionSymbol Print =
         new FunctionSymbol("print", ImmutableArray.Create(new ParameterSymbol("text", TypeSymbol.String)), TypeSymbol.Void);

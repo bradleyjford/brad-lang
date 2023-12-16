@@ -2,7 +2,7 @@ using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundGotoStatement : BoundStatement
+sealed class BoundGotoStatement : BoundStatement
 {
     public BoundGotoStatement(BoundLabel label)
     {

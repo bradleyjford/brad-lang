@@ -1,6 +1,6 @@
 namespace BradLang.CodeAnalysis.Binding;
 
-internal enum BoundNodeKind
+enum BoundNodeKind
 {
     // Statements
     BlockStatement,

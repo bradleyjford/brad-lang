@@ -1,6 +1,6 @@
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundExpressionStatement : BoundStatement
+sealed class BoundExpressionStatement : BoundStatement
 {
     public BoundExpressionStatement(BoundExpression expression)
     {

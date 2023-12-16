@@ -3,13 +3,13 @@ using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis;
 
-internal sealed class Evaluator
+sealed class Evaluator
 {
-    private readonly BoundBlockStatement _root;
-    private readonly IDictionary<VariableSymbol, object> _variables;
-    private readonly IDictionary<BoundLabel, int> _labels = new Dictionary<BoundLabel, int>();
+    readonly BoundBlockStatement _root;
+    readonly IDictionary<VariableSymbol, object> _variables;
+    readonly IDictionary<BoundLabel, int> _labels = new Dictionary<BoundLabel, int>();
 
-    private object _lastValue;
+    object _lastValue;
 
     public Evaluator(BoundBlockStatement root, IDictionary<VariableSymbol, object> variables)
     {
@@ -19,7 +19,7 @@ internal sealed class Evaluator
         IndexLabels();
     }
 
-    private void IndexLabels()
+    void IndexLabels()
     {
         for (var i = 0; i < _root.Statements.Length; i++)
         {
@@ -89,17 +89,17 @@ internal sealed class Evaluator
         return _lastValue;
     }
 
-    private void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
+    void EvaluateVariableDeclaration(BoundVariableDeclaration statement)
     {
         _variables[statement.VariableSymbol] = EvaluateExpression(statement.Initializer);
     }
 
-    private void EvaluateExpressionStatement(BoundExpressionStatement node)
+    void EvaluateExpressionStatement(BoundExpressionStatement node)
     {
         _lastValue = EvaluateExpression(node.Expression);
     }
 
-    private object EvaluateExpression(BoundNode node)
+    object EvaluateExpression(BoundNode node)
     {
         switch (node.Kind)
         {
@@ -128,7 +128,7 @@ internal sealed class Evaluator
         throw new Exception($"Unexpected node {node.Kind}.");
     }
 
-    private object EvalulateCallExpression(BoundCallExpression node)
+    object EvalulateCallExpression(BoundCallExpression node)
     {
         if (node.Function == BuiltinFunctions.Input)
         {
@@ -148,17 +148,17 @@ internal sealed class Evaluator
         }
     }
 
-    private object EvaluateLiteralExpression(BoundLiteralExpression expression)
+    object EvaluateLiteralExpression(BoundLiteralExpression expression)
     {
         return expression.Value;
     }
 
-    private object EvaluateVariableExpression(BoundVariableExpression expression)
+    object EvaluateVariableExpression(BoundVariableExpression expression)
     {
         return _variables[expression.Variable];
     }
 
-    private object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
+    object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
     {
         var value = EvaluateExpression(expression.Expression);
 
@@ -167,7 +167,7 @@ internal sealed class Evaluator
         return value;
     }
 
-    private object EvaluateUnaryExpression(BoundUnaryExpression expression)
+    object EvaluateUnaryExpression(BoundUnaryExpression expression)
     {
         var operand = EvaluateExpression(expression.Operand);
 
@@ -234,7 +234,7 @@ internal sealed class Evaluator
         }
     }
 
-    private object EvaluateBinaryExpression(BoundBinaryExpression expression)
+    object EvaluateBinaryExpression(BoundBinaryExpression expression)
     {
         var left = EvaluateExpression(expression.Left);
         var right = EvaluateExpression(expression.Right);
@@ -249,7 +249,7 @@ internal sealed class Evaluator
 
                 if (expression.Type == TypeSymbol.String)
                 {
-                    return String.Concat(left, right);
+                    return string.Concat(left, right);
                 }
 
                 throw new Exception($"Unexpected binary operator {expression.Operator.Kind}.");
@@ -288,7 +288,7 @@ internal sealed class Evaluator
         }
     }
 
-    private object EvaluateTernaryExpression(BoundTernaryExpression expression)
+    object EvaluateTernaryExpression(BoundTernaryExpression expression)
     {
         var conditionResult = (bool)EvaluateExpression(expression.Condition);
 

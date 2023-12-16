@@ -3,7 +3,7 @@ using BradLang.CodeAnalysis.Symbols;
 
 namespace BradLang.CodeAnalysis.Binding;
 
-internal sealed class BoundCallExpression : BoundExpression
+sealed class BoundCallExpression : BoundExpression
 {
     public BoundCallExpression(FunctionSymbol function, ImmutableArray<BoundExpression> arguments)
     {

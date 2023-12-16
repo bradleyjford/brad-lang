@@ -41,7 +41,7 @@ public sealed class SyntaxTree
         }
     }
 
-    private SyntaxTree(SourceText text)
+    SyntaxTree(SourceText text)
     {
         var parser = new Parser(text);
 
